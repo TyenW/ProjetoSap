@@ -1,0 +1,18 @@
+order1: 000A
+order2: 100B
+order3: E000
+order4: F000
+order5: 0000
+order6: 0000
+order7: 0000
+order8: 0000
+order9: 0000
+order10: 0000
+order11: 0003
+order12: 0004
+order13: 0000
+order14: 0000
+order15: 0000
+order16: 0000
+
+saída: ACC 7
