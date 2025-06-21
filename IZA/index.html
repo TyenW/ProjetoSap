@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>ProjetoSap</title>
-  <link rel="stylesheet" href="/IZA/assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-  <!-- Cabeçalho (agora dentro do <body>, como deve ser) -->
-  <header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 0;">
-    <div style="display: flex; align-items: center;">
-      <img src="/IZA/assets/img/logo.png" alt="Logo ProjetoSap" style="height: 48px; margin-right: 16px;">
+  <!-- Cabeçalho -->
+  <header class="header">
+    <div class="logo-container">
+      <img src="assets/img/logo.png" alt="Logo ProjetoSap" class="logo">
     </div>
     <nav>
-      <ul style="display: flex; list-style: none; margin: 0; padding: 0; gap: 24px;">
+      <ul class="nav-list">
         <li><button class="li-btn" type="button" onclick="location.href='#'">Home</button></li>
         <li><button class="li-btn" type="button" onclick="location.href='#oque-e-sap'">O que é SAP</button></li>
         <li><button class="li-btn" type="button" onclick="location.href='#emulacao'">Emulação</button></li>
@@ -21,51 +21,50 @@
     </nav>
   </header>
 
-  <!-- Área de Memória RAM -->
-  <div class="memoryran" style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
-    <div style="display: grid; grid-template-columns: repeat(2, 200px); grid-auto-rows: 60px; column-gap: 2px; row-gap: 16px;">
-      <label for="memory" style="grid-column: 1 / span 2; text-align: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 4px;">Memória RAM</label>
+  <!-- Memória RAM -->
+  <div class="memoryran">
+    <div class="ram-grid">
+      <label for="memory" class="ram-label">Memória RAM</label>
 
-      <!-- Campos de entrada da memória -->
-      <!-- IDs vão de order1 a order16 -->
-      <!-- Input mode e filtro para hexadecimais -->
-      <!-- Estão corretos -->
-      <!-- Inserção automática com replace -->
+      <!-- Inputs 1 a 16 -->
+      <!-- IDs: order1 até order16 -->
+      <!-- Campos organizados em 4x4 -->
+      <!-- Cada campo aceita até 4 caracteres hexadecimais -->
+      <!-- Copiados para evitar erro ao digitar -->
 
-      <!-- Campos gerados dinamicamente para clareza -->
-      <!-- Você pode colar os seus diretamente, se preferir -->
-      <!-- Aqui vão apenas 4 como exemplo, mas você pode expandir como quiser -->
-
+      <!-- Gerado manualmente -->
+      <!-- 4x4 -->
       <input class="ran" type="text" placeholder="order 1" id="order1" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 2" id="order2" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 3" id="order3" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 4" id="order4" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <!-- Repita até order16... -->
 
       <input class="ran" type="text" placeholder="order 5" id="order5" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 6" id="order6" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 7" id="order7" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 8" id="order8" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+
       <input class="ran" type="text" placeholder="order 9" id="order9" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 10" id="order10" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 11" id="order11" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 12" id="order12" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+
       <input class="ran" type="text" placeholder="order 13" id="order13" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 14" id="order14" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 15" id="order15" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 16" id="order16" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
 
       <!-- Botões -->
-      <button id="passo" style="grid-column: 1 / span 2; justify-self: center; align-self: center; border-radius: 12px; padding: 4px 16px; font-size: 0.9rem; background-color: #007bff; color: #fff; border: none; cursor: pointer;">Passo</button>
-      <button id="emular" style="grid-column: 1 / span 2; justify-self: center; align-self: center; border-radius: 12px; padding: 4px 16px; font-size: 0.9rem; background-color: #007bff; color: #fff; border: none; cursor: pointer;">Emular</button>
+      <button id="passo" class="btn-wide">Passo</button>
+      <button id="emular" class="btn-wide">Emular</button>
     </div>
   </div>
 
-  <!-- Exibição de saída -->
-  <label id="saida-label" style="display: block; text-align: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;"></label>
-  <button id="saida" style="display: block; margin: 0 auto 16px auto; border-radius: 12px; padding: 4px 16px; font-size: 0.9rem; background-color: #28a745; color: #fff; border: none; cursor: pointer;">Mostrar Saída</button>
+  <!-- Saída -->
+  <label id="saida-label" class="saida-label"></label>
+  <button id="saida" class="saida-btn">Mostrar Saída</button>
 
   <!-- Script -->
-  <script src="/IZA/assets/js/script.js"></script>
+  <script src="assets/js/script.js"></script>
 </body>
 </html>

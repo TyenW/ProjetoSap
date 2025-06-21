@@ -1,34 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 body {
-  background: url('/IZA/assets/img/mapa.png') repeat; /* mapa pixelado estilo Minecraft ou Mario */
+  background: url('../img/mapa.png') repeat;
   font-family: 'Press Start 2P', cursive;
-  text-align: center;
   margin: 0;
   padding: 0;
   color: #fff;
   image-rendering: pixelated;
+  text-align: center;
 }
 
-h1 {
-  font-size: 1.5em;
-  margin: 16px;
-  color: #ffd700;
-  text-shadow: 2px 2px #000;
-}
-
-p {
-  font-size: 0.8em;
-  margin: 8px;
-  color: #ffffff;
-}
-
-header {
+.header {
   background: #4da6ff;
   border-bottom: 4px solid #ffcc00;
   padding: 16px;
   font-size: 1em;
   box-shadow: 0 8px #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 48px;
+  margin-right: 16px;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 24px;
 }
 
 button.li-btn {
@@ -47,26 +55,37 @@ button.li-btn:hover {
   background: #ffee33;
 }
 
+/* Memória RAM */
 .memoryran {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 40px auto;
-  max-width: 480px; /* menor largura para centralizar melhor */
+  max-width: 480px;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.5); /* leve escurecimento para destacar os inputs */
+  background: rgba(0, 0, 0, 0.5);
   border: 4px solid #ffd700;
   border-radius: 12px;
   box-shadow: 0 8px #333;
   flex-wrap: wrap;
 }
 
-.memoryran > div {
+.ram-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 colunas por linha */
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  justify-items: center;
   width: 100%;
+  justify-items: center;
+}
+
+.ram-label {
+  grid-column: 1 / span 4;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #fff;
+  text-shadow: 1px 1px #000;
 }
 
 .ran {
@@ -81,42 +100,40 @@ button.li-btn:hover {
   margin: 6px;
 }
 
-#saida-label {
+.btn-wide {
+  grid-column: 1 / span 4;
+  justify-self: center;
+  align-self: center;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 0.6em;
+  background-color: #00cc66;
   color: #fff;
-  font-size: 0.75em;
-  margin-top: 16px;
+  border: 4px solid #000;
+  margin-top: 8px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.saida-label {
+  display: block;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #fff;
   text-shadow: 1px 1px #000;
 }
 
-#passo, #emular, #saida {
-  font-family: 'Press Start 2P', cursive;
-  background: #00cc66;
+.saida-btn {
+  display: block;
+  margin: 0 auto 16px auto;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: 0.8em;
+  background-color: #28a745;
   color: #fff;
-  padding: 10px 16px;
   border: 4px solid #000;
-  margin-top: 16px;
-  font-size: 0.6em;
   cursor: pointer;
-}
-
-#passo:hover, #emular:hover, #saida:hover {
-  background: #00ff7f;
-  transform: scale(1.1);
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-  .memoryran {
-    max-width: 90%;
-  }
-
-  .memoryran > div {
-    grid-template-columns: repeat(2, 1fr); /* menos colunas em telas menores */
-  }
-
-  .ran {
-    width: 50px;
-    height: 36px;
-    font-size: 0.5em;
-  }
+  font-family: 'Press Start 2P', cursive;
 }
