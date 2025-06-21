@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>ProjetoSap</title>
   <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -26,29 +27,29 @@
     <div class="ram-grid">
       <label for="memory" class="ram-label">Memória RAM</label>
 
-      <!-- Inputs 1 a 16 -->
+      <!-- Campos de entrada 4x4 -->
       <!-- IDs: order1 até order16 -->
-      <!-- Campos organizados em 4x4 -->
       <!-- Cada campo aceita até 4 caracteres hexadecimais -->
-      <!-- Copiados para evitar erro ao digitar -->
 
-      <!-- Gerado manualmente -->
-      <!-- 4x4 -->
+      <!-- Linha 1 -->
       <input class="ran" type="text" placeholder="order 1" id="order1" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 2" id="order2" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 3" id="order3" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 4" id="order4" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
 
+      <!-- Linha 2 -->
       <input class="ran" type="text" placeholder="order 5" id="order5" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 6" id="order6" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 7" id="order7" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 8" id="order8" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
 
+      <!-- Linha 3 -->
       <input class="ran" type="text" placeholder="order 9" id="order9" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 10" id="order10" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 11" id="order11" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 12" id="order12" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
 
+      <!-- Linha 4 -->
       <input class="ran" type="text" placeholder="order 13" id="order13" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 14" id="order14" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
       <input class="ran" type="text" placeholder="order 15" id="order15" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
@@ -63,6 +64,9 @@
   <!-- Saída -->
   <label id="saida-label" class="saida-label"></label>
   <button id="saida" class="saida-btn">Mostrar Saída</button>
+
+  <!-- Console estilo Mario -->
+  <div id="console-log" class="mario-console" style="display: none;"></div>
 
   <!-- Script -->
   <script src="assets/js/script.js"></script>

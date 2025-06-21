@@ -6,6 +6,17 @@ let passos = [];
 let saida = [];
 let running = false;
 
+// Exibe mensagens estilo Mario Bros
+function mostrarMensagemEstiloMario(texto) {
+    const consoleDiv = document.getElementById('console-log');
+    consoleDiv.textContent = texto;
+    consoleDiv.style.display = 'block';
+
+    setTimeout(() => {
+        consoleDiv.style.display = 'none';
+    }, 5000);
+}
+
 // Inicializa a memória e o estado
 function inicializar() {
     memoria = new Map();
@@ -47,52 +58,52 @@ function decode(instr) {
 // Executa um passo
 function executarPasso() {
     if (!running || PC >= 16) {
-        alert(passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : ''));
+        mostrarMensagemEstiloMario(passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : ''));
         return;
     }
 
     const instr = memoria.get(PC) || '0000';
     const { op, arg } = decode(instr);
 
-    passos.push("PC=" + PC + " | Instr: " + instr + " | ACC=" + ACC);
+    passos.push(`PC=${PC} | Instr: ${instr} | ACC=${ACC}`);
 
     switch (op) {
         case 'LDA':
             ACC = parseInt(memoria.get(arg) || '0000', 16);
-            passos.push("LDA " + arg + ": ACC <- MEM[" + arg + "] = " + memoria.get(arg) + " (" + ACC + ")");
+            passos.push(`LDA ${arg}: ACC <- MEM[${arg}] = ${memoria.get(arg)} (${ACC})`);
             PC++;
             break;
         case 'ADD':
             ACC += parseInt(memoria.get(arg) || '0000', 16);
-            passos.push("ADD " + arg + ": ACC += MEM[" + arg + "] = " + memoria.get(arg) + " (ACC=" + ACC + ")");
+            passos.push(`ADD ${arg}: ACC += MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
             PC++;
             break;
         case 'SUB':
             ACC -= parseInt(memoria.get(arg) || '0000', 16);
-            passos.push("SUB " + arg + ": ACC -= MEM[" + arg + "] = " + memoria.get(arg) + " (ACC=" + ACC + ")");
+            passos.push(`SUB ${arg}: ACC -= MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
             PC++;
             break;
         case 'INC':
             ACC++;
-            passos.push("INC: ACC++ (ACC=" + ACC + ")");
+            passos.push(`INC: ACC++ (ACC=${ACC})`);
             PC++;
             break;
         case 'DEC':
             ACC--;
-            passos.push("DEC: ACC-- (ACC=" + ACC + ")");
+            passos.push(`DEC: ACC-- (ACC=${ACC})`);
             PC++;
             break;
         case 'MUL':
             ACC *= parseInt(memoria.get(arg) || '0000', 16);
-            passos.push("MUL " + arg + ": ACC *= MEM[" + arg + "] = " + memoria.get(arg) + " (ACC=" + ACC + ")");
+            passos.push(`MUL ${arg}: ACC *= MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
             PC++;
             break;
         case 'JMP':
-            passos.push("JMP para " + arg);
+            passos.push(`JMP para ${arg}`);
             PC = arg;
             break;
         case 'OUT':
-            passos.push("OUT: " + ACC);
+            passos.push(`OUT: ${ACC}`);
             saida.push(ACC);
             PC++;
             break;
@@ -101,12 +112,12 @@ function executarPasso() {
             running = false;
             break;
         default:
-            passos.push("Instrução desconhecida: " + instr);
+            passos.push(`Instrução desconhecida: ${instr}`);
             running = false;
             break;
     }
 
-    alert(passos[passos.length - 1]);
+    mostrarMensagemEstiloMario(passos[passos.length - 1]);
 }
 
 // Executa tudo
@@ -117,55 +128,55 @@ function executarTudo() {
     while (running && PC < 16) {
         executarPassoInterno();
     }
-    alert(passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : ''));
+    mostrarMensagemEstiloMario(passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : ''));
 }
 
-// Versão interna sem alert
+// Versão interna sem mostrar mensagem
 function executarPassoInterno() {
     if (!running || PC >= 16) return;
 
     const instr = memoria.get(PC) || '0000';
     const { op, arg } = decode(instr);
 
-    passos.push("PC=" + PC + " | Instr: " + instr + " | ACC=" + ACC);
+    passos.push(`PC=${PC} | Instr: ${instr} | ACC=${ACC}`);
 
     switch (op) {
         case 'LDA':
             ACC = parseInt(memoria.get(arg) || '0000', 16);
-            passos.push("LDA " + arg + ": ACC <- MEM[" + arg + "] = " + memoria.get(arg) + " (" + ACC + ")");
+            passos.push(`LDA ${arg}: ACC <- MEM[${arg}] = ${memoria.get(arg)} (${ACC})`);
             PC++;
             break;
         case 'ADD':
             ACC += parseInt(memoria.get(arg) || '0000', 16);
-            passos.push("ADD " + arg + ": ACC += MEM[" + arg + "] = " + memoria.get(arg) + " (ACC=" + ACC + ")");
+            passos.push(`ADD ${arg}: ACC += MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
             PC++;
             break;
         case 'SUB':
             ACC -= parseInt(memoria.get(arg) || '0000', 16);
-            passos.push("SUB " + arg + ": ACC -= MEM[" + arg + "] = " + memoria.get(arg) + " (ACC=" + ACC + ")");
+            passos.push(`SUB ${arg}: ACC -= MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
             PC++;
             break;
         case 'INC':
             ACC++;
-            passos.push("INC: ACC++ (ACC=" + ACC + ")");
+            passos.push(`INC: ACC++ (ACC=${ACC})`);
             PC++;
             break;
         case 'DEC':
             ACC--;
-            passos.push("DEC: ACC-- (ACC=" + ACC + ")");
+            passos.push(`DEC: ACC-- (ACC=${ACC})`);
             PC++;
             break;
         case 'MUL':
             ACC *= parseInt(memoria.get(arg) || '0000', 16);
-            passos.push("MUL " + arg + ": ACC *= MEM[" + arg + "] = " + memoria.get(arg) + " (ACC=" + ACC + ")");
+            passos.push(`MUL ${arg}: ACC *= MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
             PC++;
             break;
         case 'JMP':
-            passos.push("JMP para " + arg);
+            passos.push(`JMP para ${arg}`);
             PC = arg;
             break;
         case 'OUT':
-            passos.push("OUT: " + ACC);
+            passos.push(`OUT: ${ACC}`);
             saida.push(ACC);
             PC++;
             break;
@@ -174,13 +185,13 @@ function executarPassoInterno() {
             running = false;
             break;
         default:
-            passos.push("Instrução desconhecida: " + instr);
+            passos.push(`Instrução desconhecida: ${instr}`);
             running = false;
             break;
     }
 }
 
-// Exibir saída
+// Escreve saída final na label
 function escreverNaLabel(mensagem) {
     const label = document.getElementById('saida-label');
     if (label) {
@@ -188,7 +199,7 @@ function escreverNaLabel(mensagem) {
     }
 }
 
-// Botões: só executa após DOM carregado
+// Botões e eventos
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('passo').addEventListener('click', function () {
         if (!running || passos.length === 0) {
