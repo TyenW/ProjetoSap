@@ -1,0 +1,590 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@700&display=swap');
+
+.mini-menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  background: rgba(0,0,0,0.85);
+  border: 4px solid #ffd700;
+  border-radius: 14px;
+  box-shadow: 0 4px #333, 0 0 16px #1e90ff44;
+  padding: 18px 10px;
+  margin: 36px auto 32px auto;
+  max-width: 950px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  animation: menuFadeIn 1s;
+}
+
+@keyframes menuFadeIn {
+  from { opacity: 0; transform: translateY(-20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+.mini-menu .li-btn {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.95em;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #ffcc00 80%, #ffe066 100%);
+  border: 3px solid #333;
+  color: #222;
+  margin: 4px 0;
+  box-shadow: 0 2px 8px #2224;
+  transition: 
+    transform 0.18s,
+    background 0.18s,
+    color 0.18s,
+    box-shadow 0.18s;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+}
+
+.mini-menu .li-btn:hover,
+.mini-menu .li-btn.active {
+  background: linear-gradient(90deg, #ffee33 80%, #fffbe0 100%);
+  color: #333;
+  transform: scale(1.09) rotate(-2deg);
+  box-shadow: 0 4px 16px #ffcc00aa;
+}
+
+.mini-menu .li-btn.active::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 50%; bottom: -6px;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 5px;
+  background: #ffcc00;
+  border-radius: 4px;
+  box-shadow: 0 0 8px #ffcc00bb;
+}
+
+@media (max-width: 700px) {
+  .mini-menu {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 4px;
+    margin: 18px 4px 18px 4px;
+  }
+  .mini-menu .li-btn {
+    width: 100%;
+    font-size: 0.95em;
+    padding: 10px 0;
+  }
+}
+
+ .video-gallery {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 24px;
+                justify-content: flex-start;
+                margin-bottom: 2em;
+            }
+            .video-item {
+                flex: 1 1 360px;
+                max-width: 360px;
+                min-width: 260px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .video-item p {
+                font-size: 0.97em;
+                margin-top: 0.5em;
+                text-align: center;
+            }
+            @media (max-width: 800px) {
+                .video-gallery {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .video-item {
+                    max-width: 100%;
+                }
+            }
+
+            .main-flex {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin: 32px auto 0 auto;
+  max-width: 1100px;
+}
+
+.memoryran,
+.other-logic-content {
+  flex: 1 1 320px;
+  min-width: 280px;
+  max-width: 420px;
+  margin: 0 auto 24px auto;
+}
+
+.other-logic-content {
+  background: rgba(0,0,0,0.5);
+  border: 4px solid #ffd700;
+  border-radius: 12px;
+  box-shadow: 0 8px #333;
+  padding: 20px 10px 24px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.other-logic-label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #fff;
+  text-shadow: 1px 1px #000;
+}
+
+#codigoMaquina {
+  width: 90%;
+  min-width: 180px;
+  max-width: 320px;
+  margin-bottom: 12px;
+  background: #fff;
+  color: #000;
+  border: 4px solid #333;
+  border-radius: 8px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7em;
+  padding: 8px;
+  resize: vertical;
+}
+
+@media (max-width: 900px) {
+  .main-flex {
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
+    max-width: 98vw;
+  }
+  .memoryran, .other-logic-content {
+    max-width: 98vw;
+    min-width: 0;
+  }
+  #codigoMaquina {
+    width: 98%;
+    min-width: 0;
+    max-width: 98vw;
+  }
+}
+
+/* FOOTER MELHORADO */
+footer {
+  background: linear-gradient(90deg, #4da6ff 60%, #1e90ff 100%);
+  color: #fff;
+  border-top: 4px solid #ffcc00;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 -2px 16px #1e90ff33, 0 0 32px #3338;
+  margin-top: 48px;
+  padding: 0;
+  font-family: 'Press Start 2P', cursive;
+  position: relative;
+  overflow: hidden;
+}
+
+footer::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 8px;
+  background: repeating-linear-gradient(
+    135deg,
+    #ffcc00, #ffcc00 8px,
+    #fffbe0 8px, #fffbe0 16px
+  );
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 12px 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.footer-section {
+  flex: 1 1 180px;
+  margin: 12px 18px;
+  min-width: 180px;
+  text-align: left;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.footer-title {
+  font-size: 1.1em;
+  color: #ffd700;
+  text-shadow: 2px 2px #333, 0 0 8px #ffcc00aa;
+  letter-spacing: 1px;
+}
+
+.footer-section h4 {
+  color: #ffd700;
+  margin-bottom: 10px;
+  font-size: 1em;
+  text-shadow: 1px 1px #333;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 8px;
+}
+
+.footer-section ul li a {
+  color: #fffbe0;
+  text-decoration: none;
+  font-size: 0.95em;
+  transition: color 0.2s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.footer-section ul li a:hover {
+  color: #ffd700;
+  text-shadow: 0 0 6px #ffcc00;
+}
+
+.footer-info p,
+.footer-info em {
+  font-size: 0.95em;
+  color: #fff;
+  margin: 0;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+.footer-social a {
+  display: inline-block;
+  margin-right: 10px;
+  margin-top: 4px;
+  transition: transform 0.2s;
+}
+
+.footer-social a:hover {
+  transform: scale(1.18) rotate(-6deg);
+}
+
+.footer-bottom {
+  background: rgba(0,0,0,0.18);
+  border-top: 2px solid #ffd700;
+  padding: 12px 0 6px 0;
+  font-size: 0.85em;
+  color: #fffbe0;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px #333;
+  font-family: 'Press Start 2P', cursive;
+  border-radius: 0 0 16px 16px;
+}
+
+@media (max-width: 900px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 18px 6px 6px 6px;
+  }
+  .footer-section {
+    margin: 10px 0;
+    min-width: 0;
+    text-align: center;
+  }
+  .footer-brand {
+    justify-content: center;
+  }
+}
+
+body {
+    background: url('../img/mapa.png') repeat;
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    image-rendering: pixelated;
+    text-align: center;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+.header {
+  background: #4da6ff;
+  border-bottom: 4px solid #ffcc00;
+  padding: 16px;
+  font-size: 1em;
+  box-shadow: 0 8px #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 48px;
+  margin-right: 16px;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 24px;
+}
+
+button.li-btn {
+  font-family: 'Press Start 2P', cursive;
+  background: #ffcc00;
+  border: 4px solid #333;
+  padding: 10px;
+  color: #000;
+  cursor: pointer;
+  margin: 8px;
+  transition: transform 0.2s;
+}
+
+button.li-btn:hover {
+  transform: scale(1.05);
+  background: #ffee33;
+}
+
+@keyframes headerFadeIn {
+    from { opacity: 0; transform: translateY(-30px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.3em;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 3px 3px 0 #333, 0 0 12px #1e90ff;
+    font-family: 'Press Start 2P', cursive;
+    animation: titlePop 0.7s;
+}
+
+@keyframes titlePop {
+    0% { transform: scale(0.8);}
+    80% { transform: scale(1.08);}
+    100% { transform: scale(1);}
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 24px;
+}
+
+nav ul li a {
+    font-family: 'Press Start 2P', cursive;
+    background: linear-gradient(90deg, #ffcc00 70%, #ffe066 100%);
+    border: 4px solid #333;
+    padding: 12px 22px;
+    color: #000;
+    text-decoration: none;
+    margin: 8px;
+    border-radius: 12px;
+    font-size: 1em;
+    box-shadow: 0 2px 8px #2224;
+    transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+    display: inline-block;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    transform: scale(1.08) rotate(-2deg);
+    background: linear-gradient(90deg, #ffee33 70%, #fffbe0 100%);
+    color: #333;
+    box-shadow: 0 4px 16px #ffcc00aa;
+}
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: rgba(0,0,0,0.8);
+    padding: 40px 24px;
+    border-radius: 20px;
+    box-shadow: 0 8px #333, 0 0 32px #1e90ff33;
+    border: 4px solid #ffd700;
+    animation: containerFadeIn 1.2s;
+}
+
+@keyframes containerFadeIn {
+    from { opacity: 0; transform: scale(0.97);}
+    to { opacity: 1; transform: scale(1);}
+}
+
+h2, h3 {
+    color: #ffcc00;
+    text-shadow: 2px 2px #333, 0 0 8px #ffcc00aa;
+    border-bottom: 2px solid #ffd700;
+    padding-bottom: 8px;
+    margin-top: 32px;
+    margin-bottom: 20px;
+    font-family: 'Press Start 2P', cursive;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+h2 {
+    font-size: 1.7em;
+}
+
+h3 {
+    font-size: 1.2em;
+    color: #4da6ff;
+    border-bottom: 2px solid #4da6ff;
+    text-shadow: 2px 2px #333, 0 0 8px #4da6ff99;
+}
+
+p, ul, ol, table, li {
+    font-family: 'Roboto', Arial, sans-serif;
+    font-size: 1em;
+    color: #fff;
+    text-align: left;
+    text-shadow: 0 1px 2px #000a;
+}
+
+ul, ol {
+    margin-left: 32px;
+}
+
+strong {
+    color: #ffd700;
+    text-shadow: 0 0 6px #ffcc00;
+}
+
+.image-container, .video-container {
+    text-align: center;
+    margin: 30px 0;
+    background-color: rgba(255,255,255,0.10);
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    transition: box-shadow 0.3s;
+}
+
+.image-container:hover, .video-container:hover {
+    box-shadow: 0 4px 24px #4da6ff55;
+}
+
+.image-container img, .video-container iframe {
+    max-width: 100%;
+    border: 4px solid #333;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 12px #0003;
+}
+
+.image-caption, .video-caption {
+    font-style: italic;
+    color: #ffd700;
+    margin-top: 10px;
+    font-size: 0.95em;
+    text-shadow: 0 0 6px #ffcc00;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1em;
+    background: rgba(0,0,0,0.6);
+    box-shadow: 0 2px 12px #1e90ff33;
+}
+
+table th, table td {
+    border: 2px solid #ffd700;
+    padding: 12px 14px;
+    text-align: left;
+}
+
+table th {
+    background-color: #ffcc00;
+    color: #333;
+    font-weight: bold;
+    text-shadow: 0 1px 2px #fff8;
+}
+
+table tr:nth-child(even) {
+    background-color: rgba(255,255,255,0.10);
+}
+
+table tr:hover {
+    background-color: #ffee33;
+    color: #000;
+    transition: background 0.2s, color 0.2s;
+}
+
+footer {
+    text-align: center;
+    padding: 24px;
+    margin-top: 40px;
+    background: linear-gradient(90deg, #4da6ff 60%, #1e90ff 100%);
+    color: #fff;
+    font-size: 0.9em;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 -2px 16px #1e90ff33;
+    border-top: 4px solid #ffcc00;
+    letter-spacing: 1px;
+}
+
+footer a {
+    color: #ffd700;
+    text-decoration: underline;
+    font-weight: bold;
+    text-shadow: 0 0 6px #ffcc00;
+}
+
+@media (max-width: 900px) {
+    .container {
+        padding: 14px;
+        margin: 10px;
+    }
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+    header h1 {
+        font-size: 1.3em;
+    }
+    h2 {
+        font-size: 1.1em;
+    }
+    h3 {
+        font-size: 1em;
+    }
+    p, ul, ol, table, li {
+        font-size: 0.95em;
+    }
+}

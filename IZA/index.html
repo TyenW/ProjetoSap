@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>ProjetoSap</title>
   <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/oqesap.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -15,51 +16,71 @@
     </div>
     <nav>
       <ul class="nav-list">
-        <li><button class="li-btn" type="button" onclick="location.href='#'">Home</button></li>
-        <li><button class="li-btn" type="button" onclick="location.href='#oque-e-sap'">O que é SAP</button></li>
+        <li><button class="li-btn" type="button" >Home</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
         <li><button class="li-btn" type="button" onclick="location.href='#emulacao'">Emulação</button></li>
       </ul>
     </nav>
   </header>
+  
+        <!-- Botão para alternar -->
+    <button id="toggleLogic" class="btn-wide">Alternar Lógica</button>
+    
+    <div class="main-flex">
+      <!-- Memória RAM -->
+      <div class="memoryran">
+        <div class="ram-grid">
+          <label for="memory" class="ram-label">Memória RAM</label>
+          <!-- Campos de entrada 4x4 -->
+          <input class="ran" type="text" placeholder="01" id="order1" maxlength="2" autocomplete="off" aria-label="Memória 1" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="02" id="order2" maxlength="2" autocomplete="off" aria-label="Memória 2" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="03" id="order3" maxlength="2" autocomplete="off" aria-label="Memória 3" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="04" id="order4" maxlength="2" autocomplete="off" aria-label="Memória 4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="05" id="order5" maxlength="2" autocomplete="off" aria-label="Memória 5" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="06" id="order6" maxlength="2" autocomplete="off" aria-label="Memória 6" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="07" id="order7" maxlength="2" autocomplete="off" aria-label="Memória 7" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="08" id="order8" maxlength="2" autocomplete="off" aria-label="Memória 8" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="09" id="order9" maxlength="2" autocomplete="off" aria-label="Memória 9" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="10" id="order10" maxlength="2" autocomplete="off" aria-label="Memória 10" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="11" id="order11" maxlength="2" autocomplete="off" aria-label="Memória 11" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="12" id="order12" maxlength="2" autocomplete="off" aria-label="Memória 12" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="13" id="order13" maxlength="2" autocomplete="off" aria-label="Memória 13" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="14" id="order14" maxlength="2" autocomplete="off" aria-label="Memória 14" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="15" id="order15" maxlength="2" autocomplete="off" aria-label="Memória 15" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
+          <input class="ran" type="text" placeholder="16" id="order16" maxlength="2" autocomplete="off" aria-label="Memória 16" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
 
-  <!-- Memória RAM -->
-  <div class="memoryran">
-    <div class="ram-grid">
-      <label for="memory" class="ram-label">Memória RAM</label>
+          <!-- Botões -->
+          <div class="ram-btns">
+            <button id="passo" class="btn-wide">Passo</button>
+            <button id="emular" class="btn-wide">Emular</button>
+            <button id="passo-atras" class="btn-wide">Passo para Trás</button>
+            <button id="resetar" class="btn-wide">Resetar</button>
+            <input type="file" id="csvInput" accept=".csv" style="margin-top:8px;">
+          </div>
+        </div>
+      </div>
 
-      <!-- Campos de entrada 4x4 -->
-      <!-- IDs: order1 até order16 -->
-      <!-- Cada campo aceita até 4 caracteres hexadecimais -->
-
-      <!-- Linha 1 -->
-      <input class="ran" type="text" placeholder="order 1" id="order1" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 2" id="order2" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 3" id="order3" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 4" id="order4" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-
-      <!-- Linha 2 -->
-      <input class="ran" type="text" placeholder="order 5" id="order5" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 6" id="order6" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 7" id="order7" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 8" id="order8" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-
-      <!-- Linha 3 -->
-      <input class="ran" type="text" placeholder="order 9" id="order9" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 10" id="order10" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 11" id="order11" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 12" id="order12" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-
-      <!-- Linha 4 -->
-      <input class="ran" type="text" placeholder="order 13" id="order13" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 14" id="order14" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 15" id="order15" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-      <input class="ran" type="text" placeholder="order 16" id="order16" maxlength="4" oninput="this.value = this.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();">
-
-      <!-- Botões -->
-      <button id="passo" class="btn-wide">Passo</button>
-      <button id="emular" class="btn-wide">Emular</button>
+      <!-- Código de Máquina -->
+      <div class="other-logic-content">
+        <label class="other-logic-label">Código de Máquina</label>
+        <textarea id="codigoMaquina" rows="8" cols="18" placeholder="LDA A0&#10;INC&#10;MUL A1&#10;SUB A2&#10;OUT&#10;HLT"></textarea>
+        <button id="converterMaquina" class="btn-wide">Converter para Hex</button>
+      </div>
     </div>
-  </div>
+
+    <!-- Status -->
+    <div class="status-panel">
+      <h3>Status</h3>
+      <div id="status-content">
+        <p>PC: <span id="status-pc">0</span></p>
+        <p>ACC: <span id="status-acc">0</span></p>
+        <p>Instrução: <span id="status-instr">00</span></p>
+        <p>Saída: <span id="status-saida"></span></p>
+      </div>
+    </div>
+
+
+  
 
   <!-- Saída -->
   <label id="saida-label" class="saida-label"></label>
