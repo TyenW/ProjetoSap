@@ -7,11 +7,16 @@
   --cor-secundaria: #00ff00;
   --cor-destaque: #00ffff;
   --cor-texto: #ffffff;
+  --azul-pacman: #0001a3;
+  --azul-escuro-pacman: #282863;
+  --amarelo-pacman: #eaea00;
+  --preto-pacman: #0000;
+  --branco-pacman: #ffffff;
 }
 
 /* === Estilos base === */
 body {
-  background: url('assets/img/mapa.png') repeat;
+  background: url('../img/pacman.png');
   font-family: 'Press Start 2P', cursive;
   margin: 0;
   padding: 0;
@@ -22,7 +27,7 @@ body {
 
 /* === Header / Navegação === */
 .header {
-  background: #4da6ff;
+  background: var(--azul-escuro-pacman);
   border-bottom: 4px solid #ffcc00;
   padding: 16px;
   font-size: 1em;

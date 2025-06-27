@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+:root {
+  --azul-pacman: #0001a3;
+  --azul-escuro-pacman: #282863;
+  --amarelo-pacman: #ffd700;
+  --preto-pacman: #0000;
+  --branco-pacman: #ffffff;
+}
+
 .ram-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -69,7 +77,7 @@
 }
 
 body {
-  background: url('../img/mapa.png') repeat;
+  background: url('../img/pacman.png') repeat;
   font-family: 'Press Start 2P', cursive;
   margin: 0;
   padding: 0;
@@ -79,7 +87,7 @@ body {
 }
 
 .header {
-  background: #4da6ff;
+  background: var(--azul-escuro-pacman);
   border-bottom: 4px solid #ffcc00;
   padding: 16px;
   font-size: 1em;
@@ -109,7 +117,7 @@ body {
 
 button.li-btn {
   font-family: 'Press Start 2P', cursive;
-  background: #ffcc00;
+  background: var(--amarelo-pacman);
   border: 4px solid #333;
   padding: 10px;
   color: #000;
@@ -175,8 +183,7 @@ button.li-btn:hover {
   border-radius: 12px;
   padding: 10px 16px;
   font-size: 0.6em;
-  background-color: #00cc66;
-  color: #fff;
+  background-color: var(--amarelo-pacman);
   border: 4px solid #000;
   margin-top: 8px;
   cursor: pointer;
@@ -271,3 +278,4 @@ button.li-btn:hover {
     padding: 16px 6px;
   }
 }
+

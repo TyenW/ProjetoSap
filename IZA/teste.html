@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>ProjetoSap</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/style.css">
   <script src="assets/js/oqesap.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
@@ -22,17 +22,19 @@
       </ul>
     </nav>
   </header>
-  
+
   <!-- Botão para alternar -->
   <button id="toggleLogic" class="btn-wide">Alternar Lógica</button>
-  
+
+  <!-- Layout Flexível RAM + SAP -->
   <div class="logic-layout">
-    
+
     <!-- Memória RAM -->
     <div class="memoryran">
       <div class="ram-grid">
         <label for="memory" class="ram-label">Memória RAM</label>
 
+        <!-- Entradas RAM 16x -->
         <input class="ran" type="text" placeholder="01" id="order1" maxlength="2" autocomplete="off">
         <input class="ran" type="text" placeholder="02" id="order2" maxlength="2" autocomplete="off">
         <input class="ran" type="text" placeholder="03" id="order3" maxlength="2" autocomplete="off">
@@ -50,7 +52,7 @@
         <input class="ran" type="text" placeholder="15" id="order15" maxlength="2" autocomplete="off">
         <input class="ran" type="text" placeholder="16" id="order16" maxlength="2" autocomplete="off">
 
-        <!-- Botões -->
+        <!-- Botões RAM -->
         <div class="ram-btns">
           <button id="passo" class="btn-wide">Passo</button>
           <button id="emular" class="btn-wide">Emular</button>
@@ -62,37 +64,26 @@
     </div>
 
     <!-- Arquitetura SAP-1 -->
-    <section class="sap1-container" id="emulacao">
-        <div class="sap1-block block-pc" id="pc">Contador de Programa (PC)</div>
-        <div class="sap1-block block-mar" id="entrada-rem">Entrada / REM</div>
-        <div class="sap1-block block-ram" id="ram">RAM 16x8</div>
-        <div class="sap1-block block-ir" id="ri">Registrador de Instruções (RI)</div>
-        <div class="sap1-block block-controller" id="controlador">Controlador / Sequencializador</div>
-
-        <div class="w-bus">
-            <div class="bus-line"></div>
-            <div class="bus-text">Barramento W</div>
-        </div>
-
-        <div class="sap1-block block-acc" id="acc">Acumulador (ACC)</div>
-        <div class="sap1-block block-alu" id="alu">Somador / Subtrator (ALU)</div>
-        <div class="sap1-block block-regb" id="regb">Registrador B</div>
-        <div class="sap1-block block-out" id="saida">Registrador de Saída</div>
-        <div class="sap1-block block-display" id="visual">Indicador Visual Binário</div>
-
-        <div class="connection conn-alu-acc"></div>
-        <div class="connection conn-alu-regb"></div>
-        <div class="connection conn-ir-controller"></div>
-        <div class="connection conn-out-display"></div>
-        <div class="controller-bus-connection"></div>
+    <section class="sap1-container">
+      <div class="sap1-block block-pc">Contador de Programa (PC)</div>
+      <div class="sap1-block block-acc">Acumulador (ACC)</div>
+      <div class="sap1-block block-mar">Entrada / REM</div>
+      <div class="sap1-block block-alu">Somador / Subtrator (ALU)</div>
+      <div class="sap1-block block-ram">RAM 16x8</div>
+      <div class="sap1-block block-regb">Registrador B</div>
+      <div class="sap1-block block-ir">Registrador de Instruções (RI)</div>
+      <div class="sap1-block block-out">Registrador de Saída</div>
+      <div class="sap1-block block-controller">Controlador / Sequencializador</div>
+      <div class="sap1-block block-display">Indicador Visual Binário</div>
     </section>
 
-    <!-- Código de Máquina -->
-    <div class="other-logic-content">
-      <label class="other-logic-label">Código de Máquina</label>
-      <textarea id="codigoMaquina" rows="8" cols="18" placeholder="LDA A0&#10;INC&#10;MUL A1&#10;SUB A2&#10;OUT&#10;HLT"></textarea>
-      <button id="converterMaquina" class="btn-wide">Converter para Hex</button>
-    </div>
+  </div>
+
+  <!-- Código de Máquina -->
+  <div class="other-logic-content">
+    <label class="other-logic-label">Código de Máquina</label>
+    <textarea id="codigoMaquina" rows="8" cols="18" placeholder="LDA A0&#10;INC&#10;MUL A1&#10;SUB A2&#10;OUT&#10;HLT"></textarea>
+    <button id="converterMaquina" class="btn-wide">Converter para Hex</button>
   </div>
 
   <!-- Status -->
