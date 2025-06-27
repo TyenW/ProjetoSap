@@ -1,0 +1,377 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* === Variáveis === */
+:root {
+  --cor-fundo: #000000;
+  --cor-primaria: #ff0000;
+  --cor-secundaria: #00ff00;
+  --cor-destaque: #00ffff;
+  --cor-texto: #ffffff;
+}
+
+/* === Estilos base === */
+body {
+  background: url('assets/img/mapa.png') repeat;
+  font-family: 'Press Start 2P', cursive;
+  margin: 0;
+  padding: 0;
+  color: var(--cor-texto);
+  image-rendering: pixelated;
+  text-align: center;
+}
+
+/* === Header / Navegação === */
+.header {
+  background: #4da6ff;
+  border-bottom: 4px solid #ffcc00;
+  padding: 16px;
+  font-size: 1em;
+  box-shadow: 0 8px #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 48px;
+  margin-right: 16px;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 24px;
+}
+
+button.li-btn {
+  font-family: 'Press Start 2P', cursive;
+  background: #ffcc00;
+  border: 4px solid #333;
+  padding: 10px;
+  color: #000;
+  cursor: pointer;
+  margin: 8px;
+  transition: transform 0.2s;
+}
+
+button.li-btn:hover {
+  transform: scale(1.05);
+  background: #ffee33;
+}
+
+/* === Memória RAM === */
+.memoryran {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40px auto;
+  max-width: 480px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 4px solid #ffd700;
+  border-radius: 12px;
+  box-shadow: 0 8px #333;
+  flex-wrap: wrap;
+}
+
+.ram-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: 100%;
+  justify-items: center;
+}
+
+.ram-label {
+  grid-column: 1 / span 4;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #fff;
+  text-shadow: 1px 1px #000;
+}
+
+.ran {
+  background: #ffffff;
+  color: #000;
+  border: 4px solid #333;
+  font-family: 'Press Start 2P', cursive;
+  width: 80px;
+  height: 40px;
+  text-align: center;
+  font-size: 0.6em;
+  margin: 6px;
+}
+
+.ram-btns {
+  grid-column: 1 / span 4;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btn-wide {
+  min-width: 110px;
+  margin: 4px 2px;
+  font-size: 0.7em;
+  border-radius: 12px;
+  padding: 10px 16px;
+  background-color: #00cc66;
+  color: #fff;
+  border: 4px solid #000;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* === Painel de status === */
+.status-panel {
+  margin: 24px auto 0 auto;
+  max-width: 340px;
+  background: rgba(0,0,0,0.7);
+  border: 3px solid #ffd700;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #1e90ff55;
+  padding: 18px 10px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.status-panel h3 {
+  color: #ffd700;
+  margin-top: 0;
+  font-size: 1.1em;
+  text-shadow: 1px 1px #333;
+}
+
+.status-panel p {
+  margin: 8px 0;
+  font-size: 0.9em;
+  color: #fff;
+  text-shadow: 1px 1px #222;
+}
+
+/* === Saída === */
+.saida-label {
+  display: block;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #fff;
+  text-shadow: 1px 1px #000;
+}
+
+.saida-btn {
+  display: block;
+  margin: 0 auto 16px auto;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: 0.8em;
+  background-color: #28a745;
+  color: #fff;
+  border: 4px solid #000;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* === Console estilo Mario === */
+.mario-console {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6em;
+  border: 4px solid #ffcc00;
+  padding: 16px;
+  border-radius: 8px;
+  z-index: 1000;
+  box-shadow: 0 0 16px #ffcc00;
+  width: 90%;
+  max-width: 480px;
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+/* === Layout combinado === */
+.logic-layout {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin: 40px auto;
+  max-width: 1200px;
+  padding: 0 16px;
+}
+
+.memoryran {
+  flex: 1 1 400px;
+  max-width: 500px;
+}
+
+.sap1-container {
+  flex: 2 1 600px;
+  max-width: 700px;
+}
+
+/* === Arquitetura SAP-1 === */
+.sap1-container {
+  display: grid;
+  grid-template-columns: 1fr 20px 1fr;
+  grid-template-rows: repeat(5, 1fr);
+  gap: 20px 40px;
+  background-color: #1a1a1a;
+  border: 3px solid var(--cor-secundaria);
+  padding: 20px;
+  margin: 20px auto;
+  position: relative;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.sap1-block {
+  background-color: #111;
+  border: 3px solid var(--cor-destaque);
+  border-radius: 12px;
+  padding: 20px 10px;
+  text-align: center;
+  font-size: 0.6em;
+  color: var(--cor-destaque);
+  box-shadow: 0 0 8px #00ffff55;
+  transition: transform 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  position: relative;
+}
+
+.sap1-block:hover {
+  transform: scale(1.05);
+  background-color: #222;
+}
+
+/* Posições */
+.block-pc        { grid-area: 1 / 1; }
+.block-mar       { grid-area: 2 / 1; }
+.block-ram       { grid-area: 3 / 1; }
+.block-ir        { grid-area: 4 / 1; }
+.block-controller{ grid-area: 5 / 1; }
+
+.block-acc       { grid-area: 1 / 3; }
+.block-alu       { grid-area: 2 / 3; }
+.block-regb      { grid-area: 3 / 3; }
+.block-out       { grid-area: 4 / 3; }
+.block-display   { grid-area: 5 / 3; }
+
+/* Setas ↔ */
+.sap1-block::after {
+  content: '↔';
+  color: var(--cor-secundaria);
+  font-size: 24px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.block-pc::after,
+.block-mar::after,
+.block-ram::after,
+.block-ir::after {
+  right: -32px;
+}
+
+.block-acc::after,
+.block-alu::after,
+.block-regb::after,
+.block-out::after {
+  left: -32px;
+}
+
+/* Barramento */
+.w-bus {
+  grid-area: 1 / 2 / 6 / 3;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bus-line {
+  width: 100%;
+  height: 100%;
+  background-color: var(--cor-secundaria);
+  border-radius: 4px;
+}
+
+.bus-text {
+  position: absolute;
+  color: #fff;
+  background-color: #1a1a1a;
+  padding: 0 5px;
+  font-size: 12px;
+}
+
+/* === Responsividade === */
+@media (max-width: 768px) {
+  .logic-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .memoryran,
+  .sap1-container {
+    max-width: 98vw;
+    flex: 1 1 100%;
+  }
+
+  .sap1-container {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    padding: 10px;
+    gap: 12px;
+  }
+
+  .sap1-block {
+    font-size: 0.55em;
+    padding: 16px 6px;
+  }
+
+  .ram-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .ran {
+    width: 60px;
+    height: 36px;
+    font-size: 0.7em;
+  }
+
+  .ram-btns {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+.main-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
