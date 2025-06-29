@@ -73,23 +73,27 @@ button.li-btn:hover {
 
 /* === Memória RAM === */
 .memoryran {
+  position: relative;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 40px auto;
-  max-width: 480px;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.5);
+  margin: 0;
+  padding: 25px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(40, 40, 99, 0.3));
   border: 4px solid #ffd700;
-  border-radius: 12px;
-  box-shadow: 0 8px #333;
-  flex-wrap: wrap;
+  
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2);
+  backdrop-filter: blur(5px);
+  width: 100%;
+  max-width: 550px;
 }
 
 .ram-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
   width: 100%;
   justify-items: center;
 }
@@ -99,21 +103,36 @@ button.li-btn:hover {
   text-align: center;
   font-size: 1.1rem;
   font-weight: bold;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   color: #fff;
-  text-shadow: 1px 1px #000;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .ran {
-  background: #ffffff;
+  background: linear-gradient(135deg, #ffffff, #f0f0f0);
   color: #000;
-  border: 4px solid #333;
+  border: 3px solid #333;
   font-family: 'Press Start 2P', cursive;
-  width: 80px;
-  height: 40px;
+  width: 90px;
+  height: 45px;
   text-align: center;
-  font-size: 0.6em;
-  margin: 6px;
+  font-size: 0.65em;
+  margin: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.ran:focus {
+  outline: none;
+  border-color: #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.ran:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.5);
 }
 
 .ram-btns {
@@ -140,52 +159,67 @@ button.li-btn:hover {
 
 /* === Painel de status === */
 .status-panel {
-  margin: 24px auto 0 auto;
-  max-width: 340px;
-  background: rgba(0,0,0,0.7);
+  margin: 40px auto 0 auto;
+  max-width: 400px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.3));
   border: 3px solid #ffd700;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px #1e90ff55;
-  padding: 18px 10px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2);
+  padding: 25px 15px;
   font-family: 'Press Start 2P', cursive;
+  backdrop-filter: blur(5px);
 }
 
 .status-panel h3 {
   color: #ffd700;
   margin-top: 0;
-  font-size: 1.1em;
-  text-shadow: 1px 1px #333;
+  font-size: 1.2em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .status-panel p {
-  margin: 8px 0;
+  margin: 12px 0;
   font-size: 0.9em;
   color: #fff;
-  text-shadow: 1px 1px #222;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border-left: 4px solid #00ffff;
 }
 
 /* === Saída === */
 .saida-label {
   display: block;
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: 8px;
+  margin: 30px 0 15px 0;
   color: #fff;
-  text-shadow: 1px 1px #000;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .saida-btn {
   display: block;
-  margin: 0 auto 16px auto;
+  margin: 0 auto 30px auto;
   border-radius: 12px;
-  padding: 10px 20px;
+  padding: 15px 25px;
   font-size: 0.8em;
-  background-color: #28a745;
+  background: linear-gradient(45deg, #28a745, #20c997);
   color: #fff;
-  border: 4px solid #000;
+  border: 3px solid #1e7e34;
   cursor: pointer;
   font-family: 'Press Start 2P', cursive;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.saida-btn:hover {
+  background: linear-gradient(45deg, #20c997, #17a2b8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
 }
 
 /* === Console estilo Mario === */
@@ -211,70 +245,246 @@ button.li-btn:hover {
 
 /* === Layout combinado === */
 .logic-layout {
-  display: flex;
-  gap: 24px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
   justify-content: center;
   align-items: flex-start;
-  flex-wrap: wrap;
   margin: 40px auto;
-  max-width: 1200px;
-  padding: 0 16px;
+  max-width: 1400px;
+  padding: 0 20px;
 }
 
 .memoryran {
-  flex: 1 1 400px;
-  max-width: 500px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  justify-self: center;
 }
 
 .sap1-container {
-  flex: 2 1 600px;
-  max-width: 700px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  justify-self: center;
+}
+
+.other-logic-content {
+  grid-column: 1 / -1;
+  margin: 50px auto 0;
+  max-width: 600px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.3));
+  border: 3px solid #00ffff;
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.other-logic-label {
+  display: block;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #00ffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  font-family: 'Press Start 2P', cursive;
+}
+
+#codigoMaquina {
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  color: #00ff00;
+  border: 3px solid #333;
+  border-radius: 10px;
+  padding: 15px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6em;
+  resize: vertical;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+}
+
+#codigoMaquina:focus {
+  outline: none;
+  border-color: #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), inset 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+#converterMaquina {
+  background: linear-gradient(45deg, #ff6600, #ff8800);
+  color: #fff;
+  border: 3px solid #cc4400;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 0.7em;
+  font-family: 'Press Start 2P', cursive;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#converterMaquina:hover {
+  background: linear-gradient(45deg, #ff8800, #ffaa00);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(255, 102, 0, 0.4);
 }
 
 /* === Arquitetura SAP-1 === */
 .sap1-container {
   display: grid;
-  grid-template-columns: 1fr 20px 1fr;
-  grid-template-rows: repeat(5, 1fr);
-  gap: 20px 40px;
-  background-color: #111;
-  border: 3px solid var(--cor-secundaria);
-  padding: 20px;
-  margin: 20px auto;
+  grid-template-columns: 1fr 140px 1fr;
+  grid-template-rows: repeat(5, minmax(120px, auto)) auto;
+  gap: 30px 50px;
+  background: linear-gradient(135deg, #111, #1a1a1a);
+  border: 4px solid var(--cor-secundaria);
+  padding: 40px;
+  margin: 30px auto;
   position: relative;
   font-family: 'Press Start 2P', cursive;
+  max-width: 1300px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 255, 255, 0.1);
 }
 
-/* Contêiner flex para bloco + seta (imagem) entre bloco e barramento */
-.sap1-arrow-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px; /* Espaço entre bloco e seta */
+/* Posicionamento do status panel dentro da SAP-1 */
+.sap1-container .status-panel {
+  grid-column: 1 / -1;
+  grid-row: 6;
+  margin: 20px auto 0 auto;
+  max-width: 500px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 3px solid #ffd700;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  padding: 20px;
+  font-family: 'Press Start 2P', cursive;
+  text-align: center;
+}
+
+.sap1-container .status-panel h3 {
+  color: #ffd700;
+  margin-top: 0;
+  font-size: 1.1em;
+  text-shadow: 2px 2px #333;
+  margin-bottom: 15px;
+}
+
+.sap1-container .status-panel p {
+  margin: 8px 0;
+  font-size: 0.8em;
+  color: #fff;
+  text-shadow: 1px 1px #222;
+}
+
+.sap1-container .status-panel span {
+  color: #00ffaa;
+  font-weight: bold;
 }
 
 /* Blocos SAP-1 */
 .sap1-block {
-  background-color: #000000;
+  background: linear-gradient(135deg, #000000, #1a1a1a);
   border: 3px solid var(--cor-destaque);
-  border-radius: 12px;
-  padding: 20px 10px;
+  border-radius: 15px;
+  padding: 25px 15px;
   text-align: center;
-  font-size: 0.6em;
+  font-size: 0.62em;
   color: var(--cor-destaque);
-  box-shadow: 0 0 8px #00ffff55;
-  transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 0 15px #00ffff33, inset 0 2px 10px rgba(0, 255, 255, 0.1);
+  transition: all 0.4s ease;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60px;
+  min-height: 120px;
   position: relative;
-  min-width: 120px;
+  min-width: 180px;
+  line-height: 1.4;
+  backdrop-filter: blur(5px);
+  margin: 8px;
 }
 
 .sap1-block:hover {
+  transform: scale(1.03);
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  box-shadow: 0 0 25px #00ffff66, inset 0 2px 15px rgba(0, 255, 255, 0.2);
+}
+
+/* Valores dentro dos blocos SAP-1 */
+.block-value {
+  background: linear-gradient(45deg, #003366, #004488);
+  border: 2px solid #00aaff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+  box-shadow: 0 0 10px rgba(0, 170, 255, 0.3), inset 0 2px 5px rgba(0, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  min-width: 60px;
+  letter-spacing: 1px;
+}
+
+.block-value:hover {
+  background: linear-gradient(45deg, #004488, #0066aa);
+  box-shadow: 0 0 15px rgba(0, 170, 255, 0.5), inset 0 2px 8px rgba(0, 255, 255, 0.2);
   transform: scale(1.05);
-  background-color: #222;
+}
+
+/* Cores específicas para diferentes tipos de valores */
+#pc-value, #mar-value {
+  background: linear-gradient(45deg, #330066, #440088);
+  border-color: #aa00ff;
+  color: #ff88ff;
+  text-shadow: 0 0 5px #ff88ff;
+}
+
+#acc-value, #regb-value {
+  background: linear-gradient(45deg, #006600, #008800);
+  border-color: #00ff00;
+  color: #88ff88;
+  text-shadow: 0 0 5px #88ff88;
+}
+
+#ri-value, #controller-value {
+  background: linear-gradient(45deg, #663300, #884400);
+  border-color: #ffaa00;
+  color: #ffcc88;
+  text-shadow: 0 0 5px #ffcc88;
+}
+
+#output-value, #display-value {
+  background: linear-gradient(45deg, #660000, #880000);
+  border-color: #ff0000;
+  color: #ff8888;
+  text-shadow: 0 0 5px #ff8888;
+}
+
+#alu-value {
+  background: linear-gradient(45deg, #666600, #888800);
+  border-color: #ffff00;
+  color: #ffff88;
+  text-shadow: 0 0 5px #ffff88;
+}
+
+#ram-value {
+  background: linear-gradient(45deg, #003366, #004488);
+  border-color: #00aaff;
+  color: #88ddff;
+  text-shadow: 0 0 5px #88ddff;
+}
+
+.sap1-block:hover {
+  transform: scale(1.03);
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  box-shadow: 0 0 25px #00ffff66, inset 0 2px 15px rgba(0, 255, 255, 0.2);
 }
 
 /* Posições dos blocos */
@@ -309,37 +519,974 @@ button.li-btn:hover {
 
 /* == barramento W == */
 .block-bus {
-  grid-area: 1 / 2 / 6 / 2;
+  grid-area: 1 / 2 / 6 / 3;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0;
+  padding: 10px;
   background-color: transparent;
   border: none;
+  box-shadow: none;
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 /* Imagem do barramento animado */
 .block-bus img {
-  height: 100%;
-  width: auto;
+  height: 90%;
+  width: 80%;
   object-fit: contain;
-  max-width: 100%;
+  transition: all 0.3s ease;
+  margin: auto;
 }
 
-/* Afastar blocos da esquerda */
-.block-pc,
-.block-mar,
-.block-ram,
-.block-ir,
-.block-controller {
-  margin-right: 12px; /* Espaço entre bloco esquerdo e barramento */
+/* Posicionamento das setas dentro dos blocos */
+.arrow-img {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s ease;
+  opacity: 0.4;
+  filter: brightness(0.6);
 }
 
-/* Afastar blocos da direita */
-.block-acc,
-.block-alu,
-.block-regb,
-.block-out,
-.block-display {
-  margin-left: 12px; /* Espaço entre bloco direito e barramento */
+/* Setas específicas para cada bloco - posições melhoradas */
+#pc .arrow-img { 
+  right: -15px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+
+#entrada-rem .arrow-img:nth-of-type(1) { 
+  bottom: -15px; 
+  left: 25%; 
+}
+
+#entrada-rem .arrow-img:nth-of-type(2) { 
+  bottom: -15px; 
+  right: 25%; 
+}
+
+#entrada-rem .arrow-img:nth-of-type(3) { 
+  left: -15px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+
+#ram .arrow-img { 
+  right: -15px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+
+#ri .arrow-img:nth-of-type(1) { 
+  bottom: -15px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+#ri .arrow-img:nth-of-type(2) { 
+  right: -15px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+
+#controlador .arrow-img { 
+  bottom: -15px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+#acc .arrow-img:nth-of-type(1) { 
+  bottom: -15px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+#acc .arrow-img:nth-of-type(2) { 
+  left: -15px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+
+#alu .arrow-img { 
+  left: -15px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+
+#regb .arrow-img:nth-of-type(1) { 
+  right: -15px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+
+#regb .arrow-img:nth-of-type(2) { 
+  top: -15px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+#saida .arrow-img:nth-of-type(1) { 
+  bottom: -15px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+#saida .arrow-img:nth-of-type(2) { 
+  right: -15px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+
+/* === Controles de Animação === */
+.animation-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px auto;
+  max-width: 900px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.3));
+  border: 3px solid #ffd700;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.animation-controls .btn-wide {
+  font-size: 0.7em;
+  padding: 14px 20px;
+  min-width: 140px;
+  background: linear-gradient(45deg, #00cc66, #00ff80);
+  border: 3px solid #003d1a;
+  border-radius: 10px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.animation-controls .btn-wide:hover {
+  background: linear-gradient(45deg, #00ff80, #66ffaa);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 204, 102, 0.4);
+}
+
+.animation-controls .btn-wide:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 204, 102, 0.4);
+}
+
+/* === Estilos para Controle de Velocidade === */
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 2px solid #ffd700;
+  font-size: 0.7em;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  min-width: 280px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.speed-control label {
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.speed-control input[type="range"] {
+  width: 140px;
+  height: 8px;
+  background: linear-gradient(to right, #333, #666);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+.speed-control input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.speed-control input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.speed-control span {
+  color: #00ff00;
+  font-weight: bold;
+  min-width: 80px;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* === Animações do SAP-1 === */
+.arrow-img {
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s ease;
+  opacity: 0.3;
+  filter: brightness(0.5);
+}
+
+.arrow-img.active {
+  opacity: 1;
+  filter: brightness(1.2) drop-shadow(0 0 8px #00ffff);
+  animation: pulse-arrow 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-arrow {
+  from {
+    transform: scale(1);
+    filter: brightness(1.2) drop-shadow(0 0 8px #00ffff);
+  }
+  to {
+    transform: scale(1.1);
+    filter: brightness(1.5) drop-shadow(0 0 12px #00ffff);
+  }
+}
+
+.sap1-block.active {
+  background-color: #1a4d4d !important;
+  border-color: #00ffff !important;
+  box-shadow: 0 0 20px #00ffff !important;
+  animation: pulse-block 1s ease-in-out;
+}
+
+@keyframes pulse-block {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 20px #00ffff;
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px #00ffff;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px #00ffff;
+  }
+}
+
+.block-bus.active img {
+  filter: brightness(1.3) drop-shadow(0 0 15px #00ff00);
+  animation: bus-glow 0.5s ease-in-out;
+}
+
+@keyframes bus-glow {
+  0% {
+    filter: brightness(1) drop-shadow(0 0 5px #00ff00);
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 20px #00ff00);
+  }
+  100% {
+    filter: brightness(1.3) drop-shadow(0 0 15px #00ff00);
+  }
+}
+
+/* Animação de transferência de dados */
+.data-transfer {
+  position: absolute;
+  background: #ffff00;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  z-index: 1000;
+  box-shadow: 0 0 10px #ffff00;
+  animation: data-move 1s linear;
+}
+
+@keyframes data-move {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* Estados específicos para cada operação */
+.operation-fetch .block-pc,
+.operation-fetch .block-ram,
+.operation-fetch .block-ir {
+  border-color: #ff6600 !important;
+  box-shadow: 0 0 15px #ff6600 !important;
+}
+
+.operation-execute .block-alu,
+.operation-execute .block-acc {
+  border-color: #ff0066 !important;
+  box-shadow: 0 0 15px #ff0066 !important;
+}
+
+.operation-store .block-out,
+.operation-store .block-display {
+  border-color: #66ff00 !important;
+  box-shadow: 0 0 15px #66ff00 !important;
+}
+
+/* === Display de código assembly baseado na RAM === */
+.assembly-display {
+  margin-top: 20px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 3px solid #00ffaa;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+  width: 100%;
+  max-width: 500px;
+}
+
+.assembly-code-container {
+  display: block;
+  margin-top: 12px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7em;
+  max-height: 300px;
+  overflow-y: auto;
+  line-height: 1.8;
+}
+
+.assembly-line {
+  background: linear-gradient(135deg, #001122, #002244);
+  border: 2px solid #003366;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  text-align: left;
+  color: #00ffaa;
+  transition: all 0.3s ease;
+  display: block;
+  min-height: 28px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.assembly-line.changed {
+  background: linear-gradient(135deg, #004400, #006600);
+  border-color: #00aa00;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 170, 0, 0.6);
+  animation: assemblyPulse 0.6s ease-out;
+}
+
+.assembly-line.empty {
+  background: linear-gradient(135deg, #333, #444);
+  border-color: #555;
+  color: #888;
+}
+
+.assembly-line.executing {
+  background: linear-gradient(135deg, #0066ff, #3388ff) !important;
+  border-color: #0099ff !important;
+  color: #fff !important;
+  box-shadow: 0 0 15px rgba(0, 153, 255, 0.8) !important;
+  animation: executingPulse 1s infinite alternate;
+}
+
+.assembly-instruction {
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes assemblyPulse {
+  0% {
+    transform: scale(1);
+    background: linear-gradient(135deg, #00ff00, #33ff33);
+  }
+  50% {
+    transform: scale(1.02);
+    background: linear-gradient(135deg, #00ffaa, #33ffcc);
+  }
+  100% {
+    transform: scale(1);
+    background: linear-gradient(135deg, #004400, #006600);
+  }
+}
+
+@keyframes executingPulse {
+  0% {
+    box-shadow: 0 0 15px rgba(0, 153, 255, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(0, 153, 255, 1);
+  }
+}
+
+@media (max-width: 768px) {
+  .assembly-display {
+    margin-top: 16px;
+    padding: 12px;
+  }
+  
+  .assembly-code-container {
+    font-size: 0.65em;
+  }
+  
+  .assembly-line {
+    padding: 6px 10px;
+    margin-bottom: 4px;
+  }
+}
+
+/* === Responsividade === */
+/* === Responsividade === */
+@media (min-width: 1200px) {
+  .logic-layout {
+    grid-template-columns: 1fr 2fr;
+    gap: 50px;
+  }
+  
+  .memoryran {
+    grid-column: 1;
+    max-width: 500px;
+  }
+  
+  .sap1-container {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .logic-layout {
+    margin: 20px auto;
+    padding: 0 10px;
+    gap: 20px;
+  }
+  
+  .sap1-container {
+    grid-template-columns: 1fr 90px 1fr;
+    grid-template-rows: repeat(5, minmax(100px, auto));
+    gap: 20px 30px;
+    padding: 25px 15px;
+    max-width: 95vw;
+    margin: 20px auto;
+  }
+
+  .sap1-block {
+    font-size: 0.52em;
+    padding: 15px 8px;
+    min-height: 85px;
+    min-width: 130px;
+    margin: 3px;
+  }
+
+  .arrow-img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .animation-controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    margin: 20px auto;
+  }
+
+  .animation-controls .btn-wide {
+    width: 85%;
+    min-width: 220px;
+    font-size: 0.65em;
+    padding: 12px 15px;
+  }
+  
+  .memoryran {
+    max-width: 98vw;
+    padding: 20px;
+  }
+  
+  .ram-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .ran {
+    width: 70px;
+    height: 40px;
+    font-size: 0.7em;
+  }
+  
+  .status-panel {
+    max-width: 95vw;
+    padding: 20px 12px;
+  }
+  
+  .other-logic-content {
+    max-width: 95vw;
+    padding: 20px;
+  }
+}
+
+/* Responsividade para mobile pequeno */
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 12px;
+  }
+  
+  .nav-list {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .nav-list button {
+    width: 100%;
+    margin: 2px 0;
+  }
+  
+  .animation-controls {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+  }
+  
+  .animation-controls .btn-wide {
+    width: 100%;
+    margin: 2px 0;
+  }
+  
+  .sap1-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .sap1-block {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+    min-height: 80px;
+    font-size: 0.6em;
+    padding: 12px 8px;
+  }
+  
+  .block-bus {
+    order: 3;
+  }
+  
+  .memoryran {
+    padding: 15px;
+  }
+  
+  .ram-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .ran {
+    width: 60px;
+    height: 35px;
+    font-size: 0.6em;
+  }
+  
+  .assembly-display {
+    padding: 10px;
+  }
+  
+  .assembly-line {
+    padding: 6px 8px;
+    font-size: 0.6em;
+  }
+}
+
+/* === Ícone de Ajuda SAP-1 === */
+.sap-help-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: inline-block;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.help-coin {
+  width: 40px;
+  height: 40px;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 0 12px #ffd700) brightness(1.1);
+  animation: coinFloat 2s ease-in-out infinite;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.help-coin:hover {
+  transform: scale(1.2) rotate(15deg);
+  filter: drop-shadow(0 0 12px #ffd700) brightness(1.2);
+}
+
+@keyframes coinFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+.sap-tooltip {
+  position: absolute;
+  bottom: 45px;
+  right: 0;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  border: 3px solid #ffd700;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.sap-help-icon:hover .sap-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-5px);
+}
+
+.sap-tooltip h3 {
+  color: #ffd700;
+  margin: 0 0 12px 0;
+  font-size: 0.9em;
+  text-align: center;
+  text-shadow: 2px 2px #333;
+}
+
+.instruction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.instruction-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 6px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  transition: background 0.2s ease;
+  margin-bottom: 2px;
+}
+
+.instruction-item:hover {
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.opcode {
+  color: #00ffff;
+  font-weight: bold;
+  font-size: 0.7em;
+}
+
+.hex {
+  color: #ff6b6b;
+  font-size: 0.7em;
+  font-family: monospace;
+}
+
+.desc {
+  color: #ffffff;
+  font-size: 0.6em;
+  text-align: left;
+}
+
+.tooltip-note {
+  margin: 12px 0 0 0;
+  font-size: 0.6em;
+  color: #cccccc;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Seta do tooltip */
+.sap-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 16px;
+  border: 8px solid transparent;
+  border-top-color: #ffd700;
+}
+
+/* Responsividade para o tooltip */
+@media (max-width: 768px) {
+  .sap-tooltip {
+    min-width: 240px;
+    font-size: 0.8em;
+  }
+  
+  .help-coin {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* === Tooltips dos Blocos SAP-1 === */
+.sap1-block {
+  position: relative;
+}
+
+.block-tooltip {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 3px solid #ffcc00;
+  border-radius: 10px;
+  padding: 16px;
+  min-width: 280px;
+  max-width: 350px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  font-size: 11px;
+  text-align: left;
+  pointer-events: none;
+}
+
+.sap1-block:hover .block-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-15px);
+  pointer-events: auto;
+}
+
+.block-tooltip h4 {
+  margin: 0 0 10px 0;
+  color: #ffcc00;
+  font-size: 12px;
+  border-bottom: 2px solid #ffcc00;
+  padding-bottom: 6px;
+  text-shadow: 1px 1px #000;
+}
+
+.block-tooltip p {
+  margin: 6px 0;
+  color: #ffffff;
+  font-size: 10px;
+  line-height: 1.4;
+  text-shadow: 1px 1px #000;
+}
+
+.tooltip-btn-small {
+  background: linear-gradient(135deg, #ffcc00, #ff9900);
+  border: none;
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 8px;
+  font-family: 'Press Start 2P', cursive;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  display: block;
+  width: 100%;
+  font-weight: bold;
+}
+
+.tooltip-btn-small:hover {
+  background: linear-gradient(135deg, #ff9900, #ffcc00);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.4);
+}
+
+/* Seta do tooltip dos blocos */
+.block-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #ffcc00;
+}
+
+.block-tooltip::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1a1a2e;
+  z-index: 1001;
+  margin-top: -1px;
+}
+
+/* === Responsividade do Tooltip da RAM === */
+@media (max-width: 1200px) {
+  .sap-tooltip {
+    min-width: 280px;
+    max-width: 320px;
+    font-size: 10px;
+    padding: 16px;
+  }
+  
+  .sap-tooltip h3 {
+    font-size: 12px;
+  }
+  
+  .opcode, .hex {
+    font-size: 9px;
+  }
+  
+  .desc {
+    font-size: 8px;
+  }
+  
+  .tooltip-note {
+    font-size: 8px;
+  }
+  
+  .help-coin {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sap-help-icon {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1001;
+  }
+  
+  .sap-tooltip {
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    max-width: none;
+    width: auto;
+    font-size: 9px;
+    padding: 14px;
+  }
+  
+  .sap-help-icon:hover .sap-tooltip {
+    transform: translateY(0);
+  }
+  
+  .sap-tooltip h3 {
+    font-size: 11px;
+  }
+  
+  .instruction-item {
+    gap: 10px;
+    padding: 6px 8px;
+  }
+  
+  .opcode, .hex {
+    font-size: 8px;
+  }
+  
+  .desc {
+    font-size: 7px;
+  }
+  
+  .tooltip-note {
+    font-size: 7px;
+    padding: 8px;
+  }
+  
+  .help-coin {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Seta no topo para mobile */
+  .sap-tooltip::after {
+    top: -8px;
+    right: 20px;
+    left: auto;
+  }
+  
+  .sap-tooltip::before {
+    top: -6px;
+    right: 22px;
+    left: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .sap-tooltip {
+    font-size: 8px;
+    padding: 12px;
+    border-radius: 8px;
+  }
+  
+  .sap-tooltip h3 {
+    font-size: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .instruction-list {
+    gap: 8px;
+  }
+  
+  .instruction-item {
+    gap: 8px;
+    padding: 5px 6px;
+    grid-template-columns: 1fr 1fr 1.5fr;
+  }
+  
+  .opcode, .hex {
+    font-size: 7px;
+  }
+  
+  .desc {
+    font-size: 6px;
+  }
+  
+  .tooltip-note {
+    font-size: 6px;
+    padding: 6px;
+    margin-top: 10px;
+  }
+  
+  .help-coin {
+    width: 22px;
+    height: 22px;
+  }
 }

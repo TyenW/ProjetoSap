@@ -1,92 +1,511 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>SapMan | Quiz SAP-1</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="stylesheet" href="assets/css/footer.css" />
-  <link rel="stylesheet" href="assets/css/oqueesap.css" />
-  <link rel="stylesheet" href="assets/css/quiz.css" />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SapMan | Home - Desvendando o SAP-1</title>
+  
+  <link rel="stylesheet" href="assets/css/emular.css">
+  <link rel="stylesheet" href="assets/css/footer.css">
+  <link rel="stylesheet" href="assets/css/oqueesap.css">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Estilos específicos para a página home */
+    .hero-section {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.6));
+      padding: 80px 20px;
+      text-align: center;
+      border-bottom: 4px solid #ffd700;
+      margin-bottom: 40px;
+    }
+    
+    .hero-title {
+      font-size: 2.5em;
+      color: #ffd700;
+      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+      margin-bottom: 20px;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+      from { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 0 0 20px #ffd700; }
+      to { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 0 0 30px #ffd700, 0 0 40px #ffd700; }
+    }
+    
+    .hero-subtitle {
+      font-size: 1.2em;
+      color: #fff;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    
+    .hero-description {
+      font-size: 0.9em;
+      color: #ccc;
+      max-width: 800px;
+      margin: 0 auto 40px auto;
+      line-height: 1.6;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+    
+    .cta-btn {
+      background: linear-gradient(45deg, #28a745, #20c997);
+      color: #fff;
+      border: 3px solid #1e7e34;
+      border-radius: 12px;
+      padding: 15px 25px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.8em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .cta-btn:hover {
+      background: linear-gradient(45deg, #20c997, #17a2b8);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
+    }
+    
+    .cta-btn.secondary {
+      background: linear-gradient(45deg, #6f42c1, #6610f2);
+      border-color: #59359a;
+    }
+    
+    .cta-btn.secondary:hover {
+      background: linear-gradient(45deg, #6610f2, #6f42c1);
+      box-shadow: 0 6px 12px rgba(111, 66, 193, 0.4);
+    }
+    
+    .features-section {
+      padding: 60px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .features-title {
+      text-align: center;
+      font-size: 2em;
+      color: #ffd700;
+      margin-bottom: 50px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+    
+    .feature-card {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(40, 40, 99, 0.3));
+      border: 3px solid #00ffff;
+      border-radius: 15px;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
+    }
+    
+    .feature-icon {
+      font-size: 3em;
+      margin-bottom: 20px;
+      display: block;
+    }
+    
+    .feature-title {
+      font-size: 1.2em;
+      color: #00ffff;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    }
+    
+    .feature-description {
+      color: #fff;
+      line-height: 1.5;
+      font-size: 0.8em;
+    }
+    
+    .about-section {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.4));
+      padding: 60px 20px;
+      margin: 40px 0;
+      border-top: 4px solid #ffd700;
+      border-bottom: 4px solid #ffd700;
+    }
+    
+    .about-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .about-title {
+      font-size: 2em;
+      color: #ffd700;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    
+    .about-text {
+      color: #fff;
+      line-height: 1.7;
+      font-size: 0.9em;
+      margin-bottom: 20px;
+    }
+    
+    .team-section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .team-title {
+      font-size: 2em;
+      color: #ffd700;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    
+    .team-member {
+      background: rgba(0, 0, 0, 0.7);
+      border: 3px solid #ffd700;
+      border-radius: 16px;
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(255, 215, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+    
+    .team-member:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+    }
+    
+    .member-avatar {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 12px auto;
+      border-radius: 50%;
+      background: #ffd700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+    }
+    
+    .member-name {
+      color: #fff;
+      font-size: 1em;
+      margin-bottom: 8px;
+    }
+    
+    .member-role {
+      color: #ffd700;
+      font-size: 0.7em;
+    }
+    
+    .quick-start {
+      background: linear-gradient(135deg, rgba(40, 167, 69, 0.8), rgba(32, 201, 151, 0.6));
+      padding: 50px 20px;
+      margin: 40px 0;
+      text-align: center;
+      border-radius: 20px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .quick-start-title {
+      font-size: 1.8em;
+      color: #fff;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    
+    .quick-start-text {
+      color: #fff;
+      margin-bottom: 30px;
+      font-size: 0.9em;
+    }
+    
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 1.8em;
+      }
+      
+      .hero-subtitle {
+        font-size: 1em;
+      }
+      
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 1.5em;
+      }
+      
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
+  <!-- Cabeçalho -->
   <header class="header">
     <div class="logo-container">
       <img src="assets/img/logo.png" alt="Logo ProjetoSap" class="logo" />
     </div>
+
     <nav>
       <ul class="nav-list">
-        <li><button class="li-btn">Home</button></li>
-        <li><button class="li-btn" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
-        <li><button class="li-btn" onclick="location.href='#emulacao'">Emulação</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='home.html'">Home</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='quiz.html'">Quiz</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='equipesap.html'">Equipe</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='index.html#emulacao'">Emulação</button></li>
       </ul>
     </nav>
+
+    <!-- Botão de Mudo -->
     <button id="muteToggle" class="li-btn" title="Alternar som">🔊</button>
   </header>
 
-  <audio id="bg-music" src="assets/audio/pacman.mp3" autoplay loop></audio>
-
-  <main class="quiz-container">
-    <div id="status" class="status-bar">
-      Pergunta <span id="current-q">1</span>/10 • <span class="hearts" id="lives">❤️❤️❤️</span>
+  <!-- Seção Hero -->
+  <section class="hero-section">
+    <h1 class="hero-title">🕹️ SapMan</h1>
+    <h2 class="hero-subtitle">Desvendando o SAP-1</h2>
+    <p class="hero-description">
+      Mergulhe no fascinante mundo da arquitetura de computadores com nosso simulador interativo do SAP-1 de Malvino. 
+      Uma experiência gamificada que torna o aprendizado de microprocessadores divertido e acessível para todos!
+    </p>
+    
+    <div class="cta-buttons">
+      <a href="index.html#emulacao" class="cta-btn">🚀 Começar Emulação</a>
+      <a href="oqueesap.html" class="cta-btn secondary">📚 Aprender SAP-1</a>
+      <a href="quiz.html" class="cta-btn">🎯 Fazer Quiz</a>
     </div>
-    <div id="question" class="question">Carregando pergunta...</div>
-    <div id="options" class="options"></div>
-    <div id="message"></div>
-    <button id="restartBtn" class="restart-btn" onclick="startQuiz()" style="display:none;">Jogar Novamente</button>
+  </section>
 
-    <!-- Espaço onde o gráfico será mostrado ao final -->
-    <div id="iaAnalysis"></div>
-  </main>
+  <!-- Seção de Funcionalidades -->
+  <section class="features-section">
+    <h2 class="features-title">✨ Principais Funcionalidades</h2>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">🖥️</span>
+        <h3 class="feature-title">Emulador SAP-1</h3>
+        <p class="feature-description">
+          Simule o funcionamento completo do computador SAP-1 com animações visuais em tempo real. 
+          Acompanhe o fluxo de dados entre os componentes e entenda cada ciclo de máquina.
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <span class="feature-icon">🧠</span>
+        <h3 class="feature-title">Aprendizado Interativo</h3>
+        <p class="feature-description">
+          Conteúdo educacional completo sobre arquitetura de computadores, desde conceitos básicos 
+          até programação em linguagem de máquina do SAP-1.
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <span class="feature-icon">🎮</span>
+        <h3 class="feature-title">Interface Gamificada</h3>
+        <p class="feature-description">
+          Design retro inspirado em jogos clássicos com tema Pac-Man, tornando o aprendizado 
+          mais envolvente e divertido para estudantes.
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <h3 class="feature-title">Quiz Adaptativo</h3>
+        <p class="feature-description">
+          Sistema de quiz inteligente que se adapta ao seu nível de conhecimento, 
+          com análise de desempenho e estatísticas detalhadas.
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <span class="feature-icon">💾</span>
+        <h3 class="feature-title">Programação Visual</h3>
+        <p class="feature-description">
+          Escreva programas em código de máquina, carregue arquivos CSV e veja 
+          a execução passo a passo com feedback visual completo.
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <span class="feature-icon">📱</span>
+        <h3 class="feature-title">Multiplataforma</h3>
+        <p class="feature-description">
+          Acesse de qualquer dispositivo - PC, tablet ou smartphone. 
+          Interface responsiva que se adapta a todas as telas.
+        </p>
+      </div>
+    </div>
+  </section>
 
-  <!-- Botão para baixar estatísticas -->
-  <div style="text-align:center; margin: 20px;">
-    <button onclick="exportarEstatisticas()" style="font-family: 'Press Start 2P', cursive; font-size: 0.8em; padding: 10px 20px; cursor: pointer;">
-      📄 Baixar Estatísticas
-    </button>
-  </div>
+  <!-- Seção Sobre o Projeto -->
+  <section class="about-section">
+    <div class="about-content">
+      <h2 class="about-title">📖 Sobre o Projeto</h2>
+      <p class="about-text">
+        O SapMan é um projeto acadêmico inovador dedicado ao ensino de arquitetura de computadores, 
+        baseado no famoso computador SAP-1 (Simples-Quanto-Possível) descrito por Albert Malvino.
+      </p>
+      <p class="about-text">
+        Nosso objetivo é democratizar o conhecimento sobre microprocessadores através de uma 
+        plataforma web interativa, gamificada e acessível, que permite aos estudantes visualizar 
+        e compreender o funcionamento interno de um computador de forma prática e envolvente.
+      </p>
+      <p class="about-text">
+        Desenvolvido com tecnologias web modernas, o projeto oferece uma experiência completa 
+        de aprendizado, desde conceitos teóricos até simulação prática, sempre mantendo o 
+        foco na qualidade educacional e na experiência do usuário.
+      </p>
+    </div>
+  </section>
 
-  <!-- Modal do gráfico (opcional) -->
-  <div id="chartModal" class="chart-modal">
-    <button class="close-btn" onclick="closeChart()">❌</button>
-    <canvas id="performanceChartModal" width="500" height="300"></canvas>
-  </div>
+  <!-- Início Rápido -->
+  <section class="quick-start">
+    <h2 class="quick-start-title">🚀 Como Começar</h2>
+    <p class="quick-start-text">
+      Pronto para explorar o mundo dos microprocessadores? Comece sua jornada agora mesmo!
+    </p>
+    <div class="cta-buttons">
+      <a href="oqueesap.html" class="cta-btn">1️⃣ Aprender Conceitos</a>
+      <a href="index.html#emulacao" class="cta-btn">2️⃣ Experimentar Emulador</a>
+      <a href="quiz.html" class="cta-btn">3️⃣ Testar Conhecimento</a>
+    </div>
+  </section>
+
+  <!-- Seção da Equipe -->
+  <section class="team-section">
+    <h2 class="team-title">👥 Nossa Equipe</h2>
+    
+    <div class="team-grid">
+      <div class="team-member">
+        <div class="member-avatar">🍄</div>
+        <h3 class="member-name">Pedro Guimarães</h3>
+        <p class="member-role">Coordenação e Front-end</p>
+      </div>
+      
+      <div class="team-member">
+        <div class="member-avatar">🍄</div>
+        <h3 class="member-name">Izabela</h3>
+        <p class="member-role">Documentação e Pesquisa</p>
+      </div>
+      
+      <div class="team-member">
+        <div class="member-avatar">🍄</div>
+        <h3 class="member-name">Lucas Pereira</h3>
+        <p class="member-role">Back-end e Emulação</p>
+      </div>
+      
+      <div class="team-member">
+        <div class="member-avatar">🍄</div>
+        <h3 class="member-name">Ana Lima</h3>
+        <p class="member-role">Design e UX</p>
+      </div>
+      
+      <div class="team-member">
+        <div class="member-avatar">🍄</div>
+        <h3 class="member-name">Pedro Ramos</h3>
+        <p class="member-role">Testes e Suporte</p>
+      </div>
+    </div>
+    
+    <p style="color: #fff; margin-top: 30px;">
+      <strong>Professor Orientador:</strong> Prof. Caudio
+    </p>
+  </section>
+
+  <!-- MUSICA SAPMAN -->
+  <audio id="bg-music" src="assets/audio/pacman.mp3" autoplay loop></audio>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-section footer-brand">
-        <img src="assets/img/logo.png" alt="Logo ProjetoSap" height="48" />
+        <img src="assets/img/logo.png" alt="Logo ProjetoSap" height="48">
       </div>
+      
       <div class="footer-section footer-nav">
         <h4>Navegação</h4>
         <ul>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="home.html">Home</a></li>
           <li><a href="oqueesap.html">O que é SAP</a></li>
+          <li><a href="quiz.html">Quiz</a></li>
           <li><a href="equipesap.html">Equipe</a></li>
+          <li><a href="index.html#emulacao">Emulação</a></li>
         </ul>
       </div>
+      
       <div class="footer-section footer-info">
         <h4>Sobre</h4>
         <p>
-          Projeto acadêmico dedicado à divulgação e ensino de arquitetura de computadores.<br />
-          Referência principal: <a href="assets/docs/Artigo_SAP1_Malvino.pdf" download>Artigo_SAP1_Malvino.pdf</a><br />
+          Projeto acadêmico dedicado à divulgação e ensino de arquitetura de computadores.<br>
+          Referência principal: <a href="assets/docs/Artigo_SAP1_Malvino.pdf" download>Artigo_SAP1_Malvino.pdf</a><br>
           Professor orientador: Prof. Caudio
         </p>
       </div>
+      
       <div class="footer-section footer-social">
         <h4>Equipe</h4>
-        <p>Any Gabriela, Eduardo Aniceto, Iara Pubilo, Izabel Chaves e Pedro Guimarães</p>
+        <p>
+          Any Gabriela, Eduardo Aniceto, Iara Pubilo, Izabel Chaves e Pedro Guimarães
+        </p>
       </div>
     </div>
+    
     <div class="footer-bottom">
       <p>&copy; 2025 Desvendando o SAP-1. Todos os direitos reservados.</p>
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="assets/js/quiz.js" defer></script>
+  <script src="assets/js/oqesap.js" defer></script>
 </body>
 </html>

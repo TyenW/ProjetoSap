@@ -18,8 +18,10 @@
 
   <nav>
     <ul class="nav-list">
-      <li><button class="li-btn" type="button">Home</button></li>
+      <li><button class="li-btn" type="button" onclick="location.href='home.html'">Home</button></li>
       <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
+      <li><button class="li-btn" type="button" onclick="location.href='quiz.html'">Quiz</button></li>
+      <li><button class="li-btn" type="button" onclick="location.href='equipesap.html'">Equipe</button></li>
       <li><button class="li-btn" type="button" onclick="location.href='#emulacao'">Emulação</button></li>
     </ul>
   </nav>
@@ -28,15 +30,89 @@
   <button id="muteToggle" class="li-btn" title="Alternar som">🔊</button>
 </header>
 
-  <!-- Botão alternar lógica -->
-  <button id="toggleLogic" class="btn-wide">Alternar Lógica</button>
+
+
+  <!-- Controles de Animação -->
+  <div class="animation-controls">
+    <button id="passo" class="btn-wide">⏯️ Executar Passo</button>
+    <button id="emular" class="btn-wide">⏩ Executar Tudo</button>
+    <button id="passo-atras" class="btn-wide">⏪ Passo Atrás</button>
+    <button id="resetar" class="btn-wide">🔄 Resetar</button>
+    <input type="file" id="csvInput" accept=".csv,.txt" style="display: none;">
+    <button id="loadCSV" class="btn-wide">📁 Carregar CSV</button>
+    
+    <!-- Controle de velocidade -->
+    <div class="speed-control">
+      <label for="speedRange">Velocidade:</label>
+      <input type="range" id="speedRange" min="500" max="3000" value="1500" step="250">
+      <span id="speedValue">Normal</span>
+    </div>
+  </div>
 
   <div class="logic-layout">
+
+    <!-- Ícone de Ajuda SAP-1 -->
+    <div class="sap-help-icon">
+      <img src="assets/img/moeda.png" alt="Ajuda SAP-1" class="help-coin">
+      <div class="sap-tooltip">
+        <h3>💡 Instruções SAP-1</h3>
+        <div class="instruction-list">
+          <div class="instruction-item">
+            <span class="opcode">LDA</span>
+            <span class="hex">0A</span>
+            <span class="desc">Carrega acumulador</span>
+          </div>
+          <div class="instruction-item">
+            <span class="opcode">ADD</span>
+            <span class="hex">1A</span>
+            <span class="desc">Soma ao acumulador</span>
+          </div>
+          <div class="instruction-item">
+            <span class="opcode">SUB</span>
+            <span class="hex">2A</span>
+            <span class="desc">Subtrai do acumulador</span>
+          </div>
+          <div class="instruction-item">
+            <span class="opcode">INC</span>
+            <span class="hex">30</span>
+            <span class="desc">Incrementa acumulador</span>
+          </div>
+          <div class="instruction-item">
+            <span class="opcode">DEC</span>
+            <span class="hex">40</span>
+            <span class="desc">Decrementa acumulador</span>
+          </div>
+          <div class="instruction-item">
+            <span class="opcode">MUL</span>
+            <span class="hex">5A</span>
+            <span class="desc">Multiplica acumulador</span>
+          </div>
+          <div class="instruction-item">
+            <span class="opcode">JMP</span>
+            <span class="hex">6A</span>
+            <span class="desc">Salta para endereço</span>
+          </div>
+          <div class="instruction-item">
+            <span class="opcode">OUT</span>
+            <span class="hex">E0</span>
+            <span class="desc">Saída para display</span>
+          </div>
+          <div class="instruction-item">
+            <span class="opcode">HLT</span>
+            <span class="hex">F0</span>
+            <span class="desc">Para execução</span>
+          </div>
+        </div>
+        <p class="tooltip-note">💭 Substitua 'A' pelo endereço desejado (0-F)</p>
+      </div>
+    </div>
 
     <!-- Memória RAM -->
     <div class="memoryran">
       <div class="ram-grid">
-        <label for="memory" class="ram-label">Memória RAM</label>
+        <label for="memory" class="ram-label">
+          Memória RAM
+        </label>
         <input class="ran" type="text" placeholder="01" id="order1" maxlength="2" autocomplete="off" />
         <input class="ran" type="text" placeholder="02" id="order2" maxlength="2" autocomplete="off" />
         <input class="ran" type="text" placeholder="03" id="order3" maxlength="2" autocomplete="off" />
@@ -53,12 +129,13 @@
         <input class="ran" type="text" placeholder="14" id="order14" maxlength="2" autocomplete="off" />
         <input class="ran" type="text" placeholder="15" id="order15" maxlength="2" autocomplete="off" />
         <input class="ran" type="text" placeholder="16" id="order16" maxlength="2" autocomplete="off" />
-        <div class="ram-btns">
-          <button id="passo" class="btn-wide">Passo</button>
-          <button id="emular" class="btn-wide">Emular</button>
-          <button id="passo-atras" class="btn-wide">Passo para Trás</button>
-          <button id="resetar" class="btn-wide">Resetar</button>
-          <input type="file" id="csvInput" accept=".csv" style="margin-top:8px" />
+      </div>
+      
+      <!-- Display de Assembly em tempo real baseado na RAM -->
+      <div class="assembly-display">
+        <label class="ram-label">📋 Código Assembly (da RAM)</label>
+        <div id="assemblyCode" class="assembly-code-container">
+          <!-- As linhas serão adicionadas dinamicamente conforme for digitado -->
         </div>
       </div>
     </div>
@@ -67,65 +144,163 @@
     <section class="sap1-container" id="emulacao">
 
       <!-- Blocos da esquerda -->
-      <div class="sap1-block block-pc" id="pc">
+      <div class="sap1-block block-pc" id="pc" title="Contador de Programa: Armazena o endereço da próxima instrução a ser executada">
+        <div class="block-tooltip">
+          <h4>💻 Contador de Programa (PC)</h4>
+          <p>Armazena o endereço da próxima instrução</p>
+          <p>🔄 Incrementa automaticamente após cada busca</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         Contador de Programa (PC)
+        <div class="block-value" id="pc-value">0</div>
         <img src="assets/img/setas/off/dir.png" alt="Seta para o barramento" class="arrow-img" />
       </div>
 
-      <div class="sap1-block block-mar" id="entrada-rem">
+      <div class="sap1-block block-mar" id="entrada-rem" title="Memory Address Register: Armazena o endereço de memória que está sendo acessado">
+        <div class="block-tooltip">
+          <h4>📍 Registrador de Endereço (MAR)</h4>
+          <p>Aponta para a posição de memória</p>
+          <p>🎯 Conecta PC com a RAM</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         Entrada / REM
+        <div class="block-value" id="mar-value">--</div>
         <img src="assets/img/setas/off/down.png" alt="Seta para baixo" class="arrow-img" />
         <img src="assets/img/setas/off/down.png" alt="Seta para baixo" class="arrow-img" />
         <img src="assets/img/setas/off/esq.png" alt="Seta do barramento" class="arrow-img" />
       </div>
 
-      <div class="sap1-block block-ram" id="ram">
+      <div class="sap1-block block-ram" id="ram" title="Memória RAM: Armazena instruções e dados do programa (16 endereços x 8 bits)">
+        <div class="block-tooltip">
+          <h4>💾 Memória RAM</h4>
+          <p>16 posições de 8 bits cada</p>
+          <p>📋 Armazena programa e dados</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         RAM 16x8
+        <div class="block-value" id="ram-value">--</div>
         <img src="assets/img/setas/off/dir.png" alt="Seta para o barramento" class="arrow-img" />
       </div>
 
-      <div class="sap1-block block-ir" id="ri">
+      <div class="sap1-block block-ir" id="ri" title="Registrador de Instruções: Armazena a instrução atual sendo decodificada">
+        <div class="block-tooltip">
+          <h4>📖 Registrador de Instruções (RI)</h4>
+          <p>Armazena a instrução atual</p>
+          <p>🔍 Decodifica operação e endereço</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         Registrador de Instruções (RI)
+        <div class="block-value" id="ri-value">--</div>
         <img src="assets/img/setas/off/down.png" alt="Seta para controlador" class="arrow-img" />
         <img src="assets/img/setas/off/dupla.png" alt="Seta dupla" class="arrow-img" />
       </div>
 
-      <div class="sap1-block block-controller" id="controlador">
+      <div class="sap1-block block-controller" id="controlador" title="Controlador/Sequencializador: Decodifica instruções e gera sinais de controle">
+        <div class="block-tooltip">
+          <h4>🎮 Controlador</h4>
+          <p>Cérebro do processador</p>
+          <p>⚡ Gera sinais de controle</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         Controlador / Sequencializador
+        <div class="block-value" id="controller-value">IDLE</div>
         <img src="assets/img/setas/off/down.png" alt="Seta para baixo" class="arrow-img" />
       </div>
 
       <!-- Imagem do Barramento Central -->
-    <div class="sap1-block block-bus" id="barramento">
+    <div class="sap1-block block-bus" id="barramento" title="Barramento de Dados: Transporta dados entre os componentes do processador">
+      <div class="block-tooltip">
+        <h4>🌐 Barramento de Dados</h4>
+        <p>Via de comunicação principal</p>
+        <p>🔄 Transporta dados entre componentes</p>
+        <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+          Mais detalhes
+        </button>
+      </div>
       <img id="bus-img" src="assets/img/w/w1.png" alt="Imagem do Barramento" />
     </div>
 
       <!-- Blocos da direita -->
-      <div class="sap1-block block-acc" id="acc">
+      <div class="sap1-block block-acc" id="acc" title="Acumulador: Registrador principal para operações aritméticas e lógicas">
+        <div class="block-tooltip">
+          <h4>🔢 Acumulador (ACC)</h4>
+          <p>Registrador principal</p>
+          <p>➕ Armazena resultados das operações</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         Acumulador (ACC)
+        <div class="block-value" id="acc-value">0</div>
         <img src="assets/img/setas/off/down.png" alt="Seta para ALU" class="arrow-img" />
         <img src="assets/img/setas/off/dupla.png" alt="Seta dupla" class="arrow-img" />
       </div>
 
-      <div class="sap1-block block-alu" id="alu">
+      <div class="sap1-block block-alu" id="alu" title="Unidade Lógica Aritmética: Realiza operações de soma, subtração e outras operações">
+        <div class="block-tooltip">
+          <h4>⚙️ ALU (Unidade Aritmética)</h4>
+          <p>Realiza cálculos matemáticos</p>
+          <p>🧮 Soma, subtração e comparações</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         Somador / Subtrator (ALU)
+        <div class="block-value" id="alu-value">--</div>
         <img src="assets/img/setas/off/esq.png" alt="Seta do barramento" class="arrow-img" />
       </div>
 
-      <div class="sap1-block block-regb" id="regb">
+      <div class="sap1-block block-regb" id="regb" title="Registrador B: Armazena temporariamente dados para operações na ALU">
+        <div class="block-tooltip">
+          <h4>📦 Registrador B</h4>
+          <p>Armazena segundo operando</p>
+          <p>🔄 Auxiliar para operações da ALU</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         Registrador B
+        <div class="block-value" id="regb-value">0</div>
         <img src="assets/img/setas/off/dir.png" alt="Seta do barramento" class="arrow-img" />
         <img src="assets/img/setas/off/up.png" alt="Seta do barramento" class="arrow-img" />
       </div>
 
-      <div class="sap1-block block-out" id="saida">
+      <div class="sap1-block block-out" id="saida" title="Registrador de Saída: Armazena dados que serão exibidos no display">
+        <div class="block-tooltip">
+          <h4>📤 Registrador de Saída</h4>
+          <p>Mostra resultados ao usuário</p>
+          <p>💡 Conecta processador ao mundo externo</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         Registrador de Saída
+        <div class="block-value" id="output-value">0</div>
         <img src="assets/img/setas/off/down.png" alt="Seta para Visual" class="arrow-img" />
         <img src="assets/img/setas/off/dir.png" alt="Seta do barramento" class="arrow-img" />
       </div>
 
-      <div class="sap1-block block-display" id="visual">
+      <div class="sap1-block block-display" id="visual" title="Display Visual: Mostra o resultado das operações em formato binário">
+        <div class="block-tooltip">
+          <h4>🖥️ Display Visual</h4>
+          <p>Exibe valores em binário</p>
+          <p>👁️ Interface visual com o usuário</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
         Indicador Visual Binário
+        <div class="block-value" id="display-value">00000000</div>
       </div>
 
       <!-- Conexões extras -->
@@ -134,30 +309,11 @@
       <div class="connection conn-ir-controller"></div>
       <div class="connection conn-out-display"></div>
       <div class="controller-bus-connection"></div>
+
     </section>
 
-    <!-- Código de Máquina -->
-    <div class="other-logic-content">
-      <label class="other-logic-label">Código de Máquina</label>
-      <textarea id="codigoMaquina" rows="8" cols="18" placeholder="LDA A0&#10;INC&#10;MUL A1&#10;SUB A2&#10;OUT&#10;HLT"></textarea>
-      <button id="converterMaquina" class="btn-wide">Converter para Hex</button>
-    </div>
+    
   </div>
-
-  <!-- Painel de Status -->
-  <div class="status-panel">
-    <h3>Status</h3>
-    <div id="status-content">
-      <p>PC: <span id="status-pc">0</span></p>
-      <p>ACC: <span id="status-acc">0</span></p>
-      <p>Instrução: <span id="status-instr">00</span></p>
-      <p>Saída: <span id="status-saida"></span></p>
-    </div>
-  </div>
-
-  <!-- Saída -->
-  <label id="saida-label" class="saida-label"></label>
-  <button id="saida" class="saida-btn">Mostrar Saída</button>
 
   <!-- Console estilo Mario -->
   <div id="console-log" class="mario-console" style="display: none;"></div>
@@ -175,8 +331,9 @@
       <div class="footer-section footer-nav">
         <h4>Navegação</h4>
         <ul>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="home.html">Home</a></li>
           <li><a href="oqueesap.html">O que é SAP</a></li>
+          <li><a href="quiz.html">Quiz</a></li>
           <li><a href="equipesap.html">Equipe</a></li>
         </ul>
       </div>

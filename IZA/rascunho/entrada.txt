@@ -16,3 +16,10 @@ order15: 0000
 order16: 0000
 
 saída: ACC 7
+
+LDA A0
+INC
+MUL A1
+SUB A2
+OUT
+HLT

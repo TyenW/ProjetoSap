@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>SapMan | Quiz SAP-1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="assets/css/emular.css" />
+  <link rel="stylesheet" href="assets/css/footer.css" />
+  <link rel="stylesheet" href="assets/css/oqueesap.css" />
+  <link rel="stylesheet" href="assets/css/quiz.css" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  
+  <style>
+    /* Melhorias de estilo para integrar com o design geral */
+    body {
+      background: url('assets/img/pacman.png') repeat;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .quiz-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .status-bar {
+      background: rgba(0, 0, 0, 0.8);
+      border: 3px solid #ffd700;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .question {
+      background: rgba(0, 0, 0, 0.85);
+      border: 3px solid #ffd700;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .options button {
+      font-family: 'Press Start 2P', cursive;
+      background: linear-gradient(90deg, #ffd700 80%, #ffed4e 100%);
+      border: 3px solid #333;
+      border-radius: 8px;
+      color: #000;
+      padding: 15px;
+      font-size: 0.85em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .options button:hover {
+      background: linear-gradient(90deg, #ffed4e 80%, #fff 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .restart-btn {
+      font-family: 'Press Start 2P', cursive;
+      background: linear-gradient(90deg, #00ff00 80%, #66ff66 100%);
+      border: 3px solid #333;
+      border-radius: 8px;
+      color: #000;
+      padding: 12px 20px;
+      font-size: 0.8em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .restart-btn:hover {
+      background: linear-gradient(90deg, #66ff66 80%, #99ff99 100%);
+      transform: translateY(-2px);
+    }
+  </style>
+
+</head>
+<body>
+
+  <header class="header">
+    <div class="logo-container">
+      <img src="assets/img/logo.png" alt="Logo ProjetoSap" class="logo" />
+    </div>
+
+    <nav>
+      <ul class="nav-list">
+        <li><button class="li-btn" type="button" onclick="location.href='home.html'">Home</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='quiz.html'">Quiz</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='equipesap.html'">Equipe</button></li>
+        <li><button class="li-btn" type="button" onclick="location.href='index.html#emulacao'">Emulação</button></li>
+      </ul>
+    </nav>
+
+    <!-- Botão de Mudo -->
+    <button id="muteToggle" class="li-btn" title="Alternar som">🔊</button>
+  </header>
+
+  <audio id="bg-music" src="assets/audio/pacman.mp3" autoplay loop></audio>
+
+  <!-- Título da página -->
+  <div class="container" style="margin-bottom: 20px;">
+    <h1 style="color: #ffd700; text-align: center; font-size: 2em; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); margin: 30px 0 20px 0;">
+      🎮 Quiz SAP-1 🎮
+    </h1>
+    <p style="text-align: center; color: #fff; font-size: 0.9em; margin-bottom: 30px;">
+      Teste seus conhecimentos sobre o computador SAP-1! Você tem 3 vidas para completar o quiz.
+    </p>
+  </div>
+
+  <main class="quiz-container">
+    <div id="status" class="status-bar">
+      Pergunta <span id="current-q">1</span>/10 • <span class="hearts" id="lives">❤️❤️❤️</span>
+    </div>
+    <div id="question" class="question">Carregando pergunta...</div>
+    <div id="options" class="options"></div>
+    <div id="message"></div>
+    <button id="restartBtn" class="restart-btn" onclick="startQuiz()" style="display:none;">Jogar Novamente</button>
+
+    <!-- Espaço onde o gráfico será mostrado ao final -->
+    <div id="iaAnalysis"></div>
+  </main>
+
+  <!-- Botão para baixar estatísticas -->
+  <div style="text-align:center; margin: 20px;">
+    <button class="li-btn" onclick="exportarEstatisticas()" style="font-size: 0.8em; padding: 10px 20px;">
+      📄 Baixar Estatísticas
+    </button>
+  </div>
+
+  <!-- Modal do gráfico (opcional) -->
+  <div id="chartModal" class="chart-modal">
+    <button class="close-btn" onclick="closeChart()">❌</button>
+    <canvas id="performanceChartModal" width="500" height="300"></canvas>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section footer-brand">
+        <div class="footer-brand">
+          <img src="assets/img/logo.png" alt="Logo ProjetoSap" height="48" />
+          <h3 class="footer-title">SapMan</h3>
+        </div>
+      </div>
+      <div class="footer-section footer-nav">
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="home.html">Home</a></li>
+          <li><a href="oqueesap.html">O que é SAP</a></li>
+          <li><a href="quiz.html">Quiz</a></li>
+          <li><a href="equipesap.html">Equipe</a></li>
+          <li><a href="index.html#emulacao">Emulação</a></li>
+        </ul>
+      </div>
+      <div class="footer-section footer-info">
+        <h4>Sobre</h4>
+        <p>
+          Projeto acadêmico dedicado à divulgação e ensino de arquitetura de computadores.<br />
+          Referência principal: <a href="assets/docs/Artigo_SAP1_Malvino.pdf" download>Artigo_SAP1_Malvino.pdf</a><br />
+          Professor orientador: Prof. Claudio
+        </p>
+      </div>
+      <div class="footer-section footer-social">
+        <h4>Equipe</h4>
+        <p>Any Gabriela, Eduardo Aniceto, Iara Pubilo, Izabel Chaves e Pedro Guimarães</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Desvendando o SAP-1. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="assets/js/quiz.js" defer></script>
+  <script src="assets/js/oqesap.js" defer></script>
+</body>
+</html>
