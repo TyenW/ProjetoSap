@@ -1155,7 +1155,7 @@ button.li-btn:hover {
 
 .sap-tooltip {
   position: absolute;
-  bottom: 45px;
+  top: 45px;
   right: 0;
   background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
   border: 3px solid #ffd700;
@@ -1175,7 +1175,7 @@ button.li-btn:hover {
 .sap-help-icon:hover .sap-tooltip {
   opacity: 1;
   visibility: visible;
-  transform: translateY(-5px);
+  transform: translateY(5px);
 }
 
 .sap-tooltip h3 {
@@ -1239,10 +1239,10 @@ button.li-btn:hover {
 .sap-tooltip::after {
   content: '';
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   right: 16px;
   border: 8px solid transparent;
-  border-top-color: #ffd700;
+  border-bottom-color: #ffd700;
 }
 
 /* Responsividade para o tooltip */
