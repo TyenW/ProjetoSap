@@ -322,3 +322,14 @@ toggleBtn.addEventListener('click', () => {
         otherLogicDiv.style.display = '';
     }
 });
+
+// deixar mudo 
+document.addEventListener('DOMContentLoaded', () => {
+  const music = document.getElementById('bg-music');
+  const muteBtn = document.getElementById('muteToggle');
+
+  muteBtn.addEventListener('click', () => {
+    music.muted = !music.muted;
+    muteBtn.textContent = music.muted ? '🔇' : '🔊';
+  });
+});

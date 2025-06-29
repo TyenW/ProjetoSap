@@ -2,26 +2,31 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>ProjetoSap</title>
+  <title>SapMan</title>
   <link rel="stylesheet" href="assets/css/emular.css" />
-  <script src="assets/js/oqesap.js" defer></script>
+  <link rel="stylesheet" href="assets/css/footer.css" />
+  
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- Cabeçalho -->
-  <header class="header">
-    <div class="logo-container">
-      <img src="assets/img/logo.png" alt="Logo ProjetoSap" class="logo" />
-    </div>
-    <nav>
-      <ul class="nav-list">
-        <li><button class="li-btn" type="button">Home</button></li>
-        <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
-        <li><button class="li-btn" type="button" onclick="location.href='#emulacao'">Emulação</button></li>
-      </ul>
-    </nav>
-  </header>
+<!-- Cabeçalho -->
+<header class="header">
+  <div class="logo-container">
+    <img src="assets/img/logo.png" alt="Logo ProjetoSap" class="logo" />
+  </div>
+
+  <nav>
+    <ul class="nav-list">
+      <li><button class="li-btn" type="button">Home</button></li>
+      <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
+      <li><button class="li-btn" type="button" onclick="location.href='#emulacao'">Emulação</button></li>
+    </ul>
+  </nav>
+
+  <!-- Botão de Mudo -->
+  <button id="muteToggle" class="li-btn" title="Alternar som">🔊</button>
+</header>
 
   <!-- Botão alternar lógica -->
   <button id="toggleLogic" class="btn-wide">Alternar Lógica</button>
@@ -156,6 +161,44 @@
 
   <!-- Console estilo Mario -->
   <div id="console-log" class="mario-console" style="display: none;"></div>
+
+  <!-- MUSICA SAPMAN -->
+   <audio id="bg-music" src="assets/audio/pacman.mp3" autoplay loop></audio>
+
+  <!-- == FOOTER == -->
+   <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section footer-brand">
+        <img src="assets/img/logo.png" alt="Logo ProjetoSap" height="48">
+        <span class="footer-title">Desvendando o SAP-1</span>
+      </div>
+      <div class="footer-section footer-nav">
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="oqueesap.html">O que é SAP</a></li>
+          <li><a href="equipesap.html">Equipe</a></li>
+        </ul>
+      </div>
+      <div class="footer-section footer-info">
+        <h4>Sobre</h4>
+        <p>
+          Projeto acadêmico dedicado à divulgação e ensino de arquitetura de computadores.<br>
+          Referência principal: <a href="assets/docs/Artigo_SAP1_Malvino.pdf" download>Artigo_SAP1_Malvino.pdf</a><br>
+          Professor orientador: Prof. Caudio
+        </p>
+      </div>
+      <div class="footer-section footer-social">
+        <h4>Equipe</h4>
+        <p>
+          João Silva, Izabela, Lucas Pereira, Ana Lima, Pedro Ramos
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Desvendando o SAP-1. Todos os direitos reservados.</p>
+    </div>
+  </footer>
 
   <script src="assets/js/script.js" defer></script>
   <script src="assets/js/oqesap.js" defer></script>
