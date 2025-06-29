@@ -308,15 +308,38 @@ button.li-btn:hover {
 }
 
 /* == barramento W == */
-.central-bus {
+.block-bus {
+  grid-area: 1 / 2 / 6 / 2;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  padding: 0;
+  background-color: transparent;
+  border: none;
 }
 
-.central-bus-img {
+/* Imagem do barramento animado */
+.block-bus img {
   height: 100%;
-  width: 8px; /* Fino, mas visível */
+  width: auto;
   object-fit: contain;
+  max-width: 100%;
+}
+
+/* Afastar blocos da esquerda */
+.block-pc,
+.block-mar,
+.block-ram,
+.block-ir,
+.block-controller {
+  margin-right: 12px; /* Espaço entre bloco esquerdo e barramento */
+}
+
+/* Afastar blocos da direita */
+.block-acc,
+.block-alu,
+.block-regb,
+.block-out,
+.block-display {
+  margin-left: 12px; /* Espaço entre bloco direito e barramento */
 }
