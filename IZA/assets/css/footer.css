@@ -1,10 +1,9 @@
-/* FOOTER MELHORADO */
 footer {
-  background: linear-gradient(90deg, #4da6ff 60%, #1e90ff 100%);
-  color: #fff;
-  border-top: 4px solid #ffcc00;
+  background: linear-gradient(90deg, var(--azul-escuro-pacman) 60%, var(--azul-pacman) 100%);
+  color: var(--branco-pacman);
+  border-top: 4px solid var(--amarelo-pacman);
   border-radius: 0 0 20px 20px;
-  box-shadow: 0 -2px 16px #1e90ff33, 0 0 32px #3338;
+  box-shadow: 0 -2px 20px #00ffff66, 0 0 32px #0008;
   margin-top: 48px;
   padding: 0;
   font-family: 'Press Start 2P', cursive;
@@ -20,7 +19,7 @@ footer::before {
   height: 8px;
   background: repeating-linear-gradient(
     135deg,
-    #ffcc00, #ffcc00 8px,
+    var(--amarelo-pacman), var(--amarelo-pacman) 8px,
     #fffbe0 8px, #fffbe0 16px
   );
   opacity: 0.7;
@@ -55,16 +54,16 @@ footer::before {
 
 .footer-title {
   font-size: 1.1em;
-  color: #ffd700;
-  text-shadow: 2px 2px #333, 0 0 8px #ffcc00aa;
+  color: var(--amarelo-pacman);
+  text-shadow: 2px 2px #000, 0 0 8px var(--amarelo-pacman);
   letter-spacing: 1px;
 }
 
 .footer-section h4 {
-  color: #ffd700;
+  color: var(--amarelo-pacman);
   margin-bottom: 10px;
   font-size: 1em;
-  text-shadow: 1px 1px #333;
+  text-shadow: 1px 1px #000;
   font-family: 'Press Start 2P', cursive;
 }
 
@@ -87,14 +86,14 @@ footer::before {
 }
 
 .footer-section ul li a:hover {
-  color: #ffd700;
-  text-shadow: 0 0 6px #ffcc00;
+  color: var(--amarelo-pacman);
+  text-shadow: 0 0 6px var(--amarelo-pacman);
 }
 
 .footer-info p,
 .footer-info em {
   font-size: 0.95em;
-  color: #fff;
+  color: #eee;
   margin: 0;
   font-family: 'Roboto', Arial, sans-serif;
 }
@@ -111,13 +110,13 @@ footer::before {
 }
 
 .footer-bottom {
-  background: rgba(0,0,0,0.18);
-  border-top: 2px solid #ffd700;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 2px solid var(--amarelo-pacman);
   padding: 12px 0 6px 0;
   font-size: 0.85em;
   color: #fffbe0;
   letter-spacing: 1px;
-  text-shadow: 1px 1px #333;
+  text-shadow: 1px 1px #000;
   font-family: 'Press Start 2P', cursive;
   border-radius: 0 0 16px 16px;
 }
@@ -128,11 +127,13 @@ footer::before {
     align-items: center;
     padding: 18px 6px 6px 6px;
   }
+
   .footer-section {
     margin: 10px 0;
     min-width: 0;
     text-align: center;
   }
+
   .footer-brand {
     justify-content: center;
   }
