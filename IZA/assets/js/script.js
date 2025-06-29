@@ -105,7 +105,13 @@ function atualizarAssemblyDaRAM() {
     if (!temInstrucoes) {
         const mensagem = document.createElement('div');
         mensagem.className = 'assembly-empty-message';
-        mensagem.textContent = 'Digite valores hex na RAM para ver o código assembly...';
+        mensagem.innerHTML = `
+            <div>Digite códigos hexadecimais na RAM</div>
+            <div>para visualizar o Assembly em tempo real!</div>
+            <div style="font-size: 0.8em; margin-top: 8px; opacity: 0.8;">
+                💡 Ex: 0A, 1F, E0, F0...
+            </div>
+        `;
         container.appendChild(mensagem);
     }
     

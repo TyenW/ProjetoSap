@@ -859,23 +859,66 @@ button.li-btn:hover {
 /* === Display de código assembly baseado na RAM === */
 .assembly-display {
   margin-top: 20px;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 3px solid #00ffaa;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+  padding: 20px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  border: 2px solid #00ffaa;
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.8),
+    0 0 25px rgba(0, 255, 170, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   width: 100%;
   max-width: 500px;
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+}
+
+.assembly-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 170, 0.1), transparent);
+  transition: left 2s ease;
+}
+
+.assembly-display:hover::before {
+  left: 100%;
 }
 
 .assembly-code-container {
   display: block;
-  margin-top: 12px;
+  margin-top: 16px;
   font-family: 'Press Start 2P', cursive;
   font-size: 0.7em;
-  max-height: 300px;
+  max-height: 320px;
   overflow-y: auto;
   line-height: 1.8;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px;
+  border: 1px solid rgba(0, 255, 170, 0.2);
+}
+
+.assembly-code-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.assembly-code-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.assembly-code-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #00ffaa, #00cc88);
+  border-radius: 4px;
+}
+
+.assembly-code-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #00cc88, #00aa66);
 }
 
 .assembly-line {
@@ -947,16 +990,30 @@ button.li-btn:hover {
 @media (max-width: 768px) {
   .assembly-display {
     margin-top: 16px;
-    padding: 12px;
+    padding: 16px;
+    max-width: 100%;
   }
   
   .assembly-code-container {
-    font-size: 0.65em;
+    font-size: 0.6em;
+    max-height: 250px;
+    padding: 10px;
   }
   
   .assembly-line {
     padding: 6px 10px;
     margin-bottom: 4px;
+  }
+  
+  .assembly-empty-message {
+    padding: 20px 15px;
+    font-size: 0.6em;
+    min-height: 100px;
+  }
+  
+  .assembly-empty-message::before {
+    font-size: 1.5em;
+    margin-bottom: 8px;
   }
 }
 
@@ -1121,6 +1178,69 @@ button.li-btn:hover {
     padding: 6px 8px;
     font-size: 0.6em;
   }
+}
+
+/* === Mensagem vazia do assembly === */
+.assembly-empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  text-align: center;
+  color: #00ffaa;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.65em;
+  line-height: 1.6;
+  background: linear-gradient(135deg, rgba(0, 255, 170, 0.05), rgba(0, 255, 170, 0.15));
+  border: 2px dashed rgba(0, 255, 170, 0.4);
+  border-radius: 12px;
+  min-height: 120px;
+  position: relative;
+  overflow: hidden;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.assembly-empty-message::before {
+  content: '⌨️';
+  font-size: 2em;
+  margin-bottom: 12px;
+  display: block;
+  opacity: 0.7;
+  animation: floatIcon 2s ease-in-out infinite;
+}
+
+.assembly-empty-message::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 170, 0.2), transparent);
+  animation: shimmer 4s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { 
+    box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+    border-color: rgba(0, 255, 170, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(0, 255, 170, 0.5);
+    border-color: rgba(0, 255, 170, 0.6);
+  }
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  50% { left: -50%; }
+  100% { left: 100%; }
 }
 
 /* === Ícone de Ajuda SAP-1 === */
