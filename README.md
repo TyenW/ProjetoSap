@@ -928,35 +928,30 @@ Ao usar este projeto, pedimos que mantenha:
 
 ### 👨‍💻 Equipe de Desenvolvimento
 
-#### **Eduardo Silva**
-- **Função**: Desenvolvedor Frontend
-- **Contribuições**: Interface principal, animações CSS
-- **Contato**: eduardo@email.com
-- **GitHub**: [@eduardo-dev](https://github.com/eduardo-dev)
+#### **Eduardo Aniceto**
+- **Função**: Pesquisador e Documentação
+- **Contribuições**: modificações do projeto SAP e prototipagem no Logisim
+- **GitHub**: [@eduhatcs](https://github.com/eduhatcs)
 
-#### **Ana Santos**
-- **Função**: Desenvolvedora Backend/Lógica
-- **Contribuições**: Emulador SAP-1, algoritmos
-- **Contato**: ana@email.com
-- **GitHub**: [@ana-dev](https://github.com/ana-dev)
+#### **Any Gabriela**
+- **Função**: Pesquisador e Documentação
+- **Contribuições**: modificações do projeto SAP e prototipagem no Logisim
+- **GitHub**: [@anygabriella](https://github.com/anygabriella)
 
-#### **Pedro Oliveira**
-- **Função**: Designer UI/UX
-- **Contribuições**: Design visual, tema Pac-Man
-- **Contato**: pedro@email.com
-- **Behance**: [@pedro-design](https://behance.net/pedro-design)
+#### **Iara Publio**
+- **Função**: Pesquisador e Documentação
+- **Contribuições**: modificações do projeto SAP e prototipagem no Logisim
+- **GitHub**: [@iarapublio](https://github.com/iarapublio)
 
-#### **Isabela Costa**
-- **Função**: Coordenadora de Conteúdo
+#### **Izabel Chaves**
+- **Função**: Design e UX/UI
 - **Contribuições**: Material didático, quiz
-- **Contato**: isabela@email.com
-- **LinkedIn**: [@isabela-costa](https://linkedin.com/in/isabela-costa)
+- **LinkedIn**: [@rainbowcrack](https://github.com/rainbowcrack)
 
-#### **Iara Fernandes**
-- **Função**: Especialista em Testes
+#### **Pedro Guimarães**
+- **Função**: Coordenação e Front-end
 - **Contribuições**: QA, validação educacional
-- **Contato**: iara@email.com
-- **GitHub**: [@iara-qa](https://github.com/iara-qa)
+- **GitHub**: [@TyenW](https://github.com/TyenW)
 
 ### 📚 Referências Acadêmicas
 
@@ -966,10 +961,10 @@ Ao usar este projeto, pedimos que mantenha:
 - **Importância**: Base teórica fundamental do projeto
 
 #### **Instituição Acadêmica**
-- **Universidade**: [Nome da Universidade]
-- **Curso**: Engenharia de Computação / Ciência da Computação
-- **Disciplina**: Arquitetura de Computadores
-- **Professor Orientador**: [Nome do Professor]
+- **Universidade**: Pontifícia Universidade Católica de Minas Gerais - Puc Minas
+- **Curso**: Ciência da Computação
+- **Disciplina**: Arquitetura de Computadores I
+- **Professor Orientador**: Cláudio
 
 ### 🎨 Recursos Visuais
 
@@ -981,7 +976,7 @@ Ao usar este projeto, pedimos que mantenha:
 #### **Áudio**
 - **Música de Fundo**: Estilo Pac-Man (livre de direitos)
 - **Efeitos Sonoros**: Criação própria
-- **Formato**: MP3, OGG (compatibilidade)
+- **Formato**: MP3 (compatibilidade)
 
 #### **Ícones e Imagens**
 - **Logo**: Criação original da equipe
@@ -999,10 +994,7 @@ Ao usar este projeto, pedimos que mantenha:
 
 #### **Design**
 - **Figma**: Prototipação e design
-- **GIMP**: Edição de imagens
-- **Inkscape**: Vetores e diagramas
-- **ColorZilla**: Paleta de cores
-
+- **Canva:** 
 #### **Bibliotecas**
 - **Chart.js**: Gráficos do quiz
 - **Google Fonts**: Tipografia
@@ -1054,11 +1046,6 @@ Ao usar este projeto, pedimos que mantenha:
 - **Tutoriais**: Guias passo a passo
 
 ### 📧 Contato Direto
-
-#### **Email da Equipe**
-- **Geral**: sapman.team@email.com
-- **Técnico**: tech@sapman.edu
-- **Educacional**: edu@sapman.edu
 
 #### **Redes Sociais**
 - **Twitter**: [@SapManProject](https://twitter.com/sapmanproject)
