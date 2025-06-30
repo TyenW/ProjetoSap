@@ -14,6 +14,8 @@
 </div>
 
 ---
+## 💻 Acesse
+[Vídeo Explicativo do Youtube](https://youtu.be/EplJ32BYQ0o)
 
 ## 📋 Índice
 
