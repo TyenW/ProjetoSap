@@ -9,286 +9,9 @@
   <link rel="stylesheet" href="assets/css/emular.css">
   <link rel="stylesheet" href="assets/css/footer.css">
   <link rel="stylesheet" href="assets/css/oqueesap.css">
+  <link rel="stylesheet" href="assets/css/home.css">
   
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  
-  <style>
-    /* Estilos específicos para a página home */
-    .hero-section {
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.6));
-      padding: 80px 20px;
-      text-align: center;
-      border-bottom: 4px solid #ffd700;
-      margin-bottom: 40px;
-    }
-    
-    .hero-title {
-      font-size: 2.5em;
-      color: #ffd700;
-      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
-      margin-bottom: 20px;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-    
-    @keyframes glow {
-      from { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 0 0 20px #ffd700; }
-      to { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 0 0 30px #ffd700, 0 0 40px #ffd700; }
-    }
-    
-    .hero-subtitle {
-      font-size: 1.2em;
-      color: #fff;
-      margin-bottom: 30px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    }
-    
-    .hero-description {
-      font-size: 0.9em;
-      color: #ccc;
-      max-width: 800px;
-      margin: 0 auto 40px auto;
-      line-height: 1.6;
-    }
-    
-    .cta-buttons {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 30px;
-    }
-    
-    .cta-btn {
-      background: linear-gradient(45deg, #28a745, #20c997);
-      color: #fff;
-      border: 3px solid #1e7e34;
-      border-radius: 12px;
-      padding: 15px 25px;
-      font-family: 'Press Start 2P', cursive;
-      font-size: 0.8em;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    .cta-btn:hover {
-      background: linear-gradient(45deg, #20c997, #17a2b8);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
-    }
-    
-    .cta-btn.secondary {
-      background: linear-gradient(45deg, #6f42c1, #6610f2);
-      border-color: #59359a;
-    }
-    
-    .cta-btn.secondary:hover {
-      background: linear-gradient(45deg, #6610f2, #6f42c1);
-      box-shadow: 0 6px 12px rgba(111, 66, 193, 0.4);
-    }
-    
-    .features-section {
-      padding: 60px 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    .features-title {
-      text-align: center;
-      font-size: 2em;
-      color: #ffd700;
-      margin-bottom: 50px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    }
-    
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      margin-bottom: 60px;
-    }
-    
-    .feature-card {
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(40, 40, 99, 0.3));
-      border: 3px solid #00ffff;
-      border-radius: 15px;
-      padding: 30px 20px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 255, 0.2);
-      backdrop-filter: blur(5px);
-      transition: transform 0.3s ease;
-    }
-    
-    .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
-    }
-    
-    .feature-icon {
-      font-size: 3em;
-      margin-bottom: 20px;
-      display: block;
-    }
-    
-    .feature-title {
-      font-size: 1.2em;
-      color: #00ffff;
-      margin-bottom: 15px;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-    }
-    
-    .feature-description {
-      color: #fff;
-      line-height: 1.5;
-      font-size: 0.8em;
-    }
-    
-    .about-section {
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.4));
-      padding: 60px 20px;
-      margin: 40px 0;
-      border-top: 4px solid #ffd700;
-      border-bottom: 4px solid #ffd700;
-    }
-    
-    .about-content {
-      max-width: 800px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    
-    .about-title {
-      font-size: 2em;
-      color: #ffd700;
-      margin-bottom: 30px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    }
-    
-    .about-text {
-      color: #fff;
-      line-height: 1.7;
-      font-size: 0.9em;
-      margin-bottom: 20px;
-    }
-    
-    .team-section {
-      padding: 60px 20px;
-      max-width: 1000px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    
-    .team-title {
-      font-size: 2em;
-      color: #ffd700;
-      margin-bottom: 40px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    }
-    
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 25px;
-      margin-bottom: 40px;
-    }
-    
-    .team-member {
-      background: rgba(0, 0, 0, 0.7);
-      border: 3px solid #ffd700;
-      border-radius: 16px;
-      padding: 20px 15px;
-      text-align: center;
-      box-shadow: 0 2px 12px rgba(255, 215, 0, 0.3);
-      transition: transform 0.3s ease;
-    }
-    
-    .team-member:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
-    }
-    
-    .member-avatar {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 12px auto;
-      border-radius: 50%;
-      background: #ffd700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5em;
-    }
-    
-    .member-name {
-      color: #fff;
-      font-size: 1em;
-      margin-bottom: 8px;
-    }
-    
-    .member-role {
-      color: #ffd700;
-      font-size: 0.7em;
-    }
-    
-    .quick-start {
-      background: linear-gradient(135deg, rgba(40, 167, 69, 0.8), rgba(32, 201, 151, 0.6));
-      padding: 50px 20px;
-      margin: 40px 0;
-      text-align: center;
-      border-radius: 20px;
-      max-width: 1000px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    
-    .quick-start-title {
-      font-size: 1.8em;
-      color: #fff;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    }
-    
-    .quick-start-text {
-      color: #fff;
-      margin-bottom: 30px;
-      font-size: 0.9em;
-    }
-    
-    @media (max-width: 768px) {
-      .hero-title {
-        font-size: 1.8em;
-      }
-      
-      .hero-subtitle {
-        font-size: 1em;
-      }
-      
-      .cta-buttons {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .features-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .team-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .hero-title {
-        font-size: 1.5em;
-      }
-      
-      .team-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
 </head>
 <body>
 
@@ -429,31 +152,41 @@
     
     <div class="team-grid">
       <div class="team-member">
-        <div class="member-avatar">🍄</div>
+        <div class="member-avatar">
+          <img src="assets/img/fantasma/1.png" alt="Izabel Chaves" class="avatar-img">
+        </div>
         <h3 class="member-name">Pedro Guimarães</h3>
         <p class="member-role">Projeto e Desenvolvimento</p>
       </div>
       
       <div class="team-member">
-        <div class="member-avatar">🍄</div>
+        <div class="member-avatar">
+          <img src="assets/img/fantasma/2.png" alt="Izabel Chaves" class="avatar-img">
+        </div>
         <h3 class="member-name">Izabel Chaves</h3>
         <p class="member-role">Design e UX</p>
       </div>
       
       <div class="team-member">
-        <div class="member-avatar">🍄</div>
+        <div class="member-avatar">
+          <img src="assets/img/fantasma/3.png" alt="Izabel Chaves" class="avatar-img">
+        </div>
         <h3 class="member-name">Eduardo Aniceto</h3>
         <p class="member-role">Documentação e Pesquisa</p>
       </div>
       
       <div class="team-member">
-        <div class="member-avatar">🍄</div>
+        <div class="member-avatar">
+          <img src="assets/img/fantasma/4.png" alt="Izabel Chaves" class="avatar-img">
+        </div>
         <h3 class="member-name">Any Gabriela</h3>
         <p class="member-role">Documentação e Pesquisa</p>
       </div>
       
       <div class="team-member">
-        <div class="member-avatar">🍄</div>
+        <div class="member-avatar">
+          <img src="assets/img/fantasma/5.png" alt="Izabel Chaves" class="avatar-img">
+        </div>
         <h3 class="member-name">Iara Publio</h3>
         <p class="member-role">Documentação e Pesquisa</p>
       </div>
