@@ -8,91 +8,12 @@
 
   <link rel="stylesheet" href="assets/css/emular.css" />
   <link rel="stylesheet" href="assets/css/footer.css" />
-  <link rel="stylesheet" href="assets/css/oqueesap.css" />
   <link rel="stylesheet" href="assets/css/quiz.css" />
+  <link rel="stylesheet" href="assets/css/style.css" />
   
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   
-  <style>
-    /* Melhorias de estilo para integrar com o design geral */
-    body {
-      background: url('assets/img/pacman.png') repeat;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-    
-    .quiz-container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    .status-bar {
-      background: rgba(0, 0, 0, 0.8);
-      border: 3px solid #ffd700;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    
-    .question {
-      background: rgba(0, 0, 0, 0.85);
-      border: 3px solid #ffd700;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      min-height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    
-    .options button {
-      font-family: 'Press Start 2P', cursive;
-      background: linear-gradient(90deg, #ffd700 80%, #ffed4e 100%);
-      border: 3px solid #333;
-      border-radius: 8px;
-      color: #000;
-      padding: 15px;
-      font-size: 0.85em;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .options button:hover {
-      background: linear-gradient(90deg, #ffed4e 80%, #fff 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    .restart-btn {
-      font-family: 'Press Start 2P', cursive;
-      background: linear-gradient(90deg, #00ff00 80%, #66ff66 100%);
-      border: 3px solid #333;
-      border-radius: 8px;
-      color: #000;
-      padding: 12px 20px;
-      font-size: 0.8em;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .restart-btn:hover {
-      background: linear-gradient(90deg, #66ff66 80%, #99ff99 100%);
-      transform: translateY(-2px);
-    }
-  </style>
+  
 
 </head>
 <body>
@@ -129,23 +50,53 @@
   </div>
 
   <main class="quiz-container">
-    <div id="status" class="status-bar">
-      Pergunta <span id="current-q">1</span>/10 • <span class="hearts" id="lives">❤️❤️❤️</span>
+    <!-- Coluna principal: status, pergunta, opções e botões -->
+    <div class="quiz-main">
+      <div id="status" class="status-bar">
+        <span class="status-item">Modo: Infinito</span>
+        <span class="status-sep">•</span>
+        <span class="status-item">Respondidas: <span id="answered-count">0</span></span>
+        <span class="status-sep">•</span>
+        <span class="status-item">Vidas: <span class="hearts" id="lives">❤️❤️❤️</span></span>
+      </div>
+      <div style="text-align:center; margin-top:10px; color:#fff; opacity:0.9; font-size:0.85em;">Responda quantas perguntas quiser — o quiz termina quando você perder 3 vidas.</div>
+      <div id="question" class="question">Carregando pergunta...</div>
+      <div id="options" class="options"></div>
+      <div id="message"></div>
+      <button id="restartBtn" class="restart-btn" onclick="startQuiz()" style="display:none;">Jogar Novamente</button>
     </div>
-    <div id="question" class="question">Carregando pergunta...</div>
-    <div id="options" class="options"></div>
-    <div id="message"></div>
-    <button id="restartBtn" class="restart-btn" onclick="startQuiz()" style="display:none;">Jogar Novamente</button>
 
-    <!-- Espaço onde o gráfico será mostrado ao final -->
-    <div id="iaAnalysis"></div>
+    <!-- Aside: Leaderboard & Achievements -->
+    <aside id="sidePanel" class="quiz-side">
+      <div id="leaderboard" class="panel small-panel card-modern"> </div>
+      <div id="achievements" class="panel small-panel card-modern"> </div>
+    </aside>
   </main>
 
   <!-- Botão para baixar estatísticas -->
   <div style="text-align:center; margin: 20px;">
-    <button class="li-btn" onclick="exportarEstatisticas()" style="font-size: 0.8em; padding: 10px 20px;">
-      📄 Baixar Estatísticas
-    </button>
+    <div style="display:inline-flex; gap:8px; flex-wrap:wrap; justify-content:center; align-items:center;">
+      <button class="li-btn" onclick="exportResults('txt')" style="font-size: 0.8em; padding: 10px 20px;">📄 Baixar TXT</button>
+      <button class="li-btn" onclick="exportResults('json')" style="font-size: 0.8em; padding: 10px 20px;">🗂️ Baixar JSON</button>
+      <button class="li-btn" onclick="exportResults('csv')" style="font-size: 0.8em; padding: 10px 20px;">📑 Baixar CSV</button>
+      <button class="li-btn" onclick="startTutorial()" style="font-size: 0.8em; padding: 10px 20px;">📘 Tutorial</button>
+    </div>
+  </div>
+
+  <!-- Overlay do Tutorial -->
+  <div id="tutorialOverlay" class="tutorial-overlay" style="display:none;">
+    <div class="tutorial-card">
+      <h2>Tutorial Rápido</h2>
+      <ol>
+        <li>Leia a pergunta e escolha uma das opções.</li>
+        <li>Você tem 3 vidas. Ao errar, perde uma vida.</li>
+        <li>Ao final, salve sua pontuação no Top 3.</li>
+        <li>Use o botão de export para baixar suas estatísticas.</li>
+      </ol>
+      <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
+        <button class="li-btn" onclick="closeTutorial()">Fechar</button>
+      </div>
+    </div>
   </div>
 
   <!-- Modal do gráfico (opcional) -->
@@ -154,13 +105,26 @@
     <canvas id="performanceChartModal" width="500" height="300"></canvas>
   </div>
 
+  <!-- Modal: salvar nome no placar -->
+  <div id="nameModal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3>Salvar no Placar</h3>
+      <p>Sua pontuação: <span id="modalScore">0</span> pts</p>
+      <input id="playerNameInput" type="text" placeholder="Seu nome" maxlength="20" />
+      <div class="modal-actions">
+        <button class="li-btn" id="saveNameBtn">Salvar</button>
+        <button class="li-btn" id="cancelNameBtn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-section footer-brand">
         <div class="footer-brand">
           <img src="assets/img/logo.png" alt="Logo ProjetoSap" height="48" />
-          <h3 class="footer-title">SapMan</h3>
+          
         </div>
       </div>
       <div class="footer-section footer-nav">

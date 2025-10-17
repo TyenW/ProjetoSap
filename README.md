@@ -1,10 +1,10 @@
-# 🎮 SapMan - Emulador SAP-1 Interativo
+ # 🎮 SapMan - Emulador SAP-1 Interativo
 
 <div align="center">
   <img src="assets/img/logo.png" alt="SapMan Logo" width="200"/>
   
   [![Status](https://img.shields.io/badge/Status-Ativo-brightgreen)](https://github.com/user/sapman)
-  [![Versão](https://img.shields.io/badge/Versão-1.0.0-blue)](https://github.com/user/sapman)
+  [![Versão](https://img.shields.io/badge/Versão-1.1.0-blue)](https://github.com/user/sapman)
   [![Licença](https://img.shields.io/badge/Licença-MIT-yellow)](LICENSE)
   [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow?logo=javascript)](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
   [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/pt-BR/docs/Web/HTML)
@@ -14,6 +14,7 @@
 </div>
 
 ---
+
 ## 💻 Acesse
 [Vídeo Explicativo do Youtube](https://youtu.be/EplJ32BYQ0o)
 
@@ -21,9 +22,11 @@
 
 - [Sobre o Projeto](#-sobre-o-projeto)
 - [Características](#-características)
+- [Novidades v1.1.0](#-novidades-v110)
 - [Tecnologias Utilizadas](#-tecnologias-utilizadas)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Funcionalidades](#-funcionalidades)
+- [Quiz Interativo](#-quiz-interativo)
 - [Como Usar](#-como-usar)
 - [Páginas do Sistema](#-páginas-do-sistema)
 - [Arquitetura SAP-1](#-arquitetura-sap-1)
@@ -48,6 +51,7 @@ O SAP-1 é um processador didático de 8 bits criado por **Albert Paul Malvino**
 - **Animações interativas** mostrando o fluxo de dados
 - **Interface intuitiva** para programação em linguagem de máquina
 - **Feedback visual** das operações internas do processador
+- **Sistema gamificado de aprendizado** com quiz e conquistas
 
 ---
 
@@ -56,14 +60,17 @@ O SAP-1 é um processador didático de 8 bits criado por **Albert Paul Malvino**
 ### 🎨 Interface Visual
 - **Tema Pac-Man**: Interface retro com cores vibrantes e fonte pixelizada
 - **Animações fluidas**: Visualização do fluxo de dados entre componentes
-- **Design responsivo**: Compatível com diferentes tamanhos de tela
+- **Design responsivo**: Totalmente adaptável para desktop, tablet e mobile
 - **Controles intuitivos**: Botões de estilo arcade para navegação
+- **Layout moderno e limpo**: Cards com sombras e bordas refinadas
 
 ### 🧠 Funcionalidades Educacionais
 - **Emulador completo** do processador SAP-1
 - **Execução passo a passo** para análise detalhada
 - **Modo automático** com velocidade ajustável
-- **Quiz interativo** com sistema de dificuldade adaptativa
+- **Quiz interativo gamificado** com modo infinito e sistema de vidas
+- **Sistema de conquistas** com progresso em tempo real
+- **Placar de líderes Top 10** persistente (localStorage + cookies)
 - **Material didático** completo sobre arquitetura
 
 ### 🔧 Recursos Técnicos
@@ -71,7 +78,62 @@ O SAP-1 é um processador didático de 8 bits criado por **Albert Paul Malvino**
 - **Editor de memória** integrado
 - **Conversão automática** de hexadecimal para assembly
 - **Sistema de logging** para depuração
-- **Estatísticas detalhadas** do quiz
+- **Estatísticas detalhadas** com gráficos (Chart.js)
+- **Export de resultados** em múltiplos formatos (TXT, JSON, CSV)
+- **Persistência de dados** via cookies e localStorage
+
+---
+
+## 🆕 Novidades v1.1.0
+
+### 🎯 Quiz Gamificado
+- **Modo Infinito**: Responda perguntas aleatórias até perder 3 vidas
+- **Sistema de Vidas**: Animação de corações com feedback visual
+- **Perguntas Externas**: Carregadas de JSON configurável com fallback interno
+- **Dificuldades Variadas**: Fácil, médio e difícil com indicação visual
+
+### 🏆 Sistema de Conquistas
+- **Conquistas Desbloqueáveis**: 6 conquistas com ícones e descrições
+- **Progresso em Tempo Real**: Barra de progresso durante a sessão
+- **Objetivos Claros**: Metas de streak, precisão, pontuação e perguntas respondidas
+- **Visualização Grid Responsiva**: 3 colunas (desktop) → 2 → 1 (mobile)
+- **Estado Locked/Unlocked**: Filtro visual para conquistas não desbloqueadas
+- **Persistência**: Salvamento em localStorage + cookies (30 dias)
+
+### 📊 Placar de Líderes
+- **Top 10 Global**: Classificação por pontuação e data
+- **Medalhas**: 🥇🥈🥉 para os 3 primeiros lugares
+- **Modal de Salvamento**: Interface moderna para inserir nome
+- **Toast de Confirmação**: Feedback visual ao salvar
+- **Atualização Instantânea**: Sem necessidade de reload
+- **Placeholders**: Linhas fictícias até completar 10 posições
+- **Seed Inicial**: 6 jogadores exemplo para demonstração
+
+### 📦 Export de Dados
+- **Formato TXT**: Estatísticas legíveis em texto plano
+- **Formato JSON**: Dados estruturados para processamento
+- **Formato CSV**: Compatível com Excel e planilhas
+- **Download Automático**: Via Blob API sem servidor
+
+### 🎓 Tutorial Interativo
+- **Overlay Explicativo**: Instruções passo a passo
+- **Guia Rápido**: Como jogar, sistema de vidas e export
+
+### 📱 Melhorias de Responsividade
+- **Layout Flex/Grid**: Container principal adaptável
+- **Suporte Touch**: Feedback tátil em botões
+- **Breakpoints Otimizados**: Mobile-first design
+- **Overflow Controlado**: Sem barras de rolagem horizontal
+- **Text Wrapping**: Textos longos quebram corretamente
+- **Sticky Panels**: Painéis fixos no scroll (desktop)
+
+### 🎨 Design Refinado
+- **Bordas Mais Leves**: De 3-4px para 1-2px
+- **Sombras Modernas**: Box-shadow suaves e profundas
+- **Gradientes Atualizados**: Tons mais escuros e elegantes
+- **Estados de Botão**: Hover, pressed, correct, wrong com transições
+- **Modal Estilizado**: Backdrop blur e animações
+- **Toast Notifications**: Conquistas e salvamentos com fade
 
 ---
 
@@ -101,23 +163,27 @@ ProjetoSap/
 ├── 📄 index.html              # Página principal do emulador
 ├── 📄 home.html               # Página de boas-vindas
 ├── 📄 oqueesap.html          # Material didático sobre SAP-1
-├── 📄 quiz.html              # Sistema de quiz interativo
+├── 📄 quiz.html              # Sistema de quiz interativo gamificado
 ├── 📄 equipesap.html         # Informações da equipe
 ├── 📄 README.md              # Documentação do projeto
 │
 ├── 📁 assets/                # Recursos estáticos
 │   ├── 📁 css/              # Folhas de estilo
 │   │   ├── emular.css       # Estilos do emulador
-│   │   ├── style.css        # Estilos gerais
-│   │   ├── quiz.css         # Estilos do quiz
+│   │   ├── style.css        # Estilos gerais + quiz moderno
+│   │   ├── quiz.css         # Estilos base do quiz
 │   │   ├── oqueesap.css     # Estilos do material didático
 │   │   └── footer.css       # Estilos do rodapé
 │   │
 │   ├── 📁 js/               # Scripts JavaScript
 │   │   ├── script.js        # Lógica principal do emulador
-│   │   ├── quiz.js          # Sistema de quiz
+│   │   ├── quiz.js          # Sistema gamificado: quiz, conquistas, leaderboard
 │   │   ├── oqesap.js        # Navegação e interações
 │   │   └── carrosel.js      # Animação do barramento
+│   │
+│   ├── 📁 data/             # ⭐ NOVO: Dados externos configuráveis
+│   │   ├── questions.json   # Banco de perguntas do quiz (100+)
+│   │   └── achievements.json # Definição de conquistas
 │   │
 │   ├── 📁 img/              # Imagens e recursos visuais
 │   │   ├── logo.png         # Logo principal
@@ -155,7 +221,7 @@ ProjetoSap/
 - **ALU**: Unidade lógica e aritmética
 - **Register B**: Registrador auxiliar
 - **Output**: Display de saída
-- **W-Bus**: Barramento de dados
+- **W-Bus**: Barramento de dados com animação visual
 
 #### Controles de Execução
 - **▶️ Executar Passo**: Executa uma instrução por vez
@@ -163,30 +229,72 @@ ProjetoSap/
 - **⏪ Passo Atrás**: Volta uma instrução (histórico)
 - **🔄 Resetar**: Reinicia o estado do processador
 - **📁 Carregar CSV**: Importa programa de arquivo
-- **🎚️ Controle de Velocidade**: Ajusta velocidade da animação
+- **🎚️ Controle de Velocidade**: Ajusta velocidade da animação (100-2000ms)
+- **🔊 Toggle Áudio**: Liga/desliga música de fundo
 
 ### 2. 🧮 Editor de Memória
 
 #### Características
 - **Interface visual**: 16 campos hexadecimais editáveis
 - **Conversão automática**: Hex → Assembly em tempo real
-- **Validação de entrada**: Apenas valores hexadecimais válidos
+- **Validação de entrada**: Apenas valores hexadecimais válidos (00-FF)
 - **Destaque visual**: Posição atual em execução
-- **Botões auxiliares**: Limpar, carregar exemplos
+- **Botões auxiliares**: Limpar, carregar exemplos pré-definidos
 
-### 3. 📝 Sistema de Quiz
+### 3. 📝 Sistema de Quiz Gamificado
 
-#### Funcionalidades
-- **Dificuldade adaptativa**: Fácil → Médio → Difícil
-- **Sistema de vidas**: 3 chances (corações ❤️)
-- **Pontuação progressiva**: Score baseado em acertos
-- **Estatísticas visuais**: Gráficos de desempenho
-- **Questões variadas**: 13+ perguntas sobre SAP-1
+#### Funcionalidades Principais
+- **Modo Infinito**: Perguntas aleatórias até perder 3 vidas
+- **Sistema de Vidas Visual**: 3 corações (❤️) com animação de perda
+- **Pontuação Progressiva**: +1 ponto por acerto, contador de streak
+- **Feedback Imediato**: Botões ficam verdes (✓) ou vermelhos (✗)
+- **Perguntas Externas**: Carregadas de `questions.json` (100+ questões)
+- **Fallback Automático**: 5 perguntas internas caso JSON falhe
+
+#### Sistema de Conquistas 🏆
+- **6 Conquistas Desbloqueáveis**:
+  - 🔥 **3 Acertos Seguidos**: Streak de 3 respostas corretas
+  - 🎯 **Acertou >= 80%**: Precisão de 80% ou mais em uma sessão
+  - 🌟 **Pontuação Perfeita**: 100% de acerto sem erros
+  - ✅ **Aquecendo**: Responda 10 perguntas
+  - 🏃 **Maratonista**: Responda 50 perguntas
+  - ⚡ **Pontuador**: Alcance 20 pontos em uma sessão
+- **Progresso em Tempo Real**: Barra de progresso durante a sessão
+- **Estado Visual**: Locked (cinza) / Unlocked (verde com brilho)
+- **Persistência**: localStorage + cookies (30 dias)
+- **Grid Responsivo**: 3 colunas → 2 → 1 (mobile)
+
+#### Placar de Líderes 🥇
+- **Top 10 Global**: Classificação por pontuação (descendente) e data
+- **Medalhas**: 🥇 (1º), 🥈 (2º), 🥉 (3º)
+- **Modal de Salvamento**: Interface moderna para inserir nome do jogador
+- **Toast de Confirmação**: "✅ [Nome] adicionado ao placar!"
+- **Atualização Instantânea**: Sem necessidade de recarregar a página
+- **Placeholders**: Linhas fictícias (---) até completar 10 posições
+- **Seed Inicial**: 6 jogadores exemplo (Ana, Bruno, Carla, Diego, Elisa, Felipe)
+- **Persistência Dupla**: localStorage + cookies
+
+#### Export de Resultados 📦
+- **TXT**: Estatísticas legíveis em texto plano
+  - Pontuação total, perguntas respondidas
+  - Desempenho por dificuldade (fácil/médio/difícil)
+- **JSON**: Dados estruturados para análise
+  - Array completo de perguntas com respostas
+  - Metadados (data, score, difficulty breakdown)
+- **CSV**: Compatível com Excel/Google Sheets
+  - Colunas: pergunta, dificuldade, acertou (true/false)
+
+#### Tutorial Interativo 📘
+- **Overlay Explicativo**: Instruções passo a passo
+- **Como Jogar**: Leia a pergunta, escolha uma opção
+- **Sistema de Vidas**: 3 vidas, perde uma ao errar
+- **Salvamento**: Como salvar no Top 10
+- **Export**: Como baixar estatísticas
 
 #### Tipos de Questão
-- **Conceitos básicos**: Definições e componentes
-- **Funcionamento**: Ciclos de execução e registradores
-- **Instruções**: Conjunto de comandos e operações
+- **Conceitos Básicos**: Definições, siglas e componentes
+- **Funcionamento**: Ciclos de execução, registradores e sinais de controle
+- **Instruções**: Conjunto de comandos e operações (LDA, ADD, SUB, OUT, STA, LDI, JMP, JC, JZ, HLT)
 - **Arquitetura**: Estrutura interna e barramentos
 
 ### 4. 📚 Material Didático
@@ -222,13 +330,57 @@ ProjetoSap/
 
 #### Método 2: Importação de Arquivo
 ```
-1. Prepare um arquivo CSV ou TXT com os valores
+1. Prepare um arquivo CSV ou TXT com os valores (ver rascunho/ para exemplos)
 2. Clique em "📁 Carregar CSV"
 3. Selecione seu arquivo
 4. O programa será carregado automaticamente
 ```
 
-### 3. Executando Programas
+### 3. Jogando o Quiz (⭐ Novo v1.1.0)
+
+#### Iniciando
+```
+1. Clique em "Quiz" no menu superior
+2. Leia as instruções no tutorial (primeira vez)
+3. Clique em "Iniciar Quiz" para começar
+```
+
+#### Gameplay
+```
+1. Leia a pergunta exibida
+2. Clique em uma das 4 opções
+3. Feedback imediato: Verde (✓) = Correto | Vermelho (✗) = Errado
+4. Continue até perder todas as 3 vidas ❤️
+5. Ao final, salve sua pontuação no Top 10
+```
+
+#### Salvando no Placar
+```
+1. Clique em "💾 Salvar no Placar"
+2. Digite seu nome no modal (3-20 caracteres)
+3. Clique em "Salvar" ou pressione Enter
+4. Receba toast de confirmação "✅ [Seu Nome] adicionado ao placar!"
+5. Veja sua posição no Top 10 instantaneamente
+```
+
+#### Exportando Resultados
+```
+1. Após finalizar a sessão, role até "📦 Exportar Dados"
+2. Escolha formato:
+   - TXT: Estatísticas legíveis
+   - JSON: Dados estruturados
+   - CSV: Compatível com planilhas
+3. Arquivo baixa automaticamente
+```
+
+#### Desbloqueando Conquistas
+```
+- Jogue normalmente e acompanhe progresso em tempo real
+- Conquistas desbloqueadas ficam verdes com efeito brilhante
+- Progresso persiste entre sessões (cookies + localStorage)
+```
+
+### 4. Executando Programas no Emulador
 
 #### Execução Passo a Passo
 ```
@@ -240,13 +392,21 @@ ProjetoSap/
 
 #### Execução Automática
 ```
-1. Ajuste a velocidade com o controle deslizante
+1. Ajuste a velocidade com o controle deslizante (100-2000ms)
 2. Clique em "⏩ Executar Tudo"
-3. Observe a execução completa
+3. Observe a execução completa com animações
 4. Use "⏸️ Pausar" se necessário
+5. Acompanhe barramento W-Bus com efeito visual
 ```
 
-### 4. Interpretando Resultados
+#### Voltando Passos
+```
+1. Use "⏪ Passo Atrás" para desfazer última instrução
+2. Histórico permite voltar múltiplos passos
+3. Estado completo é restaurado (RAM, registradores, flags)
+```
+
+### 5. Interpretando Resultados
 
 - **Painel de Status**: Mostra valores atuais dos registradores
 - **Display de Saída**: Exibe resultados das instruções OUT
@@ -268,18 +428,41 @@ Página de boas-vindas com:
 Material didático completo:
 - História e contexto do SAP-1
 - Explicação da arquitetura
-- Conjunto de instruções detalhado
-- Exemplos de programação
-- Ciclos de execução
-- Recursos visuais e diagramas
+- Conjunto de instruções detalhado (10 comandos + HLT)
+- Exemplos de programação com comentários
+- Ciclos de execução (Fetch-Decode-Execute)
+- Recursos visuais e diagramas interativos
 
-### 🎯 Quiz (`quiz.html`)
-Sistema de avaliação interativo:
-- 13+ questões sobre SAP-1
-- Dificuldade adaptativa
-- Sistema de pontuação e vidas
-- Estatísticas detalhadas
-- Gráficos de desempenho
+### 🎯 Quiz (`quiz.html`) ⭐ **ATUALIZADO v1.1.0**
+Sistema gamificado de avaliação:
+- **Modo Infinito**: Perguntas aleatórias até perder 3 vidas
+- **100+ Questões**: Banco carregado de `questions.json`
+- **Sistema de Conquistas**: 6 achievements com progresso em tempo real
+- **Placar Top 10**: Classificação global com medalhas e persistência
+- **Export Múltiplo**: TXT, JSON, CSV para análise
+- **Tutorial Integrado**: Overlay com instruções passo a passo
+- **Interface Responsiva**: Totalmente adaptada para mobile e touch
+- **Design Moderno**: Gradientes escuros, bordas leves, sombras e animações
+
+#### Estrutura Visual
+```
+┌─────────────────────────────────────────┐
+│        Quiz (Conteúdo Principal)        │
+│  ┌─────────────────────────────────┐   │
+│  │ Status: ❤️❤️❤️ | Respondidas: X │   │
+│  │ Pergunta aleatória do JSON       │   │
+│  │ [ Opção A ] [ Opção B ]          │   │
+│  │ [ Opção C ] [ Opção D ]          │   │
+│  └─────────────────────────────────┘   │
+├─────────────────────────────────────────┤
+│     Painéis Laterais (2 colunas)        │
+│  ┌───────────────┬────────────────────┐ │
+│  │ 🥇 Top 10      │ 🏆 Conquistas (6) │ │
+│  │ Medalhas       │ Grid 3 colunas    │ │
+│  │ Modal de Save  │ Barras de progr.  │ │
+│  └───────────────┴────────────────────┘ │
+└─────────────────────────────────────────┘
+```
 
 ### 👥 Equipe (`equipesap.html`)
 Informações sobre os desenvolvedores:
@@ -290,11 +473,12 @@ Informações sobre os desenvolvedores:
 
 ### 🖥️ Emulador (`index.html`)
 Interface principal do emulador:
-- Editor de memória interativo
-- Visualização da arquitetura SAP-1
-- Controles de execução
-- Animações em tempo real
-- Painel de status e logs
+- Editor de memória interativo (16 posições hex)
+- Visualização da arquitetura SAP-1 completa
+- Controles de execução (passo, automático, reset)
+- Animações em tempo real do barramento
+- Painel de status e logs detalhados
+- Importação de programas via CSV/TXT
 
 ---
 
@@ -627,7 +811,8 @@ Este arquivo representa o programa de soma básica e pode ser carregado diretame
 
 #### Recursos Necessários
 - **JavaScript**: Deve estar habilitado
-- **Cookies**: Para salvar configurações (opcional)
+- **Cookies**: Para salvar leaderboard e conquistas (v1.1.0)
+- **LocalStorage**: Para persistência de dados do quiz
 - **Áudio**: Para música de fundo (opcional)
 
 ### Instalação Local
@@ -635,8 +820,8 @@ Este arquivo representa o programa de soma básica e pode ser carregado diretame
 #### 1. Download do Projeto
 ```bash
 # Opção 1: Clone do repositório
-git clone https://github.com/usuario/sapman.git
-cd sapman
+git clone https://github.com/usuario/ProjetoSap.git
+cd ProjetoSap
 
 # Opção 2: Download direto
 # Baixe o arquivo ZIP e extraia em uma pasta
@@ -653,6 +838,9 @@ Certifique-se de que a estrutura esteja íntegra:
 └── assets/
     ├── css/
     ├── js/
+    ├── data/           ⭐ NOVO: Dados externos configuráveis
+    │   ├── questions.json
+    │   └── achievements.json
     ├── img/
     ├── audio/
     └── docs/
@@ -660,16 +848,68 @@ Certifique-se de que a estrutura esteja íntegra:
 
 #### 3. Execução
 ```bash
-# Opção 1: Servidor local simples
+# Opção 1: Servidor local simples (recomendado para v1.1.0)
 python -m http.server 8000
 # Acesse: http://localhost:8000
+# IMPORTANTE: Necessário para carregar JSON externo (CORS)
 
 # Opção 2: Live Server (VS Code)
 # Instale a extensão Live Server
 # Clique direito em index.html > "Open with Live Server"
 
-# Opção 3: Abrir diretamente
-# Simplesmente abra index.html no navegador
+# Opção 3: Abrir diretamente (limitado)
+# Funciona, mas JSON externo pode não carregar (fallback interno usado)
+```
+
+### Configuração do Quiz (v1.1.0)
+
+#### Editando Banco de Perguntas
+```json
+// assets/data/questions.json
+{
+  "meta": {
+    "version": "1.0",
+    "totalQuestions": 100,
+    "categories": ["basics", "architecture", "instructions", "programming"]
+  },
+  "questions": [
+    {
+      "id": 1,
+      "question": "O que significa SAP?",
+      "options": [
+        "Simple As Possible",
+        "System Analysis Program",
+        "Sequential Access Processor",
+        "Standard Automatic Protocol"
+      ],
+      "correctAnswer": 0,
+      "difficulty": "easy",
+      "category": "basics"
+    }
+    // ... adicione mais perguntas
+  ]
+}
+```
+
+#### Customizando Conquistas
+```json
+// assets/data/achievements.json
+{
+  "version": "1.0",
+  "achievements": [
+    {
+      "id": "streak_3",
+      "title": "🔥 3 Acertos Seguidos",
+      "description": "Acerte 3 perguntas consecutivas",
+      "icon": "🔥",
+      "goal": {
+        "type": "streak",
+        "target": 3
+      }
+    }
+    // ... personalize conquistas
+  ]
+}
 ```
 
 ### Configuração de Desenvolvimento
@@ -681,7 +921,7 @@ python -m http.server 8000
   "extensions": [
     "ms-vscode.live-server",
     "esbenp.prettier-vscode",
-    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
     "formulahendry.auto-rename-tag"
   ],
   "settings": {
@@ -697,7 +937,7 @@ python -m http.server 8000
 ```bash
 # 1. Fork do repositório
 # 2. Clone local
-git clone https://github.com/seu-usuario/sapman.git
+git clone https://github.com/seu-usuario/ProjetoSap.git
 
 # 3. Crie branch para feature
 git checkout -b feature/nova-funcionalidade
@@ -705,7 +945,7 @@ git checkout -b feature/nova-funcionalidade
 # 4. Faça as alterações
 # 5. Commit e push
 git add .
-git commit -m "Adiciona nova funcionalidade"
+git commit -m "feat: adiciona nova funcionalidade"
 git push origin feature/nova-funcionalidade
 
 # 6. Abra Pull Request
@@ -759,25 +999,25 @@ let animationSpeed = 1500; // ms entre animações
 
 #### 🐛 Reportar Bugs
 1. Verifique se o bug já foi reportado
-2. Abra uma [Issue](https://github.com/usuario/sapman/issues)
+2. Abra uma [Issue](https://github.com/usuario/ProjetoSap/issues)
 3. Descreva detalhadamente:
    - Passos para reproduzir
    - Comportamento esperado vs atual
    - Screenshots se aplicável
-   - Informações do navegador
+   - Informações do navegador e versão
 
 #### ✨ Sugerir Melhorias
-1. Abra uma [Issue](https://github.com/usuario/sapman/issues)
+1. Abra uma [Issue](https://github.com/usuario/ProjetoSap/issues)
 2. Use o template "Feature Request"
 3. Explique o benefício educacional
 4. Forneça mockups se possível
 
 #### 🔧 Contribuir com Código
 1. Fork do repositório
-2. Crie branch descritiva
+2. Crie branch descritiva (`feat/`, `fix/`, `docs/`)
 3. Siga os padrões de código
-4. Teste thoroughly
-5. Abra Pull Request
+4. Teste thoroughly (emulador, quiz, responsividade)
+5. Abra Pull Request com descrição detalhada
 
 ### Padrões de Código
 
@@ -798,6 +1038,12 @@ function atualizarEstadoSAP1() {
 // Use const/let, evite var
 const constante = 'valor';
 let variavel = 'valor';
+
+// Funções modulares e reutilizáveis (v1.1.0)
+function computeStats() {
+    const stats = { /* ... */ };
+    return stats;
+}
 ```
 
 #### CSS
@@ -816,6 +1062,16 @@ let variavel = 'valor';
 /* Use variáveis CSS */
 :root {
     --cor-primaria: #ffd700;
+    --border-light: 2px solid rgba(255, 215, 0, 0.6); /* v1.1.0 */
+}
+
+/* Box-sizing e responsividade (v1.1.0) */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+@media (max-width: 520px) {
+    /* Mobile styles */
 }
 ```
 
@@ -829,34 +1085,53 @@ let variavel = 'valor';
     </div>
 </section>
 
-<!-- Use atributos descritivos -->
+<!-- Use atributos descritivos e acessíveis -->
 <button 
     id="executeStep" 
     class="btn-primary" 
-    title="Executa uma instrução">
+    title="Executa uma instrução"
+    aria-label="Executar Passo">
     Executar Passo
 </button>
+
+<!-- Modals e overlays (v1.1.0) -->
+<div class="modal-overlay" id="nameModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-labelledby="modalTitle">
+        <!-- Conteúdo do modal -->
+    </div>
+</div>
 ```
 
 ### Áreas de Contribuição
 
 #### 1. 🎓 Conteúdo Educacional
-- Novos exemplos de programas
-- Exercícios práticos
+- Novos exemplos de programas SAP-1
+- Perguntas para o banco do quiz (questions.json)
+- Exercícios práticos e desafios
 - Material didático adicional
 - Traduções para outros idiomas
 
 #### 2. 🎨 Interface e Design
 - Melhorias na usabilidade
-- Responsividade mobile
-- Novas animações
-- Acessibilidade
+- Responsividade mobile (continuar aprimorando v1.1.0)
+- Novas animações e transições
+- Temas alternativos (dark/light mode)
+- Acessibilidade (WCAG 2.1)
 
 #### 3. 🔧 Funcionalidades Técnicas
 - Otimizações de performance
-- Novos formatos de importação
-- Sistema de save/load
+- Novos formatos de importação/exportação
+- Sistema de save/load de sessões
 - Modo debug avançado
+- Novas conquistas para o quiz
+- Melhorias no sistema de leaderboard
+
+#### 4. 🏆 Quiz e Gamificação (⭐ Novo v1.1.0)
+- Adicionar novas conquistas criativas
+- Criar sistema de badges e níveis
+- Implementar desafios diários/semanais
+- Analytics avançados de desempenho
+- Integração com redes sociais (compartilhar scores)
 
 #### 4. 🧪 Testes e Qualidade
 - Testes automatizados
@@ -1050,23 +1325,23 @@ Ao usar este projeto, pedimos que mantenha:
 ### 📧 Contato Direto
 
 #### **Redes Sociais**
-- **Twitter**: [@SapManProject](https://twitter.com/sapmanproject)
-- **YouTube**: [Canal SapMan](https://youtube.com/sapman)
-- **LinkedIn**: [Página do Projeto](https://linkedin.com/company/sapman)
+- **GitHub**: [github.com/usuario/ProjetoSap](https://github.com/usuario/ProjetoSap)
+- **Twitter**: [@ProjetoSap](https://twitter.com/projetosap)
+- **YouTube**: [Canal Projeto SAP](https://youtube.com/projetosap)
 
 ### 🎓 Uso Educacional
 
 #### **Para Professores**
-- **Kit Didático**: Materiais complementares
-- **Planos de Aula**: Sugestões de uso
-- **Avaliações**: Exercícios e rubricas
+- **Kit Didático**: Materiais complementares para sala de aula
+- **Planos de Aula**: Sugestões de uso com emulador e quiz
+- **Avaliações**: Exercícios baseados no quiz gamificado (v1.1.0)
 - **Suporte**: Treinamento e consultoria
 
 #### **Para Estudantes**
-- **Tutoriais**: Guias de aprendizado
-- **Exercícios**: Práticas adicionais
-- **Fórum**: Discussões e dúvidas
-- **Certificados**: Completar desafios
+- **Tutoriais**: Guias de aprendizado passo a passo
+- **Quiz Interativo**: Sistema gamificado com conquistas (v1.1.0)
+- **Exercícios**: Práticas com programas SAP-1
+- **Desafios**: Desbloqueie todas as conquistas e entre no Top 10!
 
 ---
 
@@ -1074,37 +1349,71 @@ Ao usar este projeto, pedimos que mantenha:
 
 ### 📅 Roadmap
 
-#### **v1.1.0** - *Próxima Release*
-- [ ] Modo dark/light theme
-- [ ] Export de programas em múltiplos formatos
-- [ ] Sistema de achievements no quiz
-- [ ] Tutorial interativo integrado
-- [ ] Suporte a touch/mobile melhorado
+#### **v1.2.0** - *Próxima Release*
+- [ ] Modo dark/light theme global
+- [ ] Sistema de níveis e badges avançados
+- [ ] Desafios diários/semanais no quiz
+- [ ] Analytics avançados de desempenho
+- [ ] PWA (Progressive Web App) para instalação offline
 
-#### **v1.2.0** - *Planejado*
+#### **v1.3.0** - *Planejado*
 - [ ] Debugger avançado com breakpoints
 - [ ] Simulação de múltiplos processadores
-- [ ] Editor de código assembly visual
+- [ ] Editor de código assembly visual com syntax highlight
 - [ ] Integração com GitHub Classroom
-- [ ] API para extensões
+- [ ] API para extensões e plugins
 
 #### **v2.0.0** - *Futuro*
 - [ ] SAP-2 e SAP-3 completos
 - [ ] Modo colaborativo em tempo real
-- [ ] IA para ajuda contextual
+- [ ] IA para ajuda contextual e sugestões
 - [ ] Realidade virtual/aumentada
 - [ ] Plataforma LMS integrada
 
 ### 📋 Changelog
 
+#### **v1.1.0** - *Quiz Gamificado* (2024-12-XX) ⭐
+##### ✨ Novas Funcionalidades
+- ✅ **Quiz em Modo Infinito**: Perguntas aleatórias até perder 3 vidas
+- ✅ **Banco de Perguntas Externo**: JSON configurável com 100+ questões
+- ✅ **Sistema de Conquistas**: 6 achievements com progresso em tempo real
+- ✅ **Placar de Líderes Top 10**: Classificação global com medalhas e modal de save
+- ✅ **Export Múltiplo**: TXT, JSON, CSV para análise de resultados
+- ✅ **Tutorial Interativo**: Overlay com instruções passo a passo
+- ✅ **Responsividade Completa**: Layout adaptado para mobile e touch
+- ✅ **Seed de Leaderboard**: 6 jogadores iniciais pré-carregados
+
+##### 🎨 Melhorias de Design
+- ✅ **Gradientes Modernos**: Botões e painéis com degradê escuro (180deg)
+- ✅ **Bordas Leves**: 2px com transparência (rgba) para visual clean
+- ✅ **Sombras e Profundidade**: box-shadow em modals, cards e botões
+- ✅ **Modal Estilizado**: Backdrop blur com efeito glassmorphism
+- ✅ **Toast Notifications**: Feedback visual de ações (save, export)
+- ✅ **Estados de Botão**: Feedback hover, active, correto/errado
+
+##### 🏗️ Arquitetura
+- ✅ **Dados Externos**: questions.json e achievements.json em assets/data/
+- ✅ **Fallback Automático**: Perguntas e conquistas padrão caso JSON falhe
+- ✅ **Persistência Dupla**: localStorage + cookies (30 dias)
+- ✅ **Layout Vertical**: Quiz acima, painéis abaixo em grid responsivo
+- ✅ **Box-Sizing Global**: border-box para todos os elementos
+- ✅ **Overflow Control**: overflow-x: hidden para evitar scroll horizontal
+
+##### 🐛 Correções
+- ✅ **Responsividade**: Elementos não escapam mais do container
+- ✅ **Grid de Conquistas**: Reduzido de 4 para 3 colunas (desktop)
+- ✅ **Atualização de Placar**: Instantânea após save (sem reload)
+- ✅ **Renderização de Opções**: Sempre exibe 4 opções corretamente
+- ✅ **Progresso de Conquistas**: Cálculo correto de streak, precisão, etc.
+
 #### **v1.0.0** - *Lançamento Inicial* (2024-12-29)
 ##### ✨ Funcionalidades
 - ✅ Emulador SAP-1 completo e funcional
 - ✅ Interface visual com tema Pac-Man
-- ✅ Sistema de quiz adaptativo
+- ✅ Sistema de quiz básico com 13+ perguntas
 - ✅ Material didático abrangente
 - ✅ Importação de programas CSV/TXT
-- ✅ Animações em tempo real
+- ✅ Animações em tempo real do barramento
 - ✅ Controles de execução (passo/automático)
 - ✅ Editor de memória interativo
 - ✅ Página da equipe e informações
@@ -1113,6 +1422,145 @@ Ao usar este projeto, pedimos que mantenha:
 - ✅ HTML5 semântico e acessível
 - ✅ CSS3 com Grid e Flexbox
 - ✅ JavaScript ES6+ vanilla
+- ✅ Chart.js para gráficos de desempenho
+- ✅ Google Fonts: "Press Start 2P"
+
+##### 📚 Documentação
+- ✅ README completo com exemplos
+- ✅ Comentários no código
+- ✅ Exemplos de programas SAP-1
+
+---
+
+## 🏆 Créditos
+
+### 👨‍💻 Equipe de Desenvolvimento
+
+Desenvolvido com ❤️ por estudantes e entusiastas de arquitetura de computadores.
+
+Visite a página [Equipe SAP](equipesap.html) para conhecer os desenvolvedores!
+
+### 📖 Referências Acadêmicas
+
+Este projeto é baseado no trabalho de **Albert Paul Malvino**, especialmente seu livro:
+- **Malvino, A. P.** (1993). *Digital Computer Electronics*. McGraw-Hill.
+
+### 🌟 Agradecimentos Especiais
+
+#### **Comunidade Educacional**
+- Professores que testaram o projeto
+- Estudantes que forneceram feedback valioso
+- Desenvolvedores de software educacional
+- Comunidade open-source
+
+#### **Inspirações Técnicas**
+- **Pac-Man**: Namco (tema visual retro)
+- **Malvino**: Base acadêmica sólida para SAP-1
+- **Ben Eater**: Vídeos educacionais sobre computadores de 8 bits
+- **Nand2Tetris**: Projeto educacional inspirador
+
+#### **Apoio Técnico**
+- **MDN Web Docs**: Documentação técnica completa
+- **Chart.js**: Biblioteca de gráficos
+- **Google Fonts**: Fonte "Press Start 2P"
+- **Stack Overflow**: Resolução de problemas
+- **GitHub Community**: Boas práticas de desenvolvimento
+- **W3C**: Padrões web modernos
+
+### 📖 Bibliografia Adicional
+
+1. **Malvino, A. P.** (1993). *Digital Computer Electronics*. McGraw-Hill.
+2. **Patterson, D. A., & Hennessy, J. L.** (2020). *Computer Organization and Design*. Morgan Kaufmann.
+3. **Tanenbaum, A. S.** (2013). *Structured Computer Organization*. Pearson.
+4. **Stallings, W.** (2018). *Computer Organization and Architecture*. Pearson.
+5. **Null, L., & Lobur, J.** (2014). *The Essentials of Computer Organization and Architecture*. Jones & Bartlett.
+
+---
+
+## 📞 Contato e Suporte
+
+### 🆘 Suporte Técnico
+
+#### **Issues no GitHub**
+- **URL**: https://github.com/usuario/ProjetoSap/issues
+- **Tempo de Resposta**: 24-48 horas
+- **Tipos**: Bugs, dúvidas, sugestões, melhorias
+
+#### **Documentação**
+- **README**: Documentação principal (este arquivo)
+- **Wiki**: https://github.com/usuario/ProjetoSap/wiki
+- **FAQ**: Perguntas frequentes e troubleshooting
+- **Tutoriais**: Guias passo a passo para usar o emulador e quiz
+
+---
+
+## 📜 Licença
+
+Este projeto é licenciado sob a [MIT License](LICENSE).
+
+```
+MIT License
+
+Copyright (c) 2024 Projeto SAP
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
+
+## 🎯 Resumo Executivo
+
+**Projeto SAP** é uma plataforma educacional interativa para aprendizado de arquitetura de computadores através do emulador SAP-1 (Simple As Possible). Combinando simulação visual, material didático e sistema de quiz gamificado (**v1.1.0**), o projeto oferece uma experiência completa e envolvente para estudantes e entusiastas.
+
+### ✨ Destaques v1.1.0
+- 🎮 **Quiz Infinito**: Modo gamificado com vidas e pontuação
+- 🏆 **6 Conquistas**: Sistema de achievements com progresso em tempo real
+- 🥇 **Top 10 Global**: Placar de líderes com medalhas e persistência
+- 📦 **Export TXT/JSON/CSV**: Análise completa de resultados
+- 📱 **100% Responsivo**: Interface adaptada para mobile e touch
+- 🎨 **Design Moderno**: Gradientes escuros, sombras e animações
+
+### 🚀 Como Começar
+1. Clone o repositório: `git clone https://github.com/usuario/ProjetoSap.git`
+2. Inicie servidor local: `python -m http.server 8000`
+3. Acesse: `http://localhost:8000`
+4. Explore o emulador SAP-1 e desafie-se no quiz!
+
+### 🎓 Público-Alvo
+- Estudantes de Ciência da Computação e Engenharia
+- Professores de Arquitetura de Computadores
+- Entusiastas de hardware e retrocomputação
+- Autodidatas em busca de aprendizado prático
+
+---
+
+<div align="center">
+
+**[⬆ Voltar ao Topo](#-projeto-sap---emulador-educacional-do-processador-sap-1)**
+
+Feito com 💛 e muito ☕ | © 2024 Projeto SAP
+
+[![Stars](https://img.shields.io/github/stars/usuario/ProjetoSap?style=social)](https://github.com/usuario/ProjetoSap)
+[![Forks](https://img.shields.io/github/forks/usuario/ProjetoSap?style=social)](https://github.com/usuario/ProjetoSap/fork)
+[![Issues](https://img.shields.io/github/issues/usuario/ProjetoSap)](https://github.com/usuario/ProjetoSap/issues)
+
+</div>
 - ✅ Design responsivo
 - ✅ Performance otimizada
 
