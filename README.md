@@ -101,13 +101,13 @@ O SAP-1 é um processador didático de 8 bits criado por **Albert Paul Malvino**
 - **Persistência**: Salvamento em localStorage + cookies (30 dias)
 
 ### 📊 Placar de Líderes
-- **Top 10 Global**: Classificação por pontuação e data
+- **Top 10 Global (via API opcional)**: Classificação por pontuação e data; usa API remota quando disponível (ex.: Vercel KV)
 - **Medalhas**: 🥇🥈🥉 para os 3 primeiros lugares
 - **Modal de Salvamento**: Interface moderna para inserir nome
 - **Toast de Confirmação**: Feedback visual ao salvar
 - **Atualização Instantânea**: Sem necessidade de reload
 - **Placeholders**: Linhas fictícias até completar 10 posições
-- **Seed Inicial**: 6 jogadores exemplo para demonstração
+- **Sem Seed Estático**: Não há jogadores de exemplo — a lista fica vazia até salvar/receber dados da API
 
 ### 📦 Export de Dados
 - **Formato TXT**: Estatísticas legíveis em texto plano
@@ -312,14 +312,14 @@ Observação: o `60` (JMP 0) salta para o endereço 0 e pode formar laço ao exe
 - **Grid Responsivo**: 3 colunas → 2 → 1 (mobile)
 
 #### Placar de Líderes 🥇
-- **Top 10 Global**: Classificação por pontuação (descendente) e data
+- **Top 10 Global (API)**: Usa um endpoint remoto opcional para persistir e compartilhar placar entre máquinas (ex.: Vercel)
 - **Medalhas**: 🥇 (1º), 🥈 (2º), 🥉 (3º)
 - **Modal de Salvamento**: Interface moderna para inserir nome do jogador
 - **Toast de Confirmação**: "✅ [Nome] adicionado ao placar!"
 - **Atualização Instantânea**: Sem necessidade de recarregar a página
 - **Placeholders**: Linhas fictícias (---) até completar 10 posições
-- **Seed Inicial**: 6 jogadores exemplo (Ana, Bruno, Carla, Diego, Elisa, Felipe)
-- **Persistência Dupla**: localStorage + cookies
+- **Sem Seed Estático**: Lista inicia vazia; preenchida pela API ou por salvamentos do usuário
+- **Persistência**: Global via API quando disponível; fallback local se offline
 
 #### Export de Resultados 📦
 - **TXT**: Estatísticas legíveis em texto plano
@@ -1645,6 +1645,63 @@ Publicação:
 
 - ✅ Design responsivo
 - ✅ Performance otimizada
+
+---
+
+## 🌐 Hospedar só a API (Vercel) e o site em outro lugar
+
+Você pode manter o site estático (HTML/CSS/JS) em qualquer hospedagem (GitHub Pages, Netlify, servidor próprio) e hospedar apenas a API do placar na Vercel.
+
+### 1) Subir apenas a API na Vercel (serverless + KV)
+
+- A pasta `api/` já contém `api/leaderboard.mjs` pronto para rodar como Function.
+- No painel da Vercel:
+  1. Crie um novo projeto apontando para este repositório (ou copie só a pasta `api/`).
+  2. Em “Storage”, crie um banco **Vercel KV** e vincule ao projeto.
+  3. Faça o deploy. O endpoint ficará assim: `https://SEU-PROJETO.vercel.app/api/leaderboard`.
+
+Observações:
+- O handler já responde com CORS liberado (GET/POST/OPTIONS), então pode ser chamado de qualquer origem.
+- Para testes locais, você pode usar o servidor Express (`server.mjs`) com `http://localhost:8000/api/leaderboard`.
+
+### 2) Hospedar o site estático (HTML/CSS/JS)
+
+- Gere a pasta `dist/` (opcional, minificada) e publique em:
+  - GitHub Pages (branch `gh-pages` ou `docs/`),
+  - Netlify,
+  - Qualquer servidor estático.
+
+### 3) Apontar o frontend para a API remota
+
+O frontend agora aceita configurar o endpoint do placar de forma flexível. Escolha uma das opções a seguir (na ordem de prioridade):
+
+1. Parâmetro de URL (mais rápido, sem editar código):
+  - Acesse o quiz com: `https://SEU-SITE/quiz.html?lbApi=https://SEU-PROJETO.vercel.app/api/leaderboard`
+  - A URL será lembrada em `localStorage` para as próximas visitas.
+
+2. Variável global antes de `assets/js/quiz.js`:
+  ```html
+  <script>
+    window.LEADERBOARD_API = 'https://SEU-PROJETO.vercel.app/api/leaderboard';
+  </script>
+  <script src="assets/js/quiz.js"></script>
+  ```
+
+3. Meta tag no `<head>`:
+  ```html
+  <meta name="leaderboard-api" content="https://SEU-PROJETO.vercel.app/api/leaderboard" />
+  ```
+
+4. Fallbacks automáticos (caso nada seja configurado):
+  - Tenta `same-origin` → `/api/leaderboard`.
+  - Tenta `http://localhost:8000/api/leaderboard` (modo desenvolvimento).
+
+### 4) CORS
+
+- A API serverless (Vercel) já inclui cabeçalhos CORS: `Access-Control-Allow-Origin: *`, `Allow-Methods: GET,POST,OPTIONS`, `Allow-Headers: Content-Type`.
+- O servidor Express local também habilita CORS por padrão (`cors()`).
+
+Pronto! Assim você mantém o site onde quiser e usa um placar global compartilhado via Vercel KV.
 
 ##### 📚 Documentação
 - ✅ README.md completo e detalhado

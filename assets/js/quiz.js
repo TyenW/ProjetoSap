@@ -457,16 +457,66 @@ function showAchievementToast(title) {
 // Leaderboard compartilhado via API + fallback local
 const LEADERBOARD_KEY = 'sap_quiz_leaderboard';
 const LEADERBOARD_API = '/api/leaderboard';
+const LEADERBOARD_API_OVERRIDE_KEY = 'sap_quiz_leaderboard_api';
 let LB_API_SELECTED = null; // endpoint escolhido dinamicamente
+
+function readApiOverrideFromQuery() {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const q = p.get('lbApi') || p.get('api');
+    if (q && /^https?:\/\//i.test(q)) {
+      // persiste para próximas visitas
+      try { localStorage.setItem(LEADERBOARD_API_OVERRIDE_KEY, q); } catch(_) {}
+      return q;
+    }
+  } catch(_) {}
+  return null;
+}
+
+function readApiOverrideFromStorage() {
+  try { return localStorage.getItem(LEADERBOARD_API_OVERRIDE_KEY); } catch(_) { return null; }
+}
+
+function readApiOverrideFromWindow() {
+  try { return (typeof window.LEADERBOARD_API === 'string' && window.LEADERBOARD_API) ? window.LEADERBOARD_API : null; } catch(_) { return null; }
+}
+
+function readApiOverrideFromMeta() {
+  try {
+    const m = document.querySelector('meta[name="leaderboard-api"]');
+    return m && m.content ? m.content : null;
+  } catch(_) { return null; }
+}
+
+function getApiCandidates() {
+  const candidates = [];
+  // 1) URL param (highest priority)
+  const q = readApiOverrideFromQuery();
+  if (q) candidates.push(q);
+  // 2) localStorage override
+  const s = readApiOverrideFromStorage();
+  if (s) candidates.push(s);
+  // 3) window global
+  const w = readApiOverrideFromWindow();
+  if (w) candidates.push(w);
+  // 4) meta tag
+  const mt = readApiOverrideFromMeta();
+  if (mt) candidates.push(mt);
+  // 5) same-origin relative
+  try { candidates.push(new URL(LEADERBOARD_API, window.location.origin).href); } catch(_) {}
+  // 6) localhost dev
+  candidates.push('http://localhost:8000/api/leaderboard');
+  // dedup while keeping order
+  const seen = new Set();
+  return candidates.filter(u => { if (!u) return false; const k = u.trim(); if (seen.has(k)) return false; seen.add(k); return true; });
+}
 
 async function pickLeaderboardApi() {
   if (LB_API_SELECTED) return LB_API_SELECTED;
-  const candidates = [];
-  try { candidates.push(new URL(LEADERBOARD_API, window.location.origin).href); } catch(_) {}
-  candidates.push('http://localhost:8000/api/leaderboard');
+  const candidates = getApiCandidates();
   for (const url of candidates) {
     try {
-      const resp = await fetch(url, { method: 'GET', cache: 'no-store' });
+      const resp = await fetch(url, { method: 'GET', cache: 'no-store', mode: 'cors' });
       if (resp.ok) { LB_API_SELECTED = url; return url; }
     } catch (_) { /* tenta próximo */ }
   }
@@ -494,6 +544,7 @@ async function remoteSaveLeaderboard(name, score) {
     const resp = await fetch(api, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      mode: 'cors',
       body: JSON.stringify({ name, score })
     });
     if (!resp.ok) throw new Error('http ' + resp.status);

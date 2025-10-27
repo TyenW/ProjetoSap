@@ -18,6 +18,14 @@ async function saveList(list) {
 }
 
 export default async function handler(req, res) {
+  // CORS headers to allow frontend hosted elsewhere
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
   try {
     if (req.method === 'GET') {
       const list = await getList();
