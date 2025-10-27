@@ -1668,6 +1668,19 @@ Se você estiver fazendo um deploy SOMENTE da API, pode adicionar um `vercel.jso
 
 Se você pretende hospedar o site completo (frontend + API) na Vercel, NÃO utilize esse redirect — deixe sem `redirects` para que a Vercel sirva seu `index.html` na raiz normalmente.
 
+### Dica importante (deploy do site completo na Vercel)
+
+Se o projeto contém um arquivo `server.mjs` na raiz (útil para desenvolvimento local), a Vercel pode tentar tratá-lo como entrada de servidor e não servir os arquivos estáticos como esperado. Para evitar isso ao hospedar o site completo:
+
+1. Crie um arquivo `.vercelignore` na raiz do repositório.
+2. Adicione a linha abaixo dentro dele:
+
+```
+server.mjs
+```
+
+Isso instrui a Vercel a ignorar `server.mjs` no deploy, garantindo que a URL raiz (`/`) sirva seu `index.html`. A API continuará disponível normalmente em `/api/leaderboard` (pasta `api/`).
+
 ### 2) Hospedar o site estático (HTML/CSS/JS)
 
 - Gere a pasta `dist/` (opcional, minificada) e publique em:
