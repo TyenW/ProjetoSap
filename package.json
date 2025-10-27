@@ -1,12 +1,18 @@
 {
   "name": "projetosap",
-  "version": "0.1.0",
+  "version": "1.2.0",
   "private": true,
-  "description": "Build/minify pipeline for ProjetoSap static site",
+  "description": "Emulador SAP-1 com quiz e leaderboard compartilhado",
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
-    "clean": "powershell -NoProfile -Command \"Remove-Item -Recurse -Force dist 2>$null; exit 0\""
+    "clean": "powershell -NoProfile -Command \"Remove-Item -Recurse -Force dist 2>$null; exit 0\"",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "@vercel/kv": "^1.0.0"
   },
   "devDependencies": {
     "cssnano": "^6.1.2",

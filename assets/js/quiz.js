@@ -457,10 +457,27 @@ function showAchievementToast(title) {
 // Leaderboard compartilhado via API + fallback local
 const LEADERBOARD_KEY = 'sap_quiz_leaderboard';
 const LEADERBOARD_API = '/api/leaderboard';
+let LB_API_SELECTED = null; // endpoint escolhido dinamicamente
+
+async function pickLeaderboardApi() {
+  if (LB_API_SELECTED) return LB_API_SELECTED;
+  const candidates = [];
+  try { candidates.push(new URL(LEADERBOARD_API, window.location.origin).href); } catch(_) {}
+  candidates.push('http://localhost:8000/api/leaderboard');
+  for (const url of candidates) {
+    try {
+      const resp = await fetch(url, { method: 'GET', cache: 'no-store' });
+      if (resp.ok) { LB_API_SELECTED = url; return url; }
+    } catch (_) { /* tenta próximo */ }
+  }
+  return null;
+}
 
 async function remoteLoadLeaderboard() {
   try {
-    const resp = await fetch(LEADERBOARD_API, { cache: 'no-store' });
+    const api = await pickLeaderboardApi();
+    if (!api) throw new Error('api indisponível');
+    const resp = await fetch(api, { cache: 'no-store' });
     if (!resp.ok) throw new Error('http ' + resp.status);
     const data = await resp.json();
     return Array.isArray(data) ? data : [];
@@ -472,7 +489,9 @@ async function remoteLoadLeaderboard() {
 
 async function remoteSaveLeaderboard(name, score) {
   try {
-    const resp = await fetch(LEADERBOARD_API, {
+    const api = await pickLeaderboardApi();
+    if (!api) throw new Error('api indisponível');
+    const resp = await fetch(api, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, score })
@@ -487,33 +506,12 @@ async function remoteSaveLeaderboard(name, score) {
 }
 
 function localLoadLeaderboard() {
-  try {
-    const fromCookie = getCookie(LEADERBOARD_KEY);
-    if (fromCookie && Array.isArray(fromCookie)) return fromCookie;
-    return JSON.parse(lsGet(LEADERBOARD_KEY, '[]'));
-  } catch (e) { return []; }
+  // Fallback desativado para evitar dados estáticos locais; exibir vazio
+  return [];
 }
 
 // Preenche o placar com exemplos se estiver vazio (apenas primeira carga)
-function seedLeaderboardIfEmpty() {
-  // Apenas para fallback local; não semeia remoto
-  const existing = localLoadLeaderboard();
-  if (existing && existing.length > 0) return;
-  const now = Date.now();
-  const base = [
-    { name: 'Ana', score: 28 },
-    { name: 'Bruno', score: 24 },
-    { name: 'Carla', score: 22 },
-    { name: 'Diego', score: 19 },
-    { name: 'Elisa', score: 16 },
-    { name: 'Felipe', score: 14 },
-  ];
-  const seeded = base.map((e, i) => ({ ...e, date: new Date(now - (i+1)*24*60*60*1000).toISOString() }));
-  seeded.sort((a,b)=> b.score - a.score || new Date(a.date) - new Date(b.date));
-  const top = seeded.slice(0,10);
-  lsSet(LEADERBOARD_KEY, JSON.stringify(top));
-  try { setCookie(LEADERBOARD_KEY, top, 30); } catch(e){}
-}
+function seedLeaderboardIfEmpty() { /* removido: sem mais seed estático */ }
 
 async function saveToLeaderboard(name, score) {
   // Tenta salvar no servidor; se falhar, usa local
@@ -735,7 +733,6 @@ endQuiz = function() {
 // Inicialização adicional
 // Carrega dados externos primeiro, depois inicializa o quiz
 loadExternalData().then(()=>{
-  seedLeaderboardIfEmpty();
   attachTouchHandlers();
   renderLeaderboard();
   renderAchievementsList();
@@ -743,7 +740,6 @@ loadExternalData().then(()=>{
   startQuiz();
 }).catch(err=>{
   console.warn('Erro na inicialização dos dados externos', err);
-  seedLeaderboardIfEmpty();
   attachTouchHandlers();
   renderLeaderboard();
   renderAchievementsList();
