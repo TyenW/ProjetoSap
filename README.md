@@ -232,6 +232,18 @@ ProjetoSap/
 - **🎚️ Controle de Velocidade**: Ajusta velocidade da animação (100-2000ms)
 - **🔊 Toggle Áudio**: Liga/desliga música de fundo
 
+#### Indicador de Estados T (T1–T6) — novo
+- Visualização explícita dos microestados do ciclo de instrução (T1 → T6)
+- Barra de passos com realce do estado atual e acessibilidade (aria-valuenow)
+- Sincronizado com a velocidade: T1–T3 durante a busca (fetch), T4–T6 durante a execução
+- Integração com animações já existentes (PC, RAM, RI, Controlador, ACC, ALU)
+
+#### Destaque do Preview 4×4 da RAM — novo
+- Em modo Assembly, o preview 4×4 destaca a célula acessada:
+  - Durante fetch: endereço do PC
+  - Durante execução de LDA/ADD/SUB/MUL: endereço do operando
+- O destaque pulsa brevemente, acompanhando a animação visual do ciclo
+
 ### 2. 🧮 Editor de Memória
 
 #### Características
@@ -240,6 +252,41 @@ ProjetoSap/
 - **Validação de entrada**: Apenas valores hexadecimais válidos (00-FF)
 - **Destaque visual**: Posição atual em execução
 - **Botões auxiliares**: Limpar, carregar exemplos pré-definidos
+
+#### 2.1 ✍️ Editor Assembly (novo)
+- Alternância de modo: “Editar RAM” ↔ “Editar Assembly” comutável na UI
+- Montagem automática ao digitar (sem botão), com mensagens de erro amigáveis
+- Sintaxe aceita no editor:
+  - Mnemônicos: LDA, ADD, SUB, MUL, INC, DEC, JMP, OUT, HLT
+  - Operandos: 0–F (hex), 0–15 (decimal) ou 0xN (ex.: 0xA)
+  - Bytes hex diretos (2 dígitos): 0A, 1B, 2C, 30, 40, 5D, 6F, E0, F0
+  - Diretivas de dados (endereçamento explícito):
+    - Formatos suportados: "A 05", "A=05", "A:05", "A, 05" (hex ou decimal)
+    - Endereço: 0–F (hex) ou 0–15 (decimal)
+    - Valor: 00–FF (hex) ou 0–255 (decimal)
+- Estratégia de montagem:
+  - Primeiro aplica diretivas nos endereços solicitados
+  - Depois aloca instruções sequencialmente nas posições livres
+- Visualização alternável na mesma área: em modo RAM mostra “Assembly em tempo real”; em modo ASM mostra “Memória RAM 4×4” em tempo real
+
+Exemplo de teste (cobre todos os opcodes; propósito didático):
+
+```
+0A
+1B
+SUB C
+50
+INC
+DEC
+60
+E0
+F0
+A 05
+B 03
+C 01
+```
+
+Observação: o `60` (JMP 0) salta para o endereço 0 e pode formar laço ao executar tudo; use como teste de aceitação das instruções. Ajuste o destino se quiser evitar loop.
 
 ### 3. 📝 Sistema de Quiz Gamificado
 
