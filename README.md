@@ -1681,25 +1681,17 @@ server.mjs
 
 Isso instrui a Vercel a ignorar `server.mjs` no deploy, garantindo que a URL raiz (`/`) sirva seu `index.html`. A API continuará disponível normalmente em `/api/leaderboard` (pasta `api/`).
 
-Além disso, inclua um `vercel.json` para indicar à Vercel como construir e servir o site estático e as funções serverless:
+Além disso, inclua um `vercel.json` simples para a Vercel construir e servir a pasta estática `dist/` (as funções em `api/` são detectadas automaticamente):
 
 ```json
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "builds": [
-    { "src": "api/**/*.mjs", "use": "@vercel/node" },
-    { "src": "dist/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/dist/$1" }
-  ]
+  "outputDirectory": "dist"
 }
 ```
 
-Isso elimina o erro “No entrypoint found” e garante que `/` sirva o conteúdo de `dist/` após o build, mantendo a API disponível em `/api/*`.
+Isso elimina o erro “No entrypoint found” e garante que `/` sirva o conteúdo de `dist/` após o build. A API permanece disponível em `/api/*` (pasta `api/`).
 
 ### 2) Hospedar o site estático (HTML/CSS/JS)
 
