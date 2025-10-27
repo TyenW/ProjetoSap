@@ -1,7 +1,7 @@
  # 🎮 SapMan - Emulador SAP-1 Interativo
 
 <div align="center">
-  <img src="assets/img/logo.png" alt="SapMan Logo" width="200"/>
+  <img src="/assets/img/logo.png" alt="SapMan Logo" width="200"/>
   
   [![Status](https://img.shields.io/badge/Status-Ativo-brightgreen)](https://github.com/user/sapman)
   [![Versão](https://img.shields.io/badge/Versão-1.1.0-blue)](https://github.com/user/sapman)

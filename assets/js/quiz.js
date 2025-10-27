@@ -454,20 +454,50 @@ function showAchievementToast(title) {
   setTimeout(() => { toast.classList.remove('visible'); setTimeout(()=>toast.remove(),400); }, 3500);
 }
 
-// Leaderboard top-3 salvo em localStorage
+// Leaderboard compartilhado via API + fallback local
 const LEADERBOARD_KEY = 'sap_quiz_leaderboard';
-function loadLeaderboard() {
+const LEADERBOARD_API = '/api/leaderboard';
+
+async function remoteLoadLeaderboard() {
+  try {
+    const resp = await fetch(LEADERBOARD_API, { cache: 'no-store' });
+    if (!resp.ok) throw new Error('http ' + resp.status);
+    const data = await resp.json();
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.warn('remoteLoadLeaderboard falhou, usando local:', e.message || e);
+    return null; // sinaliza fallback
+  }
+}
+
+async function remoteSaveLeaderboard(name, score) {
+  try {
+    const resp = await fetch(LEADERBOARD_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, score })
+    });
+    if (!resp.ok) throw new Error('http ' + resp.status);
+    const data = await resp.json();
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.warn('remoteSaveLeaderboard falhou, fallback local:', e.message || e);
+    return null;
+  }
+}
+
+function localLoadLeaderboard() {
   try {
     const fromCookie = getCookie(LEADERBOARD_KEY);
     if (fromCookie && Array.isArray(fromCookie)) return fromCookie;
     return JSON.parse(lsGet(LEADERBOARD_KEY, '[]'));
-  }
-  catch (e) { return []; }
+  } catch (e) { return []; }
 }
 
 // Preenche o placar com exemplos se estiver vazio (apenas primeira carga)
 function seedLeaderboardIfEmpty() {
-  const existing = loadLeaderboard();
+  // Apenas para fallback local; não semeia remoto
+  const existing = localLoadLeaderboard();
   if (existing && existing.length > 0) return;
   const now = Date.now();
   const base = [
@@ -479,24 +509,28 @@ function seedLeaderboardIfEmpty() {
     { name: 'Felipe', score: 14 },
   ];
   const seeded = base.map((e, i) => ({ ...e, date: new Date(now - (i+1)*24*60*60*1000).toISOString() }));
-  // ordenar e manter top-10 por consistência
   seeded.sort((a,b)=> b.score - a.score || new Date(a.date) - new Date(b.date));
   const top = seeded.slice(0,10);
   lsSet(LEADERBOARD_KEY, JSON.stringify(top));
   try { setCookie(LEADERBOARD_KEY, top, 30); } catch(e){}
 }
 
-function saveToLeaderboard(name, score) {
-  const lb = loadLeaderboard();
+async function saveToLeaderboard(name, score) {
+  // Tenta salvar no servidor; se falhar, usa local
+  const remote = await remoteSaveLeaderboard(name, score);
+  if (remote && Array.isArray(remote)) {
+    renderLeaderboard(remote);
+    showSaveToast(`${name} adicionado ao placar (global)!`);
+    return;
+  }
+  const lb = localLoadLeaderboard();
   lb.push({ name: name || '---', score, date: new Date().toISOString() });
   lb.sort((a,b)=> b.score - a.score || new Date(a.date) - new Date(b.date));
-  const top = lb.slice(0,10); // manter top-10
+  const top = lb.slice(0,10);
   lsSet(LEADERBOARD_KEY, JSON.stringify(top));
   try { setCookie(LEADERBOARD_KEY, top, 30); } catch(e){}
-  // Atualizar imediatamente após salvar (sem reload)
-  renderLeaderboard();
-  // Toast de confirmação
-  showSaveToast(`${name} adicionado ao placar!`);
+  renderLeaderboard(top);
+  showDataAlert('Servidor indisponível. Placar salvo localmente nesta máquina.', 'warn');
 }
 
 function showSaveToast(message) {
@@ -508,10 +542,11 @@ function showSaveToast(message) {
   setTimeout(() => { toast.classList.remove('visible'); setTimeout(()=>toast.remove(),400); }, 2800);
 }
 
-function renderLeaderboard() {
+async function renderLeaderboard(providedList) {
   const container = document.getElementById('leaderboard');
   if (!container) return;
-  const lb = loadLeaderboard();
+  let lb = Array.isArray(providedList) ? providedList : (await remoteLoadLeaderboard());
+  if (!Array.isArray(lb)) lb = localLoadLeaderboard();
   const medals = ['🥇','🥈','🥉'];
   // completar com linhas fictícias até 10
   const filled = [...lb];
