@@ -28,18 +28,56 @@ const DEFAULT_QUESTIONS = [
 let TRI_MODE = 'infinite';
 
 // Carrega dados externos (questions.json e achievements.json)
+function showDataAlert(text, tone = 'warn') {
+  try {
+    // Prefer a dedicated message area in the quiz
+    const msg = document.getElementById('message');
+    if (msg) {
+      msg.textContent = text;
+      msg.style.color = tone === 'error' ? '#ff6b6b' : '#ffb347';
+      return;
+    }
+    // Fallback: lightweight floating banner
+    let banner = document.getElementById('quiz-data-alert');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'quiz-data-alert';
+      banner.setAttribute('role', 'alert');
+      banner.style.position = 'fixed';
+      banner.style.top = '8px';
+      banner.style.left = '50%';
+      banner.style.transform = 'translateX(-50%)';
+      banner.style.zIndex = 9999;
+      banner.style.padding = '10px 14px';
+      banner.style.borderRadius = '8px';
+      banner.style.fontFamily = 'inherit';
+      banner.style.fontSize = '0.9rem';
+      banner.style.boxShadow = '0 2px 10px rgba(0,0,0,0.4)';
+      document.body.appendChild(banner);
+    }
+    banner.style.background = tone === 'error' ? '#7a1f1f' : '#7a5a1f';
+    banner.style.color = '#fff';
+    banner.textContent = text;
+    // Auto-hide after 6s
+    clearTimeout(banner._timer);
+    banner._timer = setTimeout(()=> banner.remove(), 6000);
+  } catch (_) { /* ignore */ }
+}
+
 async function loadExternalData() {
   try {
-    const qResp = await fetch('assets/data/questions.json');
+    const qResp = await fetch('assets/data/questions.json', { cache: 'no-store' });
     if (qResp.ok) {
       const qj = await qResp.json();
       if (Array.isArray(qj.questions)) allQuestions = qj.questions;
       else console.warn('questions.json não possui "questions" como array.');
     } else {
       console.warn('Falha HTTP ao buscar questions.json:', qResp.status, qResp.statusText);
+      showDataAlert(`Não foi possível carregar perguntas (HTTP ${qResp.status}). Usando perguntas padrão.`, 'warn');
     }
   } catch (e) {
     console.warn('Falha ao carregar questions.json, usando fallback interno se existir', e);
+    showDataAlert('Erro ao carregar questions.json (CORS/offline/JSON inválido). Usando perguntas padrão.', 'warn');
   }
   if (!allQuestions || allQuestions.length === 0) {
     console.warn('Usando perguntas padrão (fallback), verifique se assets/data/questions.json está acessível via HTTP e com JSON válido.');
@@ -47,16 +85,18 @@ async function loadExternalData() {
   }
 
   try {
-    const aResp = await fetch('assets/data/achievements.json');
+    const aResp = await fetch('assets/data/achievements.json', { cache: 'no-store' });
     if (aResp.ok) {
       const aj = await aResp.json();
       if (Array.isArray(aj.achievements)) masterAchievements = aj.achievements;
       else console.warn('achievements.json não possui "achievements" como array, usando fallback.');
     } else {
       console.warn('Falha HTTP ao buscar achievements.json:', aResp.status, aResp.statusText);
+      showDataAlert(`Não foi possível carregar conquistas (HTTP ${aResp.status}). Usando padrão.`, 'warn');
     }
   } catch (e) {
     console.warn('Falha ao carregar achievements.json', e);
+    showDataAlert('Erro ao carregar achievements.json (CORS/offline/JSON inválido). Usando conquistas padrão.', 'warn');
   }
 
   if (!masterAchievements || masterAchievements.length === 0) {
@@ -345,12 +385,31 @@ toggle.onclick = () => {
 
 // Achievements simples
 const ACHIEVEMENTS_KEY = 'sap_quiz_achievements';
+let _storageWarned = false;
+
+function lsGet(key, fallback = null) {
+  try {
+    const v = localStorage.getItem(key);
+    return v == null ? fallback : v;
+  } catch (e) {
+    if (!_storageWarned) { showDataAlert('Armazenamento desativado pelo navegador. Progresso pode não ser salvo.', 'warn'); _storageWarned = true; }
+    return fallback;
+  }
+}
+
+function lsSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    if (!_storageWarned) { showDataAlert('Armazenamento desativado pelo navegador. Progresso pode não ser salvo.', 'warn'); _storageWarned = true; }
+    return false;
+  }
+}
 function loadAchievements() {
   try {
-    return JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY) || '[]');
-  } catch (e) {
-    return [];
-  }
+    return JSON.parse(lsGet(ACHIEVEMENTS_KEY, '[]'));
+  } catch (_) { return []; }
 }
 
 // Cookie utilities (simples JSON wrapper)
@@ -380,7 +439,7 @@ function saveAchievement(id, title) {
   const unlocked = loadAchievements();
   if (!unlocked.find(a => a.id === id)) {
     unlocked.push({ id, title, date: new Date().toISOString() });
-    localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(unlocked));
+    lsSet(ACHIEVEMENTS_KEY, JSON.stringify(unlocked));
     try { setCookie(ACHIEVEMENTS_KEY, unlocked, 30); } catch(e){}
     showAchievementToast(title);
   }
@@ -401,7 +460,7 @@ function loadLeaderboard() {
   try {
     const fromCookie = getCookie(LEADERBOARD_KEY);
     if (fromCookie && Array.isArray(fromCookie)) return fromCookie;
-    return JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || '[]');
+    return JSON.parse(lsGet(LEADERBOARD_KEY, '[]'));
   }
   catch (e) { return []; }
 }
@@ -423,7 +482,7 @@ function seedLeaderboardIfEmpty() {
   // ordenar e manter top-10 por consistência
   seeded.sort((a,b)=> b.score - a.score || new Date(a.date) - new Date(b.date));
   const top = seeded.slice(0,10);
-  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(top));
+  lsSet(LEADERBOARD_KEY, JSON.stringify(top));
   try { setCookie(LEADERBOARD_KEY, top, 30); } catch(e){}
 }
 
@@ -432,7 +491,7 @@ function saveToLeaderboard(name, score) {
   lb.push({ name: name || '---', score, date: new Date().toISOString() });
   lb.sort((a,b)=> b.score - a.score || new Date(a.date) - new Date(b.date));
   const top = lb.slice(0,10); // manter top-10
-  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(top));
+  lsSet(LEADERBOARD_KEY, JSON.stringify(top));
   try { setCookie(LEADERBOARD_KEY, top, 30); } catch(e){}
   // Atualizar imediatamente após salvar (sem reload)
   renderLeaderboard();

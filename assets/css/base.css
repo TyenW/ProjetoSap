@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@300;400;700&display=swap');
+
+/* Base de estilos compartilhados do projeto */
+
+/* Paleta e variáveis globais */
+:root {
+  /* Paleta Pac-Man */
+  --azul-pacman: #0001a3;
+  --azul-escuro-pacman: #282863;
+  --amarelo-pacman: #ffd700; /* Unificado */
+  --preto-pacman: #0000;     /* Preto transparente (usado em overlays) */
+  --branco-pacman: #ffffff;
+
+  /* Cores utilitárias usadas no emulador */
+  --cor-fundo: #000000;
+  --cor-primaria: #ff0000;
+  --cor-secundaria: #00ff00;
+  --cor-destaque: #00ffff;
+  --cor-texto: #ffffff;
+
+  /* Altura do header para compensação de âncoras */
+  --header-height: 84px; /* ajuste fino em mobile abaixo */
+}
+
+/* Reset mínimo/coerência */
+html, body { height: 100%; }
+/* Rolagem suave e compensação para âncoras considerando o header fixo */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-height);
+}
+* { box-sizing: border-box; }
+
+/* Base tipográfica e fundo padrão do site */
+body {
+  background: url('../img/pacman.png') repeat;
+  color: var(--cor-texto);
+  font-family: 'Press Start 2P', cursive;
+  margin: 0;
+  padding: 0;
+  image-rendering: pixelated;
+  text-align: center;
+}
+
+/* Header / Navegação unificados */
+.header {
+  background: var(--azul-escuro-pacman);
+  border-bottom: 4px solid var(--amarelo-pacman);
+  padding: 16px;
+  font-size: 1em;
+  box-shadow: 0 8px #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-container { display: flex; align-items: center; }
+.logo { height: 48px; margin-right: 16px; }
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 24px;
+}
+
+button.li-btn {
+  font-family: 'Press Start 2P', cursive;
+  background: var(--amarelo-pacman);
+  border: 4px solid #333;
+  padding: 10px;
+  color: #000;
+  cursor: pointer;
+  margin: 8px;
+  transition: transform 0.2s, background 0.2s;
+  border-radius: 8px;
+}
+
+button.li-btn:hover {
+  transform: scale(1.05);
+  background: #ffee33;
+}
+
+/* Acessibilidade: foco visível em botões e links */
+button.li-btn:focus,
+button.li-btn:focus-visible,
+a:focus,
+a:focus-visible {
+  outline: 3px solid var(--amarelo-pacman);
+  outline-offset: 2px;
+}
+
+/* Link de pulo para conteúdo principal (skip link) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 8px;
+  background: var(--amarelo-pacman);
+  color: #000;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  z-index: 1000;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 8px;
+}
+
+/* Painel de status: estilo base (páginas podem especializar) */
+.status-panel {
+  margin: 24px auto 0 auto;
+  max-width: 340px;
+  background: rgba(0,0,0,0.7);
+  border: 3px solid var(--amarelo-pacman);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #1e90ff55;
+  padding: 18px 10px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.status-panel h3 {
+  color: var(--amarelo-pacman);
+  margin-top: 0;
+  font-size: 1.1em;
+  text-shadow: 1px 1px #333;
+}
+
+/* Grid base para listas de opções (quiz) — estilos visuais ficam nas páginas */
+.options { display: grid; gap: 10px; grid-template-columns: 1fr; width: 100%; box-sizing: border-box; }
+@media (min-width: 720px) { .options { grid-template-columns: 1fr 1fr; } }
+
+/* Utilitários pequenos compartilhados */
+.btn-wide { font-family: 'Press Start 2P', cursive; }
+.ram-label { text-shadow: 1px 1px #000; }
+
+/* Ajuste da altura estimada do header em telas pequenas (linhas podem quebrar) */
+@media (max-width: 600px) {
+  :root { --header-height: 96px; }
+}

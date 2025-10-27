@@ -5,20 +5,22 @@
   <title>SapMan | Equipe</title>
   <link rel="icon" href="assets/img/logo-page.png" type="image/png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/oqueesap.css">
   <link rel="stylesheet" href="assets/css/footer.css">
 
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <a href="#main" class="skip-link">Pular para conteúdo</a>
   <!-- Cabeçalho -->
 <header class="header">
   <div class="logo-container">
     <img src="assets/img/logo.png" alt="Logo ProjetoSap" class="logo" />
   </div>
 
-  <nav>
+    <nav aria-label="Navegação principal">
     <ul class="nav-list">
       <li><button class="li-btn" type="button" onclick="location.href='home.html'">Home</button></li>
       <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
@@ -91,10 +93,12 @@
   </div>
 
   <!-- MUSICA SAPMAN -->
-   <audio id="bg-music" src="assets/audio/pacman.mp3" autoplay loop></audio>
+  <audio id="bg-music" data-src="assets/audio/pacman.mp3" preload="none" loop muted></audio>
+
+  <main id="main" tabindex="-1">
 
   <!-- == FOOTER == -->
-   <footer class="footer">
+  <footer class="footer">
     <div class="footer-container">
       <div class="footer-section footer-brand">
         <img src="assets/img/logo.png" alt="Logo ProjetoSap" height="48">
@@ -128,5 +132,7 @@
       <p>&copy; 2025 Desvendando o SAP-1. Todos os direitos reservados.</p>
     </div>
   </footer>
+  </main>
+    <script src="assets/js/media-opt.js" defer></script>
   </body>
 </html>

@@ -1,75 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-/* === Variáveis === */
-:root {
-  --cor-fundo: #000000;
-  --cor-primaria: #ff0000;
-  --cor-secundaria: #00ff00;
-  --cor-destaque: #00ffff;
-  --cor-texto: #ffffff;
-  --azul-pacman: #0001a3;
-  --azul-escuro-pacman: #282863;
-  --amarelo-pacman: #eaea00;
-  --preto-pacman: #0000;
-  --branco-pacman: #ffffff;
-}
-
-/* === Estilos base === */
-body {
-  background: url('../img/pacman.png');
-  font-family: 'Press Start 2P', cursive;
-  margin: 0;
-  padding: 0;
-  color: var(--cor-texto);
-  image-rendering: pixelated;
-  text-align: center;
-}
-
-/* === Header / Navegação === */
-.header {
-  background: var(--azul-escuro-pacman);
-  border-bottom: 4px solid #ffcc00;
-  padding: 16px;
-  font-size: 1em;
-  box-shadow: 0 8px #333;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  height: 48px;
-  margin-right: 16px;
-}
-
-.nav-list {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 24px;
-}
-
-button.li-btn {
-  font-family: 'Press Start 2P', cursive;
-  background: #ffcc00;
-  border: 4px solid #333;
-  padding: 10px;
-  color: #000;
-  cursor: pointer;
-  margin: 8px;
-  transition: transform 0.2s;
-}
-
-button.li-btn:hover {
-  transform: scale(1.05);
-  background: #ffee33;
-}
+/* Import, variáveis e cabeçalho agora vêm de base.css */
 
 /* === Memória RAM === */
 .memoryran {
@@ -98,6 +27,36 @@ button.li-btn:hover {
   justify-items: center;
 }
 
+/* Switch de modo de edição */
+.editor-mode-switch {
+  display: inline-flex;
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(40,40,99,0.2));
+}
+.editor-mode-switch .segment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6em;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+.editor-mode-switch .segment + .segment { border-left: 1px solid rgba(255,215,0,0.4); }
+.editor-mode-switch input { display: none; }
+.editor-mode-switch input:checked + span {
+  color: #000;
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  padding: 6px 10px;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
 .ram-label {
   grid-column: 1 / span 4;
   text-align: center;
@@ -121,6 +80,12 @@ button.li-btn:hover {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.5);
   transition: all 0.3s ease;
+}
+
+.ran:disabled {
+  filter: grayscale(0.2) brightness(0.9);
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .ran:focus {
@@ -297,22 +262,22 @@ button.li-btn:hover {
   width: 100%;
   max-width: 300px;
   height: 200px;
-  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-  color: #00ff00;
-  border: 3px solid #333;
-  border-radius: 10px;
-  padding: 15px;
+  background: linear-gradient(135deg, #121212, #1f1f1f);
+  color: #b6f7ce;
+  border: 2px solid #00ffaa33;
+  border-radius: 12px;
+  padding: 14px;
   font-family: 'Press Start 2P', cursive;
-  font-size: 0.6em;
+  font-size: 0.62em;
   resize: vertical;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.45);
   margin-bottom: 20px;
 }
 
 #codigoMaquina:focus {
   outline: none;
-  border-color: #00ffff;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), inset 0 2px 10px rgba(0, 0, 0, 0.5);
+  border-color: #00ffaa;
+  box-shadow: 0 0 12px rgba(0, 255, 170, 0.4), inset 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 
 #converterMaquina {
@@ -334,6 +299,103 @@ button.li-btn:hover {
   box-shadow: 0 6px 12px rgba(255, 102, 0, 0.4);
 }
 
+/* === Editor Assembly (SAP-1) === */
+.assembly-editor {
+  margin-top: 14px;
+  padding: 0;
+  width: 100%;
+  max-width: 520px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.assembly-editor-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.assembly-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.asm-errors {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6em;
+  color: #ff6b6b;
+  background: rgba(255, 0, 0, 0.08);
+  border: 2px solid rgba(255, 0, 0, 0.25);
+  border-radius: 8px;
+  padding: 10px;
+  display: none;
+}
+
+.asm-errors.visible { display: block; }
+
+.asm-help { color: #b0ffd9; opacity: 0.9; }
+
+/* Mostrar apenas um painel por vez conforme modo */
+.memoryran.is-asm .ram-grid { display: none; }
+.memoryran.is-ram .assembly-editor { display: none; }
+.assembly-display #ramPreview { display: none; }
+.memoryran.is-asm .assembly-code-container { display: none; }
+.memoryran.is-asm .assembly-display #ramPreview { display: block; }
+.memoryran.is-ram .assembly-code-container { display: block; }
+.memoryran.is-ram .assembly-display #ramPreview { display: none; }
+
+/* RAM Preview 4x4 */
+#ramPreview {
+  width: 100%;
+  max-width: 520px;
+  margin-top: 4px;
+}
+.ram-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(56px, 1fr));
+  gap: 10px;
+  width: 100%;
+  justify-items: stretch;
+}
+.ran-preview {
+  background: linear-gradient(135deg, #141414, #1f1f1f);
+  color: #00ffaa;
+  border: 2px solid #00ffaa55;
+  font-family: 'Press Start 2P', cursive;
+  width: 100%;
+  height: clamp(38px, 7vw, 52px);
+  text-align: center;
+  font-size: clamp(0.52em, 1.6vw, 0.68em);
+  margin: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Destaque/Animação de acesso à RAM no preview 4x4 */
+.ran-preview.ram-active {
+  border-color: #00ffaa;
+  box-shadow: 0 0 14px rgba(0, 255, 170, 0.7), 0 0 30px rgba(0, 255, 170, 0.25), inset 0 0 10px rgba(0, 255, 170, 0.25);
+  animation: ramPulse 700ms ease-in-out 2;
+}
+
+@keyframes ramPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 480px) {
+  .ram-preview-grid { gap: 8px; }
+  .ran-preview { height: clamp(34px, 8vw, 46px); font-size: clamp(0.5em, 2.6vw, 0.64em); }
+}
+
 /* === Arquitetura SAP-1 === */
 .sap1-container {
   display: grid;
@@ -349,6 +411,19 @@ button.li-btn:hover {
   max-width: 1300px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 255, 255, 0.1);
+}
+@media (max-width: 1100px) and (min-width: 769px) {
+  .sap1-container {
+    grid-template-columns: 1fr 110px 1fr;
+    gap: 24px 36px;
+    padding: 28px;
+    max-width: 95vw;
+  }
+  .sap1-block {
+    min-width: 150px;
+    min-height: 100px;
+    font-size: 0.58em;
+  }
 }
 
 /* Posicionamento do status panel dentro da SAP-1 */
@@ -744,6 +819,51 @@ button.li-btn:hover {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
+/* Indicador de Estados T (T1–T6) */
+.tstate-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 255, 170, 0.06);
+  border: 1px solid rgba(0, 255, 170, 0.28);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+.tstate-label {
+  color: #9cffd1;
+  font-weight: 600;
+}
+.tstate-text {
+  color: #00ffaa;
+  font-family: 'Press Start 2P', cursive;
+}
+.tstate-steps {
+  display: flex;
+  gap: 6px;
+  margin-left: 8px;
+}
+.tstate-steps .tstep {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.68em;
+  color: #66e8c0;
+  padding: 4px 6px;
+  border: 1px dashed rgba(0, 255, 170, 0.35);
+  border-radius: 6px;
+  opacity: 0.5;
+  transition: all 160ms ease-in-out;
+}
+.tstate-steps .tstep.active {
+  color: #062b20;
+  background: #00ffaa;
+  border-color: #00ffaa;
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(0,255,170,0.4);
+}
+
+@media (max-width: 600px) {
+  .tstate-steps .tstep { padding: 3px 5px; font-size: 0.62em; }
+}
+
 /* === Animações do SAP-1 === */
 .arrow-img {
   width: 24px;
@@ -993,6 +1113,7 @@ button.li-btn:hover {
     padding: 16px;
     max-width: 100%;
   }
+  .assembly-editor { max-width: 100%; }
   
   .assembly-code-container {
     font-size: 0.6em;
@@ -1345,6 +1466,12 @@ button.li-btn:hover {
   background: linear-gradient(90deg, transparent, #ffd700, transparent);
 }
 
+.sap-tooltip-content { display: block; }
+.memoryran.is-asm .sap-tooltip .ram-hints { display: none; }
+.memoryran.is-asm .sap-tooltip .asm-hints { display: block; }
+.memoryran.is-ram .sap-tooltip .ram-hints { display: block; }
+.memoryran.is-ram .sap-tooltip .asm-hints { display: none; }
+
 .instruction-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1583,8 +1710,8 @@ button.li-btn:hover {
   border: 3px solid #ffcc00;
   border-radius: 10px;
   padding: 16px;
-  min-width: 280px;
-  max-width: 350px;
+  min-width: 260px;
+  max-width: min(92vw, 360px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9);
   opacity: 0;
   visibility: hidden;
@@ -1696,108 +1823,25 @@ button.li-btn:hover {
 }
 
 @media (max-width: 768px) {
-  .sap-help-icon {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1001;
-  }
-  
-  .sap-tooltip {
-    position: fixed;
-    top: 50px;
-    right: 10px;
-    left: 10px;
-    min-width: auto;
-    max-width: none;
-    width: auto;
-    font-size: 9px;
-    padding: 14px;
-  }
-  
-  .sap-help-icon:hover .sap-tooltip {
-    transform: translateY(0);
-  }
-  
-  .sap-tooltip h3 {
-    font-size: 11px;
-  }
-  
-  .instruction-item {
-    gap: 10px;
-    padding: 6px 8px;
-  }
-  
-  .opcode, .hex {
-    font-size: 8px;
-  }
-  
-  .desc {
-    font-size: 7px;
-  }
-  
-  .tooltip-note {
-    font-size: 7px;
-    padding: 8px;
-  }
-  
-  .help-coin {
-    width: 24px;
-    height: 24px;
-  }
-  
-  /* Seta no topo para mobile */
-  .sap-tooltip::after {
-    top: -8px;
-    right: 20px;
-    left: auto;
-  }
-  
-  .sap-tooltip::before {
-    top: -6px;
-    right: 22px;
-    left: auto;
-  }
+  .sap-help-icon { position: fixed; top: 10px; right: 10px; z-index: 1001; }
+  /* Em mobile, desativa tooltip por hover e usa modal */
+  .sap-tooltip { display: none !important; }
+  .help-coin { width: 28px; height: 28px; }
 }
 
 @media (max-width: 480px) {
-  .sap-tooltip {
-    font-size: 8px;
-    padding: 12px;
-    border-radius: 8px;
-  }
-  
-  .sap-tooltip h3 {
-    font-size: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .instruction-list {
-    gap: 8px;
-  }
-  
-  .instruction-item {
-    gap: 8px;
-    padding: 5px 6px;
-    grid-template-columns: 1fr 1fr 1.5fr;
-  }
-  
-  .opcode, .hex {
-    font-size: 7px;
-  }
-  
-  .desc {
-    font-size: 6px;
-  }
-  
-  .tooltip-note {
-    font-size: 6px;
-    padding: 6px;
-    margin-top: 10px;
-  }
-  
-  .help-coin {
-    width: 22px;
-    height: 22px;
-  }
+  .sap-tooltip { display: none !important; }
+  .help-coin { width: 26px; height: 26px; }
+}
+
+/* Overlay/modal para ajuda SAP-1 em telas pequenas */
+.sap-help-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 16px; }
+.sap-help-overlay.visible { display: flex; }
+.sap-help-card { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%); border: 2px solid #ffd700; border-radius: 16px; width: min(92vw, 520px); max-height: 80vh; overflow: auto; padding: 16px; position: relative; box-shadow: 0 10px 35px rgba(0,0,0,0.7); }
+.sap-help-close { position: absolute; top: 8px; right: 10px; background: transparent; border: none; color: #ffd700; font-size: 1.2em; cursor: pointer; }
+
+/* Evitar overflow dos tooltips dos blocos em telas menores */
+@media (max-width: 768px) {
+  .block-tooltip { top: 100%; left: 50%; transform: translate(-50%, 8px); width: min(92vw, 360px); min-width: auto; }
+  .block-tooltip::after, .block-tooltip::before { display: none; }
 }

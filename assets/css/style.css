@@ -1,12 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-:root {
-  --azul-pacman: #0001a3;
-  --azul-escuro-pacman: #282863;
-  --amarelo-pacman: #ffd700;
-  --preto-pacman: #0000;
-  --branco-pacman: #ffffff;
-}
+/* Import de fontes e variáveis centralizados em base.css */
 
 .ram-grid {
   display: grid;
@@ -104,60 +96,7 @@
   text-shadow: 1px 1px #222;
 }
 
-body {
-  background: url('../img/pacman.png') repeat;
-  font-family: 'Press Start 2P', cursive;
-  margin: 0;
-  padding: 0;
-  color: #fff;
-  image-rendering: pixelated;
-  text-align: center;
-}
-
-.header {
-  background: var(--azul-escuro-pacman);
-  border-bottom: 4px solid #ffcc00;
-  padding: 16px;
-  font-size: 1em;
-  box-shadow: 0 8px #333;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  height: 48px;
-  margin-right: 16px;
-}
-
-.nav-list {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 24px;
-}
-
-button.li-btn {
-  font-family: 'Press Start 2P', cursive;
-  background: var(--amarelo-pacman);
-  border: 4px solid #333;
-  padding: 10px;
-  color: #000;
-  cursor: pointer;
-  margin: 8px;
-  transition: transform 0.2s;
-}
-
-button.li-btn:hover {
-  transform: scale(1.05);
-  background: #ffee33;
-}
+/* Estilos de body/header/nav/button movidos para base.css */
 
 /* Memória RAM */
 .memoryran {
@@ -317,10 +256,8 @@ button.li-btn:hover {
 }
 .quiz-main { display: flex; flex-direction: column; gap: 16px; width: 100%; box-sizing: border-box; }
 #sidePanel { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; width: 100%; box-sizing: border-box; }
-@media (max-width: 680px) {
-  #sidePanel { grid-template-columns: 1fr; }
-  .quiz-container { padding: 12px; }
-}
+@media (max-width: 900px) { #sidePanel { grid-template-columns: 1fr; } }
+@media (max-width: 680px) { .quiz-container { padding: 12px; } }
 .status-bar { background: rgba(0,0,0,0.7); border: 2px solid #ffd700; border-radius: 12px; padding: 10px 14px; margin: 0 0 16px 0; width: 100%; box-sizing: border-box; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .status-item { color:#fff; }
 .status-sep { opacity:0.5; margin: 0 6px; }

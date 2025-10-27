@@ -9,12 +9,14 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@400;600&display=swap"
         rel="stylesheet">
-
+    <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/footer.css">
     <link rel="stylesheet" href="assets/css/oqueesap.css">
 </head>
 
 <body>
+
+    <a href="#main" class="skip-link">Pular para conteúdo</a>
 
     <!-- Cabeçalho -->
     <header class="header">
@@ -22,7 +24,7 @@
             <img src="assets/img/logo.png" alt="Logo ProjetoSap" class="logo" />
         </div>
 
-        <nav>
+        <nav aria-label="Navegação principal">
             <ul class="nav-list">
                 <li><button class="li-btn" type="button" onclick="location.href='home.html'">Home</button></li>
                 <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button>
@@ -32,7 +34,6 @@
                 <li><button class="li-btn" type="button" onclick="location.href='index.html#emulacao'">Emulação</button>
                 </li>
             </ul>
-        </nav>
         </nav>
 
         <!-- Botão de Mudo -->
@@ -48,6 +49,7 @@
         <button class="li-btn" onclick="location.href='#recursos-visuais'">Recursos Visuais</button>
     </div>
 
+    <main id="main" tabindex="-1">
     <div class="container">
         <section id="introducao">
             <h2>Introdução ao Computador SAP-1</h2>
@@ -398,9 +400,10 @@
             </p>
         </section>
     </div>
+    </main>
 
     <!-- MUSICA SAPMAN -->
-    <audio id="bg-music" src="assets/audio/pacman.mp3" autoplay loop></audio>
+    <audio id="bg-music" data-src="assets/audio/pacman.mp3" preload="none" loop muted></audio>
 
     <!-- == FOOTER == -->
     <footer class="footer">
@@ -439,6 +442,7 @@
         </div>
     </footer>
 
+        <script src="assets/js/media-opt.js" defer></script>
 </body>
 
 </html>

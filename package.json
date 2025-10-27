@@ -1,0 +1,16 @@
+{
+  "name": "projetosap",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Build/minify pipeline for ProjetoSap static site",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "clean": "powershell -NoProfile -Command \"Remove-Item -Recurse -Force dist 2>$null; exit 0\""
+  },
+  "devDependencies": {
+    "cssnano": "^6.1.2",
+    "postcss": "^8.4.47",
+    "terser": "^5.36.0"
+  }
+}

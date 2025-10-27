@@ -1561,6 +1561,41 @@ Feito com 💛 e muito ☕ | © 2024 Projeto SAP
 [![Issues](https://img.shields.io/github/issues/usuario/ProjetoSap)](https://github.com/usuario/ProjetoSap/issues)
 
 </div>
+
+---
+
+## 🔧 Build e Minificação (Produção)
+
+Para publicar a versão final com arquivos CSS e JS minificados, este projeto inclui um processo simples baseado em Node.js que gera a pasta `dist/` com a mesma estrutura do site, porém com `.css` e `.js` minificados.
+
+Requisitos:
+- Node.js 18+ (inclui `node` e `npm`)
+
+Passos no Windows (PowerShell):
+
+1) Instalar dependências (primeira vez)
+
+```powershell
+npm install --save-dev postcss cssnano terser
+```
+
+2) Rodar o build (gera `dist/`)
+
+```powershell
+npm run build
+```
+
+O script `build.mjs`:
+- Copia todos os arquivos do projeto (HTML, imagens, áudio, dados) para `dist/` sem alterações.
+- Minifica automaticamente apenas `.css` (cssnano) e `.js` (terser).
+- Mantém os mesmos nomes de arquivos — você não precisa alterar referências nos HTMLs.
+
+Uso no VS Code:
+- Abra a paleta (Ctrl+Shift+P) → “Run Task” → “Build (minify to dist/)”
+
+Publicação:
+- Suba o conteúdo de `dist/` para o servidor de produção ou para a branch/pasta de sua hospedagem estática (ex.: GitHub Pages).
+
 - ✅ Design responsivo
 - ✅ Performance otimizada
 

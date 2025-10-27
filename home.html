@@ -6,6 +6,7 @@
   <title>SapMan | Home - Desvendando o SAP-1</title>
   <link rel="icon" href="assets/img/logo-page.png" type="image/png">
   
+  <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/emular.css">
   <link rel="stylesheet" href="assets/css/footer.css">
   <link rel="stylesheet" href="assets/css/oqueesap.css">
@@ -15,13 +16,15 @@
 </head>
 <body>
 
+  <a href="#main" class="skip-link">Pular para conteúdo</a>
+
   <!-- Cabeçalho -->
   <header class="header">
     <div class="logo-container">
       <img src="assets/img/logo.png" alt="Logo ProjetoSap" class="logo" />
     </div>
 
-    <nav>
+    <nav aria-label="Navegação principal">
       <ul class="nav-list">
         <li><button class="li-btn" type="button" onclick="location.href='home.html'">Home</button></li>
         <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
@@ -35,6 +38,7 @@
     <button id="muteToggle" class="li-btn" title="Alternar som">🔊</button>
   </header>
 
+  <main id="main" tabindex="-1">
   <!-- Seção Hero -->
   <section class="hero-section">
     <h1 class="hero-title">🕹️ SapMan</h1>
@@ -153,7 +157,7 @@
     <div class="team-grid">
       <div class="team-member">
         <div class="member-avatar">
-          <img src="assets/img/fantasma/1.png" alt="Izabel Chaves" class="avatar-img">
+          <img src="assets/img/fantasma/1.png" alt="Pedro Guimarães" class="avatar-img">
         </div>
         <h3 class="member-name">Pedro Guimarães</h3>
         <p class="member-role">Projeto e Desenvolvimento</p>
@@ -169,7 +173,7 @@
       
       <div class="team-member">
         <div class="member-avatar">
-          <img src="assets/img/fantasma/3.png" alt="Izabel Chaves" class="avatar-img">
+          <img src="assets/img/fantasma/3.png" alt="Eduardo Aniceto" class="avatar-img">
         </div>
         <h3 class="member-name">Eduardo Aniceto</h3>
         <p class="member-role">Documentação e Pesquisa</p>
@@ -177,7 +181,7 @@
       
       <div class="team-member">
         <div class="member-avatar">
-          <img src="assets/img/fantasma/4.png" alt="Izabel Chaves" class="avatar-img">
+          <img src="assets/img/fantasma/4.png" alt="Any Gabriela" class="avatar-img">
         </div>
         <h3 class="member-name">Any Gabriela</h3>
         <p class="member-role">Documentação e Pesquisa</p>
@@ -185,7 +189,7 @@
       
       <div class="team-member">
         <div class="member-avatar">
-          <img src="assets/img/fantasma/5.png" alt="Izabel Chaves" class="avatar-img">
+          <img src="assets/img/fantasma/5.png" alt="Iara Publio" class="avatar-img">
         </div>
         <h3 class="member-name">Iara Publio</h3>
         <p class="member-role">Documentação e Pesquisa</p>
@@ -198,7 +202,7 @@
   </section>
 
   <!-- MUSICA SAPMAN -->
-  <audio id="bg-music" src="assets/audio/pacman.mp3" autoplay loop></audio>
+  <audio id="bg-music" data-src="assets/audio/pacman.mp3" preload="none" loop muted></audio>
 
   <!-- Footer -->
   <footer class="footer">
@@ -240,6 +244,9 @@
     </div>
   </footer>
 
+  </main>
+
+  <script src="assets/js/media-opt.js" defer></script>
   <script src="assets/js/oqesap.js" defer></script>
 </body>
 </html>

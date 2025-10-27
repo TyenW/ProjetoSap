@@ -1,12 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@700&display=swap');
-
-:root {
-  --azul-pacman: #0001a3;
-  --azul-escuro-pacman: #282863;
-  --amarelo-pacman: #eaea00;
-  --preto-pacman: #0000;
-  --branco-pacman: #ffffff;
-}
+/* Import de fontes e variáveis centralizados em base.css */
 
 .mini-menu {
   display: flex;
@@ -187,62 +179,14 @@
   }
 }
 
+/* Body: manter apenas tipografia específica desta página */
 body {
-    background: url('../img/pacman.png') repeat;
-    font-family: 'Roboto', Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #fff;
-    image-rendering: pixelated;
-    text-align: center;
-    font-size: 1.1em;
-    line-height: 1.6;
+  font-family: 'Roboto', Arial, sans-serif; /* Option A: corpo com fonte legível */
+  font-size: 1.08em;
+  line-height: 1.7;
 }
 
-.header {
-  background: var(--azul-escuro-pacman);
-  border-bottom: 4px solid #ffcc00;
-  padding: 16px;
-  font-size: 1em;
-  box-shadow: 0 8px #333;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  height: 48px;
-  margin-right: 16px;
-}
-
-.nav-list {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 24px;
-}
-
-button.li-btn {
-  font-family: 'Press Start 2P', cursive;
-  background: #ffcc00;
-  border: 4px solid #333;
-  padding: 10px;
-  color: #000;
-  cursor: pointer;
-  margin: 8px;
-  transition: transform 0.2s;
-}
-
-button.li-btn:hover {
-  transform: scale(1.05);
-  background: #ffee33;
-}
+/* Header/nav/botões movidos para base.css */
 
 @keyframes headerFadeIn {
     from { opacity: 0; transform: translateY(-30px);}
@@ -299,7 +243,8 @@ nav ul li a.active {
 .container {
     max-width: 900px;
     margin: 40px auto;
-    background: rgba(0,0,0,0.8);
+  /* Levemente mais claro para conforto visual mantendo o tema */
+  background: rgba(0,0,0,0.75);
     padding: 40px 24px;
     border-radius: 20px;
     box-shadow: 0 8px #333, 0 0 32px #1e90ff33;
@@ -336,12 +281,18 @@ h3 {
 }
 
 p, ul, ol, table, li {
-    font-family: 'Roboto', Arial, sans-serif;
-    font-size: 1em;
-    color: #fff;
-    text-align: left;
-    text-shadow: 0 1px 2px #000a;
+  font-family: 'Roboto', Arial, sans-serif; /* Option A aplicado */
+  font-size: 1.02em;
+  line-height: 1.75;
+  letter-spacing: 0.15px;
+  color: #f5f7fa;
+  text-align: left;
+  text-shadow: 0 1px 2px #000a;
 }
+
+/* Espaçamento de leitura */
+p { margin: 0 0 1.1em 0; }
+li { margin: 0.35em 0; }
 
 ul, ol {
     margin-left: 32px;
