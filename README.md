@@ -1664,6 +1664,9 @@ Observações:
 - O handler já responde com CORS liberado (GET/POST/OPTIONS), então pode ser chamado de qualquer origem.
 - Para testes locais, você pode usar o servidor Express (`server.mjs`) com `http://localhost:8000/api/leaderboard`.
 
+Se ao abrir a raiz do projeto na Vercel você ver “Cannot GET /”, isso é normal em um deploy só de API.
+Incluímos um `vercel.json` que redireciona a raiz `/` para `/api/leaderboard` para mostrar o JSON em vez do erro.
+
 ### 2) Hospedar o site estático (HTML/CSS/JS)
 
 - Gere a pasta `dist/` (opcional, minificada) e publique em:
