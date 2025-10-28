@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>SapMan</title>
+  <link rel="icon" href="assets/img/logo-page.png" type="image/png">
+  
+  <link rel="stylesheet" href="assets/css/base.css" />
+  
+  <link rel="stylesheet" href="assets/css/emular.css" />
+  <link rel="stylesheet" href="assets/css/footer.css" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Pular para conteúdo</a>
+
+<!-- Cabeçalho -->
+<header class="header">
+  <div class="logo-container">
+    <img src="assets/img/logo.png" alt="Logo ProjetoSap" class="logo" />
+  </div>
+
+  <nav aria-label="Navegação principal">
+    <ul class="nav-list">
+      <li><button class="li-btn" type="button" onclick="location.href='home.html'">Home</button></li>
+      <li><button class="li-btn" type="button" onclick="location.href='oqueesap.html'">O que é SAP</button></li>
+      <li><button class="li-btn" type="button" onclick="location.href='quiz.html'">Quiz</button></li>
+      <li><button class="li-btn" type="button" onclick="location.href='equipesap.html'">Equipe</button></li>
+      <li><button class="li-btn" type="button" onclick="location.href='#emulacao'">Emulação</button></li>
+    </ul>
+  </nav>
+
+  <!-- Botão de Mudo -->
+  <button id="muteToggle" class="li-btn" title="Alternar som">🔊</button>
+</header>
+
+<main id="main" tabindex="-1">
+
+
+
+  <!-- Controles de Animação -->
+  <div class="animation-controls">
+    <button id="passo" class="btn-wide">⏯️ Executar Passo</button>
+    <button id="emular" class="btn-wide">⏩ Executar Tudo</button>
+    <button id="passo-atras" class="btn-wide">⏪ Passo Atrás</button>
+    <button id="resetar" class="btn-wide">🔄 Resetar</button>
+    <input type="file" id="csvInput" accept=".csv,.txt" style="display: none;">
+    <button id="loadCSV" class="btn-wide">📁 Carregar CSV</button>
+    
+    <!-- Controle de velocidade -->
+    <div class="speed-control">
+      <label for="speedRange">Velocidade:</label>
+      <input type="range" id="speedRange" min="500" max="3000" value="1500" step="250">
+      <span id="speedValue">Normal</span>
+    </div>
+
+    <!-- Indicador de Estado T (T1–T6) -->
+    <div class="tstate-indicator" aria-live="polite">
+      <span class="tstate-label">Estado T:</span>
+      <span id="tstate-text" class="tstate-text" aria-atomic="true">—</span>
+      <div class="tstate-steps" role="progressbar" aria-label="Ciclo de microestados T" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1">
+        <span class="tstep" data-t="1">T1</span>
+        <span class="tstep" data-t="2">T2</span>
+        <span class="tstep" data-t="3">T3</span>
+        <span class="tstep" data-t="4">T4</span>
+        <span class="tstep" data-t="5">T5</span>
+        <span class="tstep" data-t="6">T6</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="logic-layout">
+
+    <!-- Ícone de Ajuda SAP-1 -->
+    
+
+    <!-- Memória RAM -->
+    <div class="memoryran">
+      <div class="sap-help-icon">
+      <img src="assets/img/moeda.png" alt="Ajuda SAP-1" class="help-coin">
+      <div class="sap-tooltip">
+        <h3>💡 Instruções SAP-1</h3>
+        <!-- Dicas quando o modo ativo é RAM (hex -> assembly) -->
+        <div class="sap-tooltip-content ram-hints">
+          <div class="instruction-list">
+            <div class="instruction-item">
+              <span class="opcode">LDA</span>
+              <span class="hex">0A</span>
+              <span class="desc">Carrega acumulador</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">ADD</span>
+              <span class="hex">1A</span>
+              <span class="desc">Soma ao acumulador</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">SUB</span>
+              <span class="hex">2A</span>
+              <span class="desc">Subtrai do acumulador</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">MUL</span>
+              <span class="hex">5A</span>
+              <span class="desc">Multiplica acumulador</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">INC</span>
+              <span class="hex">30</span>
+              <span class="desc">Incrementa acumulador</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">DEC</span>
+              <span class="hex">40</span>
+              <span class="desc">Decrementa acumulador</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">JMP</span>
+              <span class="hex">6A</span>
+              <span class="desc">Salta para endereço</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">OUT</span>
+              <span class="hex">E0</span>
+              <span class="desc">Saída para display</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">HLT</span>
+              <span class="hex">F0</span>
+              <span class="desc">Para execução</span>
+            </div>
+          </div>
+          <p class="tooltip-note">Dica: 0A = LDA A, 1F = ADD F, E0 = OUT, F0 = HLT</p>
+        </div>
+        
+        <!-- Dicas quando o modo ativo é Assembly (assembly -> hex) -->
+        <div class="sap-tooltip-content asm-hints">
+          <div class="instruction-list">
+            <div class="instruction-item">
+              <span class="opcode">Sintaxe</span>
+              <span class="hex">OP [N]</span>
+              <span class="desc">1 por linha; comentários: # ou //</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">Operandos</span>
+              <span class="hex">0–F</span>
+              <span class="desc">Ou 0–15 (decimal) ou 0xN</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">Ops com N</span>
+              <span class="hex">LDA,ADD,SUB,MUL,JMP</span>
+              <span class="desc">Ex: LDA A | ADD 3 | JMP F</span>
+            </div>
+            <div class="instruction-item">
+              <span class="opcode">Ops sem N</span>
+              <span class="hex">INC,DEC,OUT,HLT</span>
+              <span class="desc">Ex: OUT | HLT</span>
+            </div>
+          </div>
+          <p class="tooltip-note">Exemplo: LDA A → 0A | OUT → E0 | HLT → F0</p>
+        </div>
+      </div>
+    </div>
+      <div class="editor-mode-switch" role="radiogroup" aria-label="Modo de edição">
+        <label class="segment">
+          <input type="radio" name="editMode" value="ram" id="modeRam" checked>
+          <span>Editar RAM</span>
+        </label>
+        <label class="segment">
+          <input type="radio" name="editMode" value="asm" id="modeAsm">
+          <span>Editar Assembly</span>
+        </label>
+      </div>
+
+      <div class="ram-grid" aria-label="Memória RAM 16x8">
+        <label for="memory" class="ram-label">
+          Memória RAM
+        </label>
+        <input class="ran" type="text" placeholder="01" id="order1" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="02" id="order2" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="03" id="order3" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="04" id="order4" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="05" id="order5" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="06" id="order6" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="07" id="order7" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="08" id="order8" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="09" id="order9" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="10" id="order10" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="11" id="order11" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="12" id="order12" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="13" id="order13" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="14" id="order14" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="15" id="order15" maxlength="2" autocomplete="off" />
+        <input class="ran" type="text" placeholder="16" id="order16" maxlength="2" autocomplete="off" />
+      </div>
+
+      <!-- Editor Assembly (SAP-1) -->
+      <div class="assembly-editor" aria-labelledby="assemblyEditorLabel">
+        <label id="assemblyEditorLabel" class="ram-label">Editor Assembly (SAP-1)</label>
+        <div class="assembly-editor-grid">
+          <textarea id="codigoMaquina" placeholder="Digite 1 instrução por linha.\nExemplos:\nLDA A\nADD B\nOUT\nHLT"></textarea>
+          <!-- Montagem agora é automática ao digitar -->
+          <div id="asmErrors" class="asm-errors" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+
+      
+      <!-- Display alternável: Assembly em tempo real (modo RAM) OU Memória em tempo real 4x4 (modo Assembly) -->
+      <div class="assembly-display">
+        <label id="displayTitle" class="ram-label">Assembly em Tempo Real</label>
+        <div id="assemblyCode" class="assembly-code-container">
+          <!-- As linhas serão adicionadas dinamicamente conforme for digitado -->
+        </div>
+        <!-- RAM Preview embutido para ocupar o mesmo lugar -->
+        <div id="ramPreview" class="ram-preview" aria-label="Memória RAM em Tempo Real 4x4">
+          <div class="ram-preview-grid">
+            <div class="ran-preview" id="preview1">--</div>
+            <div class="ran-preview" id="preview2">--</div>
+            <div class="ran-preview" id="preview3">--</div>
+            <div class="ran-preview" id="preview4">--</div>
+            <div class="ran-preview" id="preview5">--</div>
+            <div class="ran-preview" id="preview6">--</div>
+            <div class="ran-preview" id="preview7">--</div>
+            <div class="ran-preview" id="preview8">--</div>
+            <div class="ran-preview" id="preview9">--</div>
+            <div class="ran-preview" id="preview10">--</div>
+            <div class="ran-preview" id="preview11">--</div>
+            <div class="ran-preview" id="preview12">--</div>
+            <div class="ran-preview" id="preview13">--</div>
+            <div class="ran-preview" id="preview14">--</div>
+            <div class="ran-preview" id="preview15">--</div>
+            <div class="ran-preview" id="preview16">--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arquitetura SAP-1 -->
+    <section class="sap1-container" id="emulacao">
+
+      <!-- Blocos da esquerda -->
+      <div class="sap1-block block-pc" id="pc" title="Contador de Programa: Armazena o endereço da próxima instrução a ser executada">
+        <div class="block-tooltip">
+          <h4>💻 Contador de Programa (PC)</h4>
+          <p>Armazena o endereço da próxima instrução</p>
+          <p>🔄 Incrementa automaticamente após cada busca</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        Contador de Programa (PC)
+        <div class="block-value" id="pc-value">0</div>
+        <img src="assets/img/setas/off/dir.png" alt="Seta para o barramento" class="arrow-img" />
+      </div>
+
+      <div class="sap1-block block-mar" id="entrada-rem" title="Memory Address Register: Armazena o endereço de memória que está sendo acessado">
+        <div class="block-tooltip">
+          <h4>📍 Registrador de Endereço (MAR)</h4>
+          <p>Aponta para a posição de memória</p>
+          <p>🎯 Conecta PC com a RAM</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        Entrada / REM
+        <div class="block-value" id="mar-value">--</div>
+        <img src="assets/img/setas/off/down.png" alt="Seta para baixo" class="arrow-img" />
+        <img src="assets/img/setas/off/down.png" alt="Seta para baixo" class="arrow-img" />
+        <img src="assets/img/setas/off/esq.png" alt="Seta do barramento" class="arrow-img" />
+      </div>
+
+      <div class="sap1-block block-ram" id="ram" title="Memória RAM: Armazena instruções e dados do programa (16 endereços x 8 bits)">
+        <div class="block-tooltip">
+          <h4>💾 Memória RAM</h4>
+          <p>16 posições de 8 bits cada</p>
+          <p>📋 Armazena programa e dados</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        RAM 16x8
+        <div class="block-value" id="ram-value">--</div>
+        <img src="assets/img/setas/off/dir.png" alt="Seta para o barramento" class="arrow-img" />
+      </div>
+
+      <div class="sap1-block block-ir" id="ri" title="Registrador de Instruções: Armazena a instrução atual sendo decodificada">
+        <div class="block-tooltip">
+          <h4>📖 Registrador de Instruções (RI)</h4>
+          <p>Armazena a instrução atual</p>
+          <p>🔍 Decodifica operação e endereço</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        Registrador de Instruções (RI)
+        <div class="block-value" id="ri-value">--</div>
+        <img src="assets/img/setas/off/down.png" alt="Seta para controlador" class="arrow-img" />
+        <img src="assets/img/setas/off/dupla.png" alt="Seta dupla" class="arrow-img" />
+      </div>
+
+      <div class="sap1-block block-controller" id="controlador" title="Controlador/Sequencializador: Decodifica instruções e gera sinais de controle">
+        <div class="block-tooltip">
+          <h4>🎮 Controlador</h4>
+          <p>Cérebro do processador</p>
+          <p>⚡ Gera sinais de controle</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        Controlador / Sequencializador
+        <div class="block-value" id="controller-value">IDLE</div>
+        <img src="assets/img/setas/off/down.png" alt="Seta para baixo" class="arrow-img" />
+      </div>
+
+      <!-- Imagem do Barramento Central -->
+    <div class="sap1-block block-bus" id="barramento" title="Barramento de Dados: Transporta dados entre os componentes do processador">
+      <div class="block-tooltip">
+        <h4>🌐 Barramento de Dados</h4>
+        <p>Via de comunicação principal</p>
+        <p>🔄 Transporta dados entre componentes</p>
+        <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+          Mais detalhes
+        </button>
+      </div>
+      <img id="bus-img" src="assets/img/w/w1.png" alt="Imagem do Barramento" />
+    </div>
+
+      <!-- Blocos da direita -->
+      <div class="sap1-block block-acc" id="acc" title="Acumulador: Registrador principal para operações aritméticas e lógicas">
+        <div class="block-tooltip">
+          <h4>🔢 Acumulador (ACC)</h4>
+          <p>Registrador principal</p>
+          <p>➕ Armazena resultados das operações</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        Acumulador (ACC)
+        <div class="block-value" id="acc-value">0</div>
+        <img src="assets/img/setas/off/down.png" alt="Seta para ALU" class="arrow-img" />
+        <img src="assets/img/setas/off/dupla.png" alt="Seta dupla" class="arrow-img" />
+      </div>
+
+      <div class="sap1-block block-alu" id="alu" title="Unidade Lógica Aritmética: Realiza operações de soma, subtração e outras operações">
+        <div class="block-tooltip">
+          <h4>⚙️ ALU (Unidade Aritmética)</h4>
+          <p>Realiza cálculos matemáticos</p>
+          <p>🧮 Soma, subtração e comparações</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        Somador / Subtrator (ALU)
+        <div class="block-value" id="alu-value">--</div>
+        <img src="assets/img/setas/off/esq.png" alt="Seta do barramento" class="arrow-img" />
+      </div>
+
+      <div class="sap1-block block-regb" id="regb" title="Registrador B: Armazena temporariamente dados para operações na ALU">
+        <div class="block-tooltip">
+          <h4>📦 Registrador B</h4>
+          <p>Armazena segundo operando</p>
+          <p>🔄 Auxiliar para operações da ALU</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        Registrador B
+        <div class="block-value" id="regb-value">0</div>
+        <img src="assets/img/setas/off/dir.png" alt="Seta do barramento" class="arrow-img" />
+        <img src="assets/img/setas/off/up.png" alt="Seta do barramento" class="arrow-img" />
+      </div>
+
+      <div class="sap1-block block-out" id="saida" title="Registrador de Saída: Armazena dados que serão exibidos no display">
+        <div class="block-tooltip">
+          <h4>📤 Registrador de Saída</h4>
+          <p>Mostra resultados ao usuário</p>
+          <p>💡 Conecta processador ao mundo externo</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        Registrador de Saída
+        <div class="block-value" id="output-value">0</div>
+        <img src="assets/img/setas/off/down.png" alt="Seta para Visual" class="arrow-img" />
+        <img src="assets/img/setas/off/dir.png" alt="Seta do barramento" class="arrow-img" />
+      </div>
+
+      <div class="sap1-block block-display" id="visual" title="Display Visual: Mostra o resultado das operações em formato binário">
+        <div class="block-tooltip">
+          <h4>🖥️ Display Visual</h4>
+          <p>Exibe valores em binário</p>
+          <p>👁️ Interface visual com o usuário</p>
+          <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
+            Mais detalhes
+          </button>
+        </div>
+        Indicador Visual Binário
+        <div class="block-value" id="display-value">00000000</div>
+      </div>
+
+      <!-- Conexões extras -->
+      <div class="connection conn-alu-acc"></div>
+      <div class="connection conn-alu-regb"></div>
+      <div class="connection conn-ir-controller"></div>
+      <div class="connection conn-out-display"></div>
+      <div class="controller-bus-connection"></div>
+
+    </section>
+
+    
+  </div>
+
+  <!-- Console estilo Mario -->
+  <div id="console-log" class="mario-console" style="display: none;"></div>
+
+  <!-- MUSICA SAPMAN -->
+   <audio id="bg-music" data-src="assets/audio/pacman.mp3" preload="none" loop muted></audio>
+
+  <!-- == FOOTER == -->
+   <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section footer-brand">
+        <img src="assets/img/logo.png" alt="Logo ProjetoSap" height="48">
+
+      </div>
+      <div class="footer-section footer-nav">
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="home.html">Home</a></li>
+          <li><a href="oqueesap.html">O que é SAP</a></li>
+          <li><a href="quiz.html">Quiz</a></li>
+          <li><a href="equipesap.html">Equipe</a></li>
+        </ul>
+      </div>
+      <div class="footer-section footer-info">
+        <h4>Sobre</h4>
+        <p>
+          Projeto acadêmico dedicado à divulgação e ensino de arquitetura de computadores.<br>
+          Referência principal: <a href="assets/docs/Artigo_SAP1_Malvino.pdf" download>Artigo_SAP1_Malvino.pdf</a><br>
+          Professor orientador: Prof. Caudio
+        </p>
+      </div>
+      <div class="footer-section footer-social">
+        <h4>Equipe</h4>
+        <p>
+          Any Gabriela, Eduardo Aniceto, Iara Pubilo, Izabel Chaves e Pedro Guimarães
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Desvendando o SAP-1. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+</main>
+
+  <script src="assets/js/media-opt.js" defer></script>
+  <script src="assets/js/script.js" defer></script>
+  <script src="assets/js/oqesap.js" defer></script>
+  <script src="assets/js/carrosel.js" defer></script>
+</body>
+</html>
