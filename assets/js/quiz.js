@@ -260,6 +260,9 @@ function endQuiz() {
   renderChart();
   // gravar cookies com resumo rápido
   try { setCookie('sap_last_score', score, 7); setCookie('sap_last_date', new Date().toISOString(), 7); } catch(e){}
+
+  // Enviar pontuação para o leaderboard (Vercel KV via /api/leaderboard)
+  try { submitScoreToLeaderboard(score); } catch (_) { /* não bloquear a UI */ }
 }
 
 function startQuiz() {
@@ -404,6 +407,44 @@ function lsSet(key, value) {
   } catch (e) {
     if (!_storageWarned) { showDataAlert('Armazenamento desativado pelo navegador. Progresso pode não ser salvo.', 'warn'); _storageWarned = true; }
     return false;
+  }
+}
+
+// --- Leaderboard (cliente) ---
+async function submitScoreToLeaderboard(finalScore) {
+  try {
+    // Recupera nome salvo ou pergunta ao usuário
+    let name = lsGet('sap_player_name', '') || '';
+    name = (name || '').trim();
+    if (!name) {
+      name = (prompt('Digite seu nome para o ranking:') || '').trim();
+      if (!name) {
+        showDataAlert('Nome vazio: pontuação não registrada no ranking.', 'warn');
+        return;
+      }
+      lsSet('sap_player_name', name);
+    }
+
+    const payload = { name: name.slice(0, 32), score: Number(finalScore) || 0 };
+    const resp = await fetch('/api/leaderboard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+      showDataAlert(`Falha ao registrar no ranking (HTTP ${resp.status}).`, 'warn');
+      return;
+    }
+
+    const top = await resp.json();
+    // Feedback leve (não intrusivo)
+    showDataAlert('Pontuação registrada no ranking! ✅', 'ok');
+    // Se desejar, poderia atualizar uma lista de ranking na página com "top"
+  } catch (e) {
+    // Não bloquear a experiência do usuário se falhar
+    console.warn('Falha ao registrar no leaderboard:', e);
+    showDataAlert('Não foi possível registrar no ranking (offline/CORS).', 'warn');
   }
 }
 function loadAchievements() {
