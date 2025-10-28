@@ -24,7 +24,26 @@ const __dirname = path.dirname(__filename);
 const ROOT = __dirname;
 const OUTDIR = path.join(ROOT, 'dist');
 
-const EXCLUDE_DIRS = new Set(['node_modules', '.git', 'dist', '.vscode']);
+// Diretórios a ignorar no build estático (não devem ir para dist/)
+const EXCLUDE_DIRS = new Set([
+  'node_modules',
+  '.git',
+  'dist',
+  '.vscode',
+  'api',       // Funções serverless são construídas a partir da raiz pelo Vercel
+  'rascunho'   // Conteúdo de rascunho não faz parte do site estático
+]);
+
+// Arquivos de raiz a ignorar (somente na raiz do projeto)
+const EXCLUDE_FILES = new Set([
+  'build.mjs',
+  'server.mjs',
+  'package.json',
+  'package-lock.json',
+  'vercel.json',
+  '.vercelignore',
+  'README.md'
+]);
 
 async function ensureDir(dir) {
   await fs.mkdir(dir, { recursive: true });
@@ -44,6 +63,8 @@ async function getAllFiles(dir, base = dir) {
     if (e.isDirectory()) {
       files.push(...(await getAllFiles(full, base)));
     } else {
+      // Exclui arquivos específicos apenas quando estão na raiz do projeto
+      if (dir === base && EXCLUDE_FILES.has(e.name)) continue;
       files.push(path.relative(base, full));
     }
   }
