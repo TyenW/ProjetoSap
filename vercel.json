@@ -2,8 +2,10 @@
 	"version": 2,
 	"installCommand": "npm install",
 	"buildCommand": "npm run build",
+	"functions": {
+		"api/**/*.{js,mjs}": { "runtime": "nodejs20.x" }
+	},
 	"builds": [
-		{ "src": "api/**/*.{js,mjs}", "use": "@vercel/node" },
 		{ "src": "dist/**", "use": "@vercel/static" }
 	],
 	"routes": [
