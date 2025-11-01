@@ -10,6 +10,17 @@ let assemblyAnterior = []; // Para acompanhar mudanças no assembly
 let asmDebounce = null;    // Debounce para montagem automática
 let editMode = 'ram';      // 'ram' | 'asm'
 let asmTouched = false;    // true quando o usuário digitar no editor pela primeira vez
+// Núcleo determinístico (sem DOM)
+let core = null; // window.EmulatorCore.Emulator
+// Memory store reativo (fonte de verdade da RAM)
+let store = null; // window.MemoryStore
+let syncingInputs = false; // evita laço ao sincronizar inputs a partir do store
+// Workers
+let emulatorWorker = null;
+let assemblerWorker = null;
+let workerRunning = false;
+let tickQueue = [];
+let animatingTick = false;
 
 // Tabela de conversão de hex para assembly
 const hexParaAssembly = {
@@ -40,58 +51,86 @@ function converterHexParaAssembly(hexValue) {
     
     // Se a operação precisa de argumento
     if (['LDA', 'ADD', 'SUB', 'MUL', 'JMP'].includes(operacao)) {
-        if (argumento && argumento !== '0') {
-            return `${operacao} A${argumento}`;
-        } else {
-            return `${operacao} A0`;
-        }
+        // Operando é um nibble 0..F em hex (A..F permitido). Ex.: 0A => LDA A
+        return `${operacao} ${argumento}`;
     }
     
     // Operações sem argumento
     return operacao;
 }
 
-// Função para atualizar o display de assembly baseado na RAM
+// Interpretação com sinal (8 bits): 0..255 -> -128..127
+function toSigned8(n) {
+    n = (n & 0xFF);
+    return (n >= 128) ? (n - 256) : n;
+}
+
+function safeText(text) {
+    const span = document.createElement('span');
+    span.textContent = String(text ?? '');
+    return span.textContent;
+}
+
+// Renderiza display de assembly a partir do store
 function atualizarAssemblyDaRAM() {
     const container = document.getElementById('assemblyCode');
     if (!container) return;
-    
-    container.innerHTML = '';
+    container.textContent = '';
     const novoAssembly = [];
     let temInstrucoes = false;
-    
+
+    const mem = (store && typeof store.getAll === 'function') ? store.getAll() : new Array(16).fill('00');
+    const firstHLT = mem.findIndex(v => (v || '').toUpperCase() === 'F0');
     for (let i = 0; i < 16; i++) {
-        const ramInput = document.getElementById('order' + (i + 1));
-        const hexValue = ramInput ? ramInput.value.trim().toUpperCase() : '';
-        
-        if (hexValue && hexValue !== '00') {
-            const assembly = converterHexParaAssembly(hexValue);
-            if (assembly !== '---') {
-                temInstrucoes = true;
-                const linhaDiv = document.createElement('div');
-                linhaDiv.className = 'assembly-line';
-                linhaDiv.setAttribute('data-linha', i);
-                const numeroFormatado = i.toString().padStart(2, '0');
-                linhaDiv.innerHTML = `${numeroFormatado}: <span class="assembly-instruction">${assembly}</span>`;
-                const mudou = assemblyAnterior[i] !== assembly;
-                if (mudou && assemblyAnterior.length > 0) {
-                    linhaDiv.classList.add('changed');
-                    setTimeout(() => linhaDiv.classList.remove('changed'), 600);
-                }
-                container.appendChild(linhaDiv);
+        const hexValue = (mem[i] || '').toUpperCase();
+        let asm = hexValue.length >= 2 ? converterHexParaAssembly(hexValue) : '---';
+
+        // Após o primeiro HLT, trate bytes como dados (ex.: .DB 0C (12))
+        if (firstHLT !== -1 && i > firstHLT && hexValue.length === 2) {
+            if (hexValue !== '00') {
+                const dec = parseInt(hexValue, 16);
+                const addrHex = i.toString(16).toUpperCase();
+                // Formato desejado: "A 3", "B 4" etc.
+                asm = `${addrHex} ${dec}`;
+            } else {
+                asm = '---';
             }
         }
-        novoAssembly.push(hexValue ? converterHexParaAssembly(hexValue) : '---');
+
+        if (hexValue && hexValue !== '00' && asm !== '---') {
+            temInstrucoes = true;
+            const linhaDiv = document.createElement('div');
+            linhaDiv.className = 'assembly-line';
+            linhaDiv.setAttribute('data-linha', String(i));
+
+            const numero = document.createElement('span');
+            numero.className = 'assembly-line-no';
+            numero.textContent = i.toString().padStart(2, '0') + ': ';
+
+            const instr = document.createElement('span');
+            instr.className = 'assembly-instruction';
+            instr.textContent = safeText(asm);
+
+            linhaDiv.appendChild(numero);
+            linhaDiv.appendChild(instr);
+
+            const mudou = assemblyAnterior[i] !== asm;
+            if (mudou && assemblyAnterior.length > 0) {
+                linhaDiv.classList.add('changed');
+                setTimeout(() => linhaDiv.classList.remove('changed'), 600);
+            }
+            container.appendChild(linhaDiv);
+        }
+        novoAssembly.push(asm);
     }
-    
+
     if (!temInstrucoes) {
         const mensagem = document.createElement('div');
         mensagem.className = 'assembly-empty-message';
-        mensagem.innerHTML = `
-            <div>Digite códigos hexadecimais na RAM</div>
-            <div>para visualizar o Assembly em tempo real!</div>
-            <div style="font-size: 0.8em; margin-top: 8px; opacity: 0.8;">💡 Ex: 0A, 1F, E0, F0...</div>
-        `;
+        const l1 = document.createElement('div'); l1.textContent = 'Digite códigos hexadecimais na RAM';
+        const l2 = document.createElement('div'); l2.textContent = 'para visualizar o Assembly em tempo real!';
+        const l3 = document.createElement('div'); l3.textContent = '💡 Ex: 0A, 1F, E0, F0...'; l3.style.fontSize = '0.8em'; l3.style.marginTop = '8px'; l3.style.opacity = '0.8';
+        mensagem.appendChild(l1); mensagem.appendChild(l2); mensagem.appendChild(l3);
         container.appendChild(mensagem);
     }
     
@@ -123,18 +162,39 @@ function aplicarModoEdicaoUI() {
 function popularTextareaComAssemblyAtual() {
     const textarea = document.getElementById('codigoMaquina');
     if (!textarea) return;
+    const mem = (store && store.getAll) ? store.getAll() : new Array(16).fill('00');
     const linhas = [];
-    for (let i = 0; i < 16; i++) {
-        const val = (document.getElementById('order' + (i + 1))?.value || '').trim().toUpperCase();
-        const asm = converterHexParaAssembly(val);
-        linhas.push(asm === '---' ? '' : asm);
+    // Instruções até o primeiro HLT
+    const firstHLT = mem.findIndex(v => (v || '').toUpperCase() === 'F0');
+    const lastInstrIdx = firstHLT >= 0 ? firstHLT : (mem.length - 1);
+
+    for (let i = 0; i <= lastInstrIdx; i++) {
+        const val = (mem[i] || '').toUpperCase();
+        if (val.length >= 2) {
+            const asm = converterHexParaAssembly(val);
+            if (asm !== '---') linhas.push(asm);
+        }
     }
+
+    // Dados após HLT: formato "A 3", "B 4" (não listar zeros)
+    if (firstHLT >= 0) {
+        for (let i = firstHLT + 1; i < 16; i++) {
+            const hex = (mem[i] || '').toUpperCase();
+            if (hex.length === 2 && hex !== '00') {
+                const dec = parseInt(hex, 16);
+                const addrHex = i.toString(16).toUpperCase();
+                linhas.push(`${addrHex} ${dec}`);
+            }
+        }
+    }
+
     textarea.value = linhas.join('\n');
 }
 
 function isRamVazia() {
+    const mem = (store && store.getAll) ? store.getAll() : new Array(16).fill('');
     for (let i = 0; i < 16; i++) {
-        const v = (document.getElementById('order' + (i + 1))?.value || '').trim().toUpperCase();
+        const v = (mem[i] || '').toUpperCase();
         if (v && v !== '00') return false;
     }
     return true;
@@ -145,174 +205,85 @@ function montarAssemblyParaRAM() {
     const textarea = document.getElementById('codigoMaquina');
     const errosBox = document.getElementById('asmErrors');
     if (!textarea) return;
+    const source = textarea.value || '';
 
-    let bruto = textarea.value.replace(/[,;]+/g, '\n');
-    // Normaliza espaços não separáveis (NBSP) e similares
-    bruto = bruto.replace(/\u00A0/g, ' ');
-    const linhasBrutas = bruto.split(/\r?\n/);
-    const linhas = [];
-    for (const l of linhasBrutas) linhas.push(l.trim());
-
-    const OPC = {
-        LDA: { code: '0', arg: 'nibble' },
-        ADD: { code: '1', arg: 'nibble' },
-        SUB: { code: '2', arg: 'nibble' },
-        INC: { code: '3', arg: 'none' },
-        DEC: { code: '4', arg: 'none' },
-        MUL: { code: '5', arg: 'nibble' },
-        JMP: { code: '6', arg: 'nibble' },
-        OUT: { code: 'E', arg: 'none' },
-        HLT: { code: 'F', arg: 'none' }
+    const applyResult = (result) => {
+        const { memory, errors, assignments } = result || {};
+        if (store && store.setAll && Array.isArray(memory)) {
+            store.setAll(memory, 'asm');
+        } else if (Array.isArray(memory)) {
+            for (let i = 0; i < 16; i++) {
+                const el = document.getElementById('order' + (i + 1));
+                if (el) el.value = memory[i];
+            }
+            atualizarRamPreview();
+        }
+        if (errosBox) {
+            const errs = Array.isArray(errors) ? errors : [];
+            if (errs.length) {
+                errosBox.innerHTML = errs.map(e => `• ${e}`).join('<br>');
+                errosBox.classList.add('visible');
+                errosBox.style.display = 'block';
+            } else {
+                const summary = Array.isArray(assignments) && assignments.length ? ('\n' + assignments.map(s => `• ${s}`).join('\n')) : '';
+                errosBox.textContent = 'Montagem concluída. RAM atualizada.' + summary;
+                errosBox.classList.add('visible');
+                errosBox.style.display = 'block';
+                errosBox.style.whiteSpace = 'pre-line';
+                errosBox.style.color = '#9effa3';
+                errosBox.style.background = 'rgba(0,255,100,0.08)';
+                errosBox.style.borderColor = 'rgba(0,255,100,0.25)';
+                setTimeout(() => {
+                    errosBox.style.removeProperty('color');
+                    errosBox.style.removeProperty('background');
+                    errosBox.style.removeProperty('border-color');
+                }, 2500);
+            }
+        }
+        atualizarAssemblyDaRAM();
     };
 
-    const erros = [];
-    const mem = new Array(16).fill('00');
-    const used = new Array(16).fill(false);
-
-    const parseNibble = (tok) => {
-        if (!tok) return null;
-        let t = tok.trim().toUpperCase();
-        t = t.replace(/^0X/, '');
-        if (/^\d+$/.test(t)) {
-            const dec = parseInt(t, 10);
-            if (isNaN(dec) || dec < 0 || dec > 15) return null;
-            return dec.toString(16).toUpperCase();
-        }
-        if (/^[0-9A-F]{1,2}$/.test(t)) {
-            const val = parseInt(t, 16);
-            if (val < 0 || val > 15) return null;
-            return val.toString(16).toUpperCase();
-        }
-        return null;
-    };
-
-    const parseAddr = (tok) => {
-        if (!tok) return null;
-        let t = tok.trim().toUpperCase().replace(/^0X/, '');
-        let val = null;
-        if (/^\d+$/.test(t)) val = parseInt(t, 10);
-        else if (/^[0-9A-F]{1,2}$/.test(t)) val = parseInt(t, 16);
-        if (val === null || isNaN(val) || val < 0 || val > 15) return null;
-        return val;
-    };
-
-    const parseByte = (tok) => {
-        if (!tok) return null;
-        let t = tok.trim().toUpperCase().replace(/^0X/, '');
-        if (/^\d+$/.test(t)) {
-            const dec = parseInt(t, 10);
-            if (isNaN(dec) || dec < 0 || dec > 255) return null;
-            return dec.toString(16).toUpperCase().padStart(2, '0');
-        }
-        if (/^[0-9A-F]{1,2}$/.test(t)) {
-            return t.padStart(2, '0');
-        }
-        return null;
-    };
-
-    const instrLinhas = [];
-    linhas.forEach((raw, idx) => {
-        let semComentario = raw.replace(/(#|\/\/).*$/, '').trim();
-        if (!semComentario) return;
-
-        // Se parece com par numérico (endereço valor), trate como diretiva de dados SEMPRE
-        const tokens = semComentario.split(/\s+/);
-        const addrLike = tokens[0] && /^(?:0x)?[0-9A-Fa-f]{1,2}$|^\d{1,2}$/.test(tokens[0]);
-        const hasSecond = tokens.length > 1 && tokens[1];
-        if (addrLike && hasSecond) {
-            const a = parseAddr(tokens[0]);
-            const b = parseByte(tokens[1]);
-            if (a === null) erros.push(`Linha ${idx + 1}: Endereço inválido (0–15).`);
-            else if (!b) erros.push(`Linha ${idx + 1}: Valor inválido (00–FF ou 0–255).`);
-            else { mem[a] = b; used[a] = true; }
-            return; // não tratar como instrução
-        }
-
-        // Tenta outros separadores (= : ,)
-        const mdir = semComentario.match(/^(.+?)\s*[,=:]\s*(.+)$/);
-        if (mdir) {
-            const a = parseAddr(mdir[1]);
-            const b = parseByte(mdir[2]);
-            if (a === null) erros.push(`Linha ${idx + 1}: Endereço inválido (0–15).`);
-            else if (!b) erros.push(`Linha ${idx + 1}: Valor inválido (00–FF ou 0–255).`);
-            else { mem[a] = b; used[a] = true; }
-            return;
-        }
-
-        // Caso contrário, considere linha como instrução
-        instrLinhas.push({ text: semComentario, idx: idx + 1 });
-    });
-
-    let ptr = 0;
-    const nextFree = () => {
-        while (ptr < 16 && used[ptr]) ptr++;
-        return ptr < 16 ? ptr : -1;
-    };
-
-    instrLinhas.forEach(({ text, idx }) => {
-        const m = text.toUpperCase().match(/^(\w+)(?:\s+(.+))?$/);
-        if (!m) { erros.push(`Linha ${idx}: Sintaxe inválida.`); return; }
-        const op = m[1];
-
-        // Aceita byte hex direto (ex.: 0A, 30, E0, F0) como instrução bruta
-        if (/^[0-9A-F]{2}$/i.test(op) && (!m[2] || !m[2].trim())) {
-            const slotRaw = nextFree();
-            if (slotRaw === -1) { erros.push(`Sem espaço na memória para instruções adicionais (limite 16).`); return; }
-            mem[slotRaw] = op.toUpperCase();
-            used[slotRaw] = true;
-            return;
-        }
-
-        const spec = OPC[op];
-        if (!spec) { erros.push(`Linha ${idx}: Mnemônico desconhecido: ${op}.`); return; }
-        let argNib = '0';
-        if (spec.arg === 'nibble') {
-            const nib = parseNibble((m[2] || '').trim());
-            if (nib === null) { erros.push(`Linha ${idx}: Operando inválido (0–F ou 0–15).`); return; }
-            argNib = nib;
-        } else if (m[2] && m[2].trim()) {
-            erros.push(`Linha ${idx}: ${op} não usa operando. Valor ignorado.`);
-        }
-        const slot = nextFree();
-        if (slot === -1) { erros.push(`Sem espaço na memória para instruções adicionais (limite 16).`); return; }
-        mem[slot] = `${spec.code}${argNib}`;
-        used[slot] = true;
-    });
-
-    for (let i = 0; i < 16; i++) {
-        const el = document.getElementById('order' + (i + 1));
-        if (el) el.value = mem[i];
-    }
-    atualizarRamPreview();
-
-    if (errosBox) {
-        if (erros.length) {
-            errosBox.innerHTML = erros.map(e => `• ${e}`).join('<br>');
-            errosBox.classList.add('visible');
-            errosBox.style.display = 'block';
-        } else {
-            errosBox.textContent = 'Montagem concluída. RAM atualizada.';
-            errosBox.classList.add('visible');
-            errosBox.style.display = 'block';
-            errosBox.style.color = '#9effa3';
-            errosBox.style.background = 'rgba(0,255,100,0.08)';
-            errosBox.style.borderColor = 'rgba(0,255,100,0.25)';
-            setTimeout(() => {
-                errosBox.style.removeProperty('color');
-                errosBox.style.removeProperty('background');
-                errosBox.style.removeProperty('border-color');
-            }, 2000);
+    // Tenta via worker
+    if (window.Worker) {
+        ensureWorkers();
+        if (assemblerWorker) {
+            try {
+                const h = (ev) => {
+                    const data = ev.data || {};
+                    if (data.type === 'assembled') {
+                        assemblerWorker.removeEventListener('message', h);
+                        applyResult(data);
+                    }
+                };
+                assemblerWorker.addEventListener('message', h, { once: true });
+                assemblerWorker.postMessage({ type: 'assemble', source });
+                return;
+            } catch (e) {
+                // fallback abaixo
+            }
         }
     }
-
-    atualizarAssemblyDaRAM();
+    // Fallback local
+    try {
+        if (window.AssemblerCore && typeof window.AssemblerCore.assemble === 'function') {
+            const result = window.AssemblerCore.assemble(source);
+            applyResult(result);
+        }
+    } catch (e) {
+        if (errosBox) {
+            errosBox.textContent = 'Falha ao montar: ' + (e && e.message ? e.message : String(e));
+            errosBox.classList.add('visible');
+            errosBox.style.display = 'block';
+        }
+    }
 }
 
 function atualizarRamPreview() {
+    const mem = (store && store.getAll) ? store.getAll() : new Array(16).fill('');
     for (let i = 0; i < 16; i++) {
-        const val = (document.getElementById('order' + (i + 1))?.value || '--').toUpperCase();
+        const val = (mem[i] || '').toUpperCase();
         const cell = document.getElementById('preview' + (i + 1));
-        if (cell) cell.textContent = val && val.length ? val : '--';
+        if (cell) cell.textContent = (val.length === 2) ? val : '--';
     }
 }
 
@@ -578,6 +549,18 @@ function resetar() {
     
     // Mostrar mensagem
     mostrarMensagemEstiloMario("Sistema resetado completamente!");
+
+    // Cancelar execução no worker, se houver
+    try {
+        if (emulatorWorker && workerRunning) {
+            emulatorWorker.postMessage({ type: 'cancel' });
+        }
+        workerRunning = false;
+        tickQueue = [];
+        animatingTick = false;
+    } catch (e) {
+        // ignore
+    }
 }
 
 // Importar CSV
@@ -589,6 +572,7 @@ function importarCSVParaMemoria(csvText) {
     if (linhas.length < 16) {
         throw new Error('Arquivo possui menos de 16 linhas válidas');
     }
+    const arr = new Array(16);
     for (let i = 0; i < 16; i++) {
         let valor = (linhas[i] || '').toUpperCase().replace(/[^0-9A-F]/g, '');
         if (valor.length === 0) valor = '00';
@@ -596,8 +580,17 @@ function importarCSVParaMemoria(csvText) {
         if (!/^[0-9A-F]{2}$/.test(valor)) {
             throw new Error(`Valor inválido na linha ${i+1}: ${linhas[i]}`);
         }
-        const input = document.getElementById('order' + (i + 1));
-        if (input) input.value = valor;
+        arr[i] = valor;
+    }
+    if (store && store.setAll) {
+        store.setAll(arr, 'csv');
+    } else {
+        for (let i = 0; i < 16; i++) {
+            const input = document.getElementById('order' + (i + 1));
+            if (input) input.value = arr[i];
+        }
+        atualizarAssemblyDaRAM();
+        atualizarRamPreview();
     }
     inicializar();
     atualizarStatus();
@@ -616,15 +609,26 @@ function mostrarMensagemEstiloMario(texto) {
 }
 
 function inicializar() {
+    // Captura RAM atual como hex a partir do MemoryStore
     memoria = new Map();
-    for (let i = 1; i <= 16; i++) {
-        const address = i - 1;
-        let val = document.getElementById('order' + i).value.trim().toUpperCase();
-        // Preenche com zeros à esquerda para garantir 2 dígitos
-        memoria.set(address, val.padStart(2, '0'));
+    const memHex = (store && store.getAll) ? store.getAll().map(v => (v || '').toUpperCase().replace(/[^0-9A-F]/g, '').padStart(2, '0')) : new Array(16).fill('00');
+    for (let i = 0; i < 16; i++) memoria.set(i, memHex[i]);
+
+    // Instancia núcleo do emulador determinístico
+    try {
+        core = new (window.EmulatorCore && window.EmulatorCore.Emulator ? window.EmulatorCore.Emulator : function(){ throw new Error('EmulatorCore indisponível'); })();
+        core.loadMemoryFromHex(memHex);
+        core.reset();
+    } catch (e) {
+        console.error('Falha ao inicializar núcleo do emulador:', e);
+        mostrarMensagemEstiloMario('Erro ao inicializar o núcleo do emulador.');
+        running = false;
+        return;
     }
-    PC = 0;
-    ACC = 0;
+
+    // Espelha estado no legado
+    PC = core.PC;
+    ACC = core.ACC;
     passos = [];
     saida = [];
     running = true;
@@ -681,8 +685,17 @@ function atualizarStatus(instrucaoAtual = '') {
     
     if (pcValue) pcValue.textContent = PC;
     if (accValue) accValue.textContent = ACC;
-    if (riValue) riValue.textContent = instrucaoAtual || (memoria.get(PC) || '--');
-    if (outputValue) outputValue.textContent = saida.length > 0 ? saida[saida.length - 1] : '0';
+    if (riValue) {
+        const riHex = instrucaoAtual || (core ? core.peekCurrentInstrHex() : (memoria.get(PC) || '--'));
+        riValue.textContent = riHex || '--';
+    }
+    if (outputValue) {
+        const lastUnsigned = saida.length > 0 ? (saida[saida.length - 1] >>> 0) : 0;
+        const signed = toSigned8(lastUnsigned);
+        outputValue.textContent = String(signed);
+        // Dica: mostrar também o valor sem sinal no title
+        outputValue.title = `sem sinal: ${lastUnsigned}`;
+    }
     if (displayValue) {
         const lastOutput = saida.length > 0 ? parseInt(saida[saida.length - 1]) : 0;
         displayValue.textContent = lastOutput.toString(2).padStart(8, '0');
@@ -697,8 +710,15 @@ function adicionarEventosRAM() {
     for (let i = 1; i <= 16; i++) {
         const input = document.getElementById('order' + i);
         if (input) {
-            input.addEventListener('input', function() {
-                atualizarAssemblyDaRAM();
+            input.addEventListener('input', function(e) {
+                const v = (e.target.value || '').toUpperCase().replace(/[^0-9A-F]/g, '').slice(0,2);
+                e.target.value = v; // mantém parcial
+                if (store && store.setByte) store.setByte(i - 1, v, 'ram');
+            });
+            input.addEventListener('blur', function(e) {
+                const v = ((e.target.value || '').toUpperCase().replace(/[^0-9A-F]/g, '')).slice(0,2).padStart(2,'0');
+                e.target.value = v;
+                if (store && store.setByte) store.setByte(i - 1, v, 'ram');
             });
         }
     }
@@ -776,13 +796,20 @@ function removerDestaqueExecucao() {
 
 // Executa um passo
 function executarPasso() {
-    if (!running || PC >= 16) {
+    if (!running || !core || core.halted || PC >= 16) {
         mostrarMensagemEstiloMario(passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : ''));
         return;
     }
-
-    const instr = memoria.get(PC) || '0000';
-    const { op, arg } = decode(instr);
+    // Obter instrução atual (antes do step)
+    const instr = core.peekCurrentInstrHex();
+    const decoded = (function decodeHex(hx){
+        if (!hx || hx.length < 2) return { op:'???', arg:0 };
+        const opcode = parseInt(hx[0], 16);
+        const arg = parseInt(hx[1], 16);
+        const map = {0:'LDA',1:'ADD',2:'SUB',3:'INC',4:'DEC',5:'MUL',6:'JMP',14:'OUT',15:'HLT'};
+        return { op: map.hasOwnProperty(opcode)? map[opcode]:'???', arg: isNaN(arg)?0:arg };
+    })(instr);
+    const op = decoded.op; const arg = decoded.arg;
 
     // Define duração base para micro-passos T1..T6 em função da velocidade
     const stepDur = Math.max(120, Math.floor(animationSpeed / 6));
@@ -797,91 +824,66 @@ function executarPasso() {
 
     // Aguarda a animação de busca terminar, então executa
     setTimeout(() => {
-        passos.push(`PC=${PC} | Instr: ${instr} | ACC=${ACC}`);
+        // Executa 1 passo no núcleo determinístico
+        const result = core.step();
+        const opName = result.decode.opName;
+        const argVal = result.decode.arg;
+        const hasMem = ['LDA','ADD','SUB','MUL'].includes(opName);
 
-        switch (op) {
-            case 'LDA':
-                animateInstructionExecute('LDA', true, arg);
-                const valorMem = parseInt(memoria.get(arg) || '0000', 16);
-                atualizarValorBloco('ram-value', memoria.get(arg) || '--');
-                atualizarValorBloco('mar-value', arg);
-                ACC = valorMem;
-                atualizarValorBloco('acc-value', ACC);
-                passos.push(`LDA ${arg}: ACC <- MEM[${arg}] = ${memoria.get(arg)} (${ACC})`);
-                PC++;
-                break;
-            case 'ADD':
-                animateInstructionExecute('ADD', true, arg);
-                const valorAdd = parseInt(memoria.get(arg) || '0000', 16);
-                atualizarValorBloco('regb-value', valorAdd);
-                atualizarValorBloco('mar-value', arg);
-                mostrarOperacaoALU('ADD', ACC, valorAdd, ACC + valorAdd);
-                ACC += valorAdd;
-                atualizarValorBloco('acc-value', ACC);
-                passos.push(`ADD ${arg}: ACC += MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
-                PC++;
-                break;
-            case 'SUB':
-                animateInstructionExecute('SUB', true, arg);
-                const valorSub = parseInt(memoria.get(arg) || '0000', 16);
-                atualizarValorBloco('regb-value', valorSub);
-                atualizarValorBloco('mar-value', arg);
-                mostrarOperacaoALU('SUB', ACC, valorSub, ACC - valorSub);
-                ACC -= valorSub;
-                atualizarValorBloco('acc-value', ACC);
-                passos.push(`SUB ${arg}: ACC -= MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
-                PC++;
-                break;
-            case 'INC':
-                animateInstructionExecute('INC', false);
-                mostrarOperacaoALU('INC', ACC, 1, ACC + 1);
-                ACC++;
-                atualizarValorBloco('acc-value', ACC);
-                passos.push(`INC: ACC++ (ACC=${ACC})`);
-                PC++;
-                break;
-            case 'DEC':
-                animateInstructionExecute('DEC', false);
-                mostrarOperacaoALU('DEC', ACC, 1, ACC - 1);
-                ACC--;
-                atualizarValorBloco('acc-value', ACC);
-                passos.push(`DEC: ACC-- (ACC=${ACC})`);
-                PC++;
-                break;
-            case 'MUL':
-                animateInstructionExecute('MUL', true, arg);
-                const valorMul = parseInt(memoria.get(arg) || '0000', 16);
-                atualizarValorBloco('regb-value', valorMul);
-                atualizarValorBloco('mar-value', arg);
-                mostrarOperacaoALU('MUL', ACC, valorMul, ACC * valorMul);
-                ACC *= valorMul;
-                atualizarValorBloco('acc-value', ACC);
-                passos.push(`MUL ${arg}: ACC *= MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
-                PC++;
-                break;
-            case 'JMP':
-                passos.push(`JMP para ${arg}`);
-                atualizarValorBloco('controller-value', `JMP→${arg}`);
-                PC = arg;
-                atualizarValorBloco('pc-value', PC);
-                break;
-            case 'OUT':
-                animateOutput();
-                passos.push(`OUT: ${ACC}`);
-                saida.push(ACC);
-                atualizarValorBloco('output-value', ACC);
-                atualizarValorBloco('display-value', ACC.toString(2).padStart(8, '0'));
-                PC++;
-                break;
-            case 'HLT':
-                passos.push("HLT: Parada");
-                atualizarValorBloco('controller-value', 'HALT');
-                running = false;
-                break;
-            default:
-                passos.push(`Instrução desconhecida: ${instr}`);
-                running = false;
-                break;
+        passos.push(`PC=${result.before.PC} | Instr: ${instr} | ACC=${result.before.ACC}`);
+
+        if (opName === 'JMP') {
+            passos.push(`JMP para ${argVal}`);
+            atualizarValorBloco('controller-value', `JMP→${argVal}`);
+        }
+
+        // Anima execução conforme tipo
+        if (opName === 'OUT') {
+            animateOutput();
+        } else if (opName && opName !== 'HLT' && opName !== '???') {
+            animateInstructionExecute(opName, hasMem, hasMem ? argVal : null);
+        }
+
+        // Atualiza valores de UI (ACC/PC/REGs) segundo resultado
+        ACC = result.after.ACC;
+        PC = result.after.PC;
+
+        // Valores auxiliares para UI (REG B, ALU, MAR, RAM value)
+        if (hasMem) {
+            atualizarValorBloco('mar-value', argVal);
+            const memHexVal = core.getInstrHexAt(argVal);
+            atualizarValorBloco('ram-value', memHexVal || '--');
+            if (opName !== 'LDA') {
+                const rb = result.readVal ?? parseInt(memHexVal || '00', 16);
+                atualizarValorBloco('regb-value', rb);
+                const preview = (opName === 'ADD') ? (result.before.ACC + rb)
+                               : (opName === 'SUB') ? (result.before.ACC - rb)
+                               : (opName === 'MUL') ? (result.before.ACC * rb)
+                               : result.after.ACC;
+                mostrarOperacaoALU(opName, result.before.ACC, rb, preview);
+            }
+        } else if (opName === 'INC' || opName === 'DEC') {
+            const delta = (opName === 'INC') ? 1 : -1;
+            mostrarOperacaoALU(opName, result.before.ACC, Math.abs(delta), result.before.ACC + delta);
+        }
+
+        if (opName === 'OUT') {
+            // OUT usa ACC antes da operação como saída (no core outputs foi empurrada)
+            const last = core.outputs.length ? core.outputs[core.outputs.length - 1] : result.before.ACC;
+            saida.push(last);
+            // Mostrar como valor com sinal
+            atualizarValorBloco('output-value', toSigned8(last));
+            atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
+            passos.push(`OUT: ${last}`);
+        }
+        if (opName === 'HLT') {
+            passos.push('HLT: Parada');
+            atualizarValorBloco('controller-value', 'HALT');
+            running = false;
+        }
+        if (result.fault) {
+            passos.push(result.fault);
+            running = false;
         }
 
         // Avança Estados T durante a execução (T4..T6)
@@ -901,89 +903,194 @@ function executarPasso() {
 
 // Executa tudo com animações
 function executarTudo() {
-    if (!running || passos.length === 0) {
-        inicializar();
-    }
-    
-    resetAnimations();
-    mostrarMensagemEstiloMario("Executando todas as instruções...");
-    
-    function executarProximoPasso() {
-        if (running && PC < 16) {
-            executarPasso();
-            // Agenda o próximo passo após a animação atual terminar
-            setTimeout(executarProximoPasso, animationSpeed + 500);
-        } else {
-            // Execução completa
-            setTimeout(() => {
-                mostrarMensagemEstiloMario(passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : ''));
-                resetAnimations();
-            }, 1000);
+    // Executa via Web Worker para não travar a UI
+    // Sempre reinicializa para garantir ACC=0, PC=0 e limpeza de estado entre execuções
+    try {
+        if (emulatorWorker && workerRunning) {
+            emulatorWorker.postMessage({ type: 'cancel' });
+            workerRunning = false;
+            tickQueue = [];
+            animatingTick = false;
         }
+    } catch (_) {}
+    inicializar();
+    resetAnimations();
+    mostrarMensagemEstiloMario("Executando (worker)...");
+
+    ensureWorkers();
+    if (!emulatorWorker) {
+        // fallback para o modo antigo
+        return (function fallback(){
+            const MAX_STEPS = 256; let steps = 0; let interrompidoPorLimite = false;
+            const loop = () => {
+                const podeContinuar = running && core && !core.halted && PC < 16 && steps < MAX_STEPS;
+                if (podeContinuar) {
+                    executarPasso(); steps++; setTimeout(loop, animationSpeed + 500);
+                } else {
+                    if (steps >= MAX_STEPS && core && !core.halted) interrompidoPorLimite = true;
+                    setTimeout(() => {
+                        const base = passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : '');
+                        const aviso = interrompidoPorLimite ? `\nExecução interrompida: limite de ${MAX_STEPS} passos atingido (possível loop sem HLT).` : '';
+                        mostrarMensagemEstiloMario(base + aviso);
+                        resetAnimations();
+                    }, 1000);
+                }
+            };
+            loop();
+        })();
     }
-    
-    // Inicia a execução
-    executarProximoPasso();
+
+    try {
+        workerRunning = true;
+        tickQueue = [];
+        animatingTick = false;
+        const memHex = (store && store.getAll) ? store.getAll().map(v => (v || '').toUpperCase()) : new Array(16).fill('00');
+
+        const onMsg = (ev) => {
+            const data = ev.data || {};
+            if (data.type === 'tick') {
+                tickQueue.push(data);
+                processTickQueue();
+            } else if (data.type === 'done') {
+                workerRunning = false;
+                const reason = data.reason || 'DONE';
+                const base = passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : '');
+                const aviso = (reason === 'MAX_STEPS') ? `\nExecução interrompida: limite de 256 passos.` : (reason === 'CANCELED' ? '\nExecução cancelada.' : '');
+                setTimeout(() => {
+                    mostrarMensagemEstiloMario(base + aviso);
+                    resetAnimations();
+                }, 300);
+                emulatorWorker.removeEventListener('message', onMsg);
+            }
+        };
+        emulatorWorker.addEventListener('message', onMsg);
+        const stepMs = Math.max(0, parseInt(animationSpeed, 10) || 0);
+        emulatorWorker.postMessage({ type: 'run', memory: memHex, maxSteps: 256, speed: stepMs });
+    } catch (e) {
+        workerRunning = false;
+    }
+}
+
+function processTickQueue() {
+    if (animatingTick) return;
+    const item = tickQueue.shift();
+    if (!item) return;
+    animatingTick = true;
+    try {
+        renderTickFromWorker(item);
+    } finally {
+        setTimeout(() => {
+            animatingTick = false;
+            processTickQueue();
+        }, (parseInt(animationSpeed, 10) || 1500) + 400);
+    }
+}
+
+function renderTickFromWorker(tick) {
+    // tick: { fetched, decode:{opName,arg}, before, after, outputEmitted, fault }
+    const instrHex = (tick && typeof tick.fetched === 'number') ? (tick.fetched & 0xFF).toString(16).toUpperCase().padStart(2, '0') : '--';
+    const opName = tick && tick.decode ? tick.decode.opName : '???';
+    const argVal = tick && tick.decode ? tick.decode.arg : 0;
+    const hasMem = ['LDA','ADD','SUB','MUL'].includes(opName);
+
+    // Usa mesmas animações básicas do executarPasso(), mas sem chamar core.step()
+    animateInstructionFetch();
+    const stepDur = Math.max(120, Math.floor(animationSpeed / 6));
+    resetTState();
+    setTState(1);
+    setTimeout(() => setTState(2), stepDur);
+    setTimeout(() => setTState(3), stepDur * 2);
+
+    setTimeout(() => {
+        if (opName === 'OUT') {
+            animateOutput();
+        } else if (opName && opName !== 'HLT' && opName !== '???') {
+            animateInstructionExecute(opName, hasMem, hasMem ? argVal : null);
+        }
+
+        // Aplicar efeitos/valores em UI
+        const beforeACC = tick.before ? tick.before.ACC : ACC;
+        if (hasMem) {
+            atualizarValorBloco('mar-value', argVal);
+            const memHexAt = (store && store.getAll) ? (store.getAll()[argVal] || '--') : '--';
+            atualizarValorBloco('ram-value', memHexAt || '--');
+            if (opName !== 'LDA') {
+                const rb = tick.readVal ?? parseInt(memHexAt || '00', 16);
+                atualizarValorBloco('regb-value', rb);
+                const preview = (opName === 'ADD') ? (beforeACC + rb)
+                               : (opName === 'SUB') ? (beforeACC - rb)
+                               : (opName === 'MUL') ? (beforeACC * rb)
+                               : (tick.after ? tick.after.ACC : ACC);
+                mostrarOperacaoALU(opName, beforeACC, rb, preview);
+            }
+        } else if (opName === 'INC' || opName === 'DEC') {
+            const delta = (opName === 'INC') ? 1 : -1;
+            mostrarOperacaoALU(opName, beforeACC, Math.abs(delta), beforeACC + delta);
+        }
+
+        // Atualiza estados globais
+        ACC = tick.after ? (tick.after.ACC || 0) : ACC;
+        PC = tick.after ? (tick.after.PC || 0) : PC;
+
+        if (opName === 'OUT') {
+            const last = (tick.before && typeof tick.before.ACC === 'number') ? tick.before.ACC : ACC;
+            saida.push(last);
+            atualizarValorBloco('output-value', toSigned8(last));
+            atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
+            passos.push(`OUT: ${last}`);
+        }
+        if (opName === 'JMP') {
+            passos.push(`JMP para ${argVal}`);
+            atualizarValorBloco('controller-value', `JMP→${argVal}`);
+        }
+        if (opName === 'HLT') {
+            passos.push('HLT: Parada');
+            atualizarValorBloco('controller-value', 'HALT');
+            running = false;
+        }
+        if (tick.fault) {
+            passos.push(tick.fault);
+            running = false;
+        }
+
+        // Avança T4..T6
+        setTState(4);
+        setTimeout(() => setTState(5), stepDur);
+        setTimeout(() => setTState(6), stepDur * 2);
+
+        mostrarMensagemEstiloMario(passos[passos.length - 1] || `Instr ${instrHex}`);
+        setTimeout(() => atualizarStatus(instrHex), 500);
+    }, animationSpeed);
+}
+
+function ensureWorkers() {
+    try {
+        if (!window.Worker) return;
+        if (!emulatorWorker) {
+            emulatorWorker = new Worker('assets/js/workers/emulator.worker.js');
+        }
+        if (!assemblerWorker) {
+            assemblerWorker = new Worker('assets/js/workers/assembler.worker.js');
+        }
+    } catch (e) {
+        console.warn('Workers indisponíveis:', e);
+    }
 }
 
 // Versão interna sem mostrar mensagem
 function executarPassoInterno() {
-    if (!running || PC >= 16) return;
-
-    const instr = memoria.get(PC) || '0000';
-    const { op, arg } = decode(instr);
-
-    passos.push(`PC=${PC} | Instr: ${instr} | ACC=${ACC}`);
-
-    switch (op) {
-        case 'LDA':
-            ACC = parseInt(memoria.get(arg) || '0000', 16);
-            passos.push(`LDA ${arg}: ACC <- MEM[${arg}] = ${memoria.get(arg)} (${ACC})`);
-            PC++;
-            break;
-        case 'ADD':
-            ACC += parseInt(memoria.get(arg) || '0000', 16);
-            passos.push(`ADD ${arg}: ACC += MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
-            PC++;
-            break;
-        case 'SUB':
-            ACC -= parseInt(memoria.get(arg) || '0000', 16);
-            passos.push(`SUB ${arg}: ACC -= MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
-            PC++;
-            break;
-        case 'INC':
-            ACC++;
-            passos.push(`INC: ACC++ (ACC=${ACC})`);
-            PC++;
-            break;
-        case 'DEC':
-            ACC--;
-            passos.push(`DEC: ACC-- (ACC=${ACC})`);
-            PC++;
-            break;
-        case 'MUL':
-            ACC *= parseInt(memoria.get(arg) || '0000', 16);
-            passos.push(`MUL ${arg}: ACC *= MEM[${arg}] = ${memoria.get(arg)} (ACC=${ACC})`);
-            PC++;
-            break;
-        case 'JMP':
-            passos.push(`JMP para ${arg}`);
-            PC = arg;
-            break;
-        case 'OUT':
-            passos.push(`OUT: ${ACC}`);
-            saida.push(ACC);
-            PC++;
-            break;
-        case 'HLT':
-            passos.push("HLT: Parada");
-            running = false;
-            break;
-        default:
-            passos.push(`Instrução desconhecida: ${instr}`);
-            running = false;
-            break;
+    if (!running || !core || core.halted || PC >= 16) return;
+    const res = core.step();
+    ACC = res.after.ACC;
+    PC = res.after.PC;
+    if (res.decode && res.decode.opName === 'OUT') {
+        const last = core.outputs.length ? core.outputs[core.outputs.length - 1] : res.before.ACC;
+        saida.push(last);
     }
+    if (res.decode && res.decode.opName === 'JMP') {
+        passos.push(`JMP para ${res.decode.arg}`);
+    }
+    if (res.halted) running = false;
 }
 
 // Escreve saída final no console Mario
@@ -993,6 +1100,33 @@ function escreverNaLabel(mensagem) {
 
 // Botões e eventos
 document.addEventListener('DOMContentLoaded', function () {
+    // Cria MemoryStore e conecta assinantes
+    if (!store && window.MemoryStore && typeof window.MemoryStore.create === 'function') {
+        store = window.MemoryStore.create();
+        // Inicializa store com valores dos inputs (se houver) para preservar estado visual atual
+        const initArr = new Array(16);
+        for (let i = 0; i < 16; i++) {
+            const el = document.getElementById('order' + (i + 1));
+            const v = (el && el.value ? el.value : '').toUpperCase().replace(/[^0-9A-F]/g, '').slice(0,2);
+            initArr[i] = v;
+        }
+        store.setAll(initArr, 'init');
+
+        store.subscribe(({ source, next }) => {
+            // Atualiza preview e assembly sempre
+            atualizarRamPreview();
+            atualizarAssemblyDaRAM();
+            // Sincroniza inputs quando a mudança não veio do próprio input
+            if (source !== 'ram') {
+                syncingInputs = true;
+                for (let i = 0; i < 16; i++) {
+                    const el = document.getElementById('order' + (i + 1));
+                    if (el) el.value = (next[i] || '').toUpperCase();
+                }
+                syncingInputs = false;
+            }
+        });
+    }
     // Inicializa o display de assembly baseado na RAM
     atualizarAssemblyDaRAM();
     aplicarModoEdicaoUI();
@@ -1000,6 +1134,34 @@ document.addEventListener('DOMContentLoaded', function () {
     // Adiciona eventos de input nos campos da RAM
     adicionarEventosRAM();
     atualizarRamPreview();
+
+    // Clique nas linhas do assembly: foca RAM correspondente e troca para modo RAM
+    try {
+        const assemblyContainer = document.getElementById('assemblyCode');
+        if (assemblyContainer) {
+            assemblyContainer.addEventListener('click', (ev) => {
+                const line = ev.target.closest('.assembly-line');
+                if (!line) return;
+                const idx = parseInt(line.getAttribute('data-linha'), 10);
+                if (isNaN(idx)) return;
+                const input = document.getElementById('order' + (idx + 1));
+                const modeRam = document.getElementById('modeRam');
+                const modeAsm = document.getElementById('modeAsm');
+                if (modeRam && modeAsm) {
+                    modeRam.checked = true;
+                    modeAsm.checked = false;
+                    editMode = 'ram';
+                    aplicarModoEdicaoUI();
+                }
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            });
+        }
+    } catch (e) {
+        console.warn('Falha ao conectar clique no assembly:', e);
+    }
     
     document.getElementById('passo').addEventListener('click', function () {
         if (editMode === 'asm') montarAssemblyParaRAM();

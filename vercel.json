@@ -1,16 +1,7 @@
 {
-	"version": 2,
-	"installCommand": "npm install",
-	"buildCommand": "npm run build",
-	"functions": {
-		"api/**/*.{js,mjs}": { "runtime": "nodejs20.x" }
-	},
-	"builds": [
-		{ "src": "dist/**", "use": "@vercel/static" }
-	],
-	"routes": [
-		{ "src": "/api/(.*)", "dest": "/api/$1" },
-		{ "src": "^/$", "dest": "/dist/index.html" },
-		{ "src": "/(.*)", "dest": "/dist/$1" }
-	]
+  "version": 2,
+  "routes": [
+    { "src": "^/$", "dest": "/index.html" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
 }

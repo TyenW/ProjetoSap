@@ -12,4 +12,6 @@
  * - Meta tag: <meta name="leaderboard-api" content="https://.../api/leaderboard" />
  * - localStorage: key 'sap_quiz_leaderboard_api'
  */
-window.LEADERBOARD_API = window.LEADERBOARD_API || '';
+// Defina explicitamente a API pública do Apps Script para o leaderboard
+// (GET retorna Top 10; POST recebe {name, score})
+window.LEADERBOARD_API = window.LEADERBOARD_API || 'https://script.google.com/macros/s/AKfycbwNFOo7vdeMmjn5IimQjghcJb0RyhygPJv4DfGNf1ypiX0AV4uPgkINB8pOTIylTku6WQ/exec';

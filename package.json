@@ -1,22 +1,10 @@
 {
   "name": "projetosap",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
-  "description": "Emulador SAP-1 com quiz e leaderboard compartilhado",
+  "description": "Emulador SAP-1 com quiz e leaderboard (deploy estático)",
   "type": "module",
-  "scripts": {
-    "build": "node build.mjs",
-    "clean": "powershell -NoProfile -Command \"Remove-Item -Recurse -Force dist 2>$null; exit 0\"",
-    "start": "node server.mjs"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "@vercel/kv": "^1.0.0"
-  },
-  "devDependencies": {
-    "cssnano": "^6.1.2",
-    "postcss": "^8.4.47",
-    "terser": "^5.36.0"
-  }
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {}
 }

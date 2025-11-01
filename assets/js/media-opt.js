@@ -8,11 +8,14 @@
     } catch (_) { return false; }
   }
 
-  async function headExists(url) {
+  function webpEnabled() {
+    // Opt-in via flag JS ou meta tag; padrão: desabilitado para evitar 404 em dev
     try {
-      const res = await fetch(url, { method: 'HEAD' });
-      return res.ok;
-    } catch (_) { return false; }
+      if (window.MEDIA_OPT && window.MEDIA_OPT.webp === true) return true;
+      const meta = document.querySelector('meta[name="enable-webp"]');
+      if (meta && /^(1|true|yes)$/i.test(meta.getAttribute('content') || '')) return true;
+    } catch(_) {}
+    return false;
   }
 
   function optimizeImages() {
@@ -26,30 +29,24 @@
   async function trySwapBackground() {
     const body = document.body;
     if (!body) return;
-    if (!supportsWebP()) return;
-    const webpBg = 'assets/img/pacman.webp';
-    if (await headExists(webpBg)) {
-      // Preserve repeat and other bg props; only swap image URL
-      body.style.backgroundImage = `url('${webpBg}')`;
-      body.style.backgroundRepeat = body.style.backgroundRepeat || 'repeat';
-      body.style.imageRendering = body.style.imageRendering || 'pixelated';
-    }
+    if (!supportsWebP() || !webpEnabled()) return;
+    const webpBg = body.getAttribute('data-webp-bg');
+    if (!webpBg) return;
+    // Preserve repeat and other bg props; only swap image URL
+    body.style.backgroundImage = `url('${webpBg}')`;
+    body.style.backgroundRepeat = body.style.backgroundRepeat || 'repeat';
+    body.style.imageRendering = body.style.imageRendering || 'pixelated';
   }
 
   async function trySwapInlineImages() {
-    if (!supportsWebP()) return;
+    if (!supportsWebP() || !webpEnabled()) return;
     const imgs = Array.from(document.images || []);
-    await Promise.all(imgs.map(async (img) => {
-      const src = img.getAttribute('src') || '';
-      if (!src) return;
-      const lower = src.toLowerCase();
-      if (lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg')) {
-        const webp = src.replace(/\.(png|jpg|jpeg)$/i, '.webp');
-        if (await headExists(webp)) {
-          img.setAttribute('src', webp);
-        }
+    imgs.forEach((img) => {
+      const candidate = img.getAttribute('data-webp');
+      if (candidate) {
+        img.setAttribute('src', candidate);
       }
-    }));
+    });
   }
 
   function initLazyAudio() {
