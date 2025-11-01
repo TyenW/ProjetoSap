@@ -1,1 +1,111 @@
-!function(){function t(){try{const t=document.createElement("canvas");return!!t.getContext&&0===t.toDataURL("image/webp").indexOf("data:image/webp")}catch(t){return!1}}async function e(t){try{return(await fetch(t,{method:"HEAD"})).ok}catch(t){return!1}}document.addEventListener("DOMContentLoaded",function(){Array.from(document.images||[]).forEach(t=>{t.hasAttribute("loading")||t.setAttribute("loading","lazy"),t.hasAttribute("decoding")||t.setAttribute("decoding","async")}),async function(){const a=document.body;if(!a)return;if(!t())return;const n="assets/img/pacman.webp";await e(n)&&(a.style.backgroundImage=`url('${n}')`,a.style.backgroundRepeat=a.style.backgroundRepeat||"repeat",a.style.imageRendering=a.style.imageRendering||"pixelated")}(),async function(){if(!t())return;const a=Array.from(document.images||[]);await Promise.all(a.map(async t=>{const a=t.getAttribute("src")||"";if(!a)return;const n=a.toLowerCase();if(n.endsWith(".png")||n.endsWith(".jpg")||n.endsWith(".jpeg")){const n=a.replace(/\.(png|jpg|jpeg)$/i,".webp");await e(n)&&t.setAttribute("src",n)}}))}(),function(){const t=document.getElementById("bg-music"),e=document.getElementById("muteToggle");if(!t||!e)return;const a=!!document.querySelector('script[src*="assets/js/script.js"]'),n=t.getAttribute("src");n&&(t.setAttribute("data-src",n),t.removeAttribute("src")),t.setAttribute("preload","none"),t.muted=!0,t.autoplay=!1,e&&!e.dataset.mediaOptInit&&(e.textContent="🔇",e.dataset.mediaOptInit="1");const r=async n=>{try{if(!t.getAttribute("src")){const e=t.getAttribute("data-src");e&&(t.setAttribute("src",e),await t.load())}if(t.muted=!t.muted,!t.paused&&t.muted)try{await t.pause()}catch{}else try{await t.play()}catch{}e.textContent=t.muted?"🔇":"🔊",e.setAttribute("aria-pressed",String(!t.muted)),e.setAttribute("aria-label",t.muted?"Ativar som":"Desativar som"),a&&e.removeEventListener("click",r)}catch(t){}};e.addEventListener("click",r)}()})}();
+// Media optimization: lazy audio, lazy images, opportunistic WebP swaps
+(function(){
+	function supportsWebP() {
+		try {
+			const canvas = document.createElement('canvas');
+			if (!canvas.getContext) return false;
+			return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+		} catch (_) { return false; }
+	}
+
+	function webpEnabled() {
+		// Opt-in via flag JS ou meta tag; padrão: desabilitado para evitar 404 em dev
+		try {
+			if (window.MEDIA_OPT && window.MEDIA_OPT.webp === true) return true;
+			const meta = document.querySelector('meta[name="enable-webp"]');
+			if (meta && /^(1|true|yes)$/i.test(meta.getAttribute('content') || '')) return true;
+		} catch(_) {}
+		return false;
+	}
+
+	function optimizeImages() {
+		const imgs = Array.from(document.images || []);
+		imgs.forEach(img => {
+			if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+			if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+		});
+	}
+
+	async function trySwapBackground() {
+		const body = document.body;
+		if (!body) return;
+		if (!supportsWebP() || !webpEnabled()) return;
+		const webpBg = body.getAttribute('data-webp-bg');
+		if (!webpBg) return;
+		// Preserve repeat and other bg props; only swap image URL
+		body.style.backgroundImage = `url('${webpBg}')`;
+		body.style.backgroundRepeat = body.style.backgroundRepeat || 'repeat';
+		body.style.imageRendering = body.style.imageRendering || 'pixelated';
+	}
+
+	async function trySwapInlineImages() {
+		if (!supportsWebP() || !webpEnabled()) return;
+		const imgs = Array.from(document.images || []);
+		imgs.forEach((img) => {
+			const candidate = img.getAttribute('data-webp');
+			if (candidate) {
+				img.setAttribute('src', candidate);
+			}
+		});
+	}
+
+	function initLazyAudio() {
+		const audio = document.getElementById('bg-music');
+		const muteBtn = document.getElementById('muteToggle');
+		if (!audio || !muteBtn) return;
+
+		const hasScriptJs = !!document.querySelector('script[src*="assets/js/script.js"]');
+
+		// If HTML still has src, migrate to data-src to avoid auto-download
+		const currentSrc = audio.getAttribute('src');
+		if (currentSrc) {
+			audio.setAttribute('data-src', currentSrc);
+			audio.removeAttribute('src');
+		}
+		audio.setAttribute('preload', 'none');
+		audio.muted = true;
+		audio.autoplay = false;
+
+		// Ensure initial icon shows muted
+		if (muteBtn && !muteBtn.dataset.mediaOptInit) {
+			muteBtn.textContent = '🔇';
+			muteBtn.dataset.mediaOptInit = '1';
+		}
+
+		const onFirstClick = async (e) => {
+			try {
+				if (!audio.getAttribute('src')) {
+					const ds = audio.getAttribute('data-src');
+					if (ds) {
+						audio.setAttribute('src', ds);
+						await audio.load();
+					}
+				}
+				// Toggle muted state based on current
+				audio.muted = !audio.muted;
+				if (!audio.paused && audio.muted) {
+					try { await audio.pause(); } catch {}
+				} else {
+					try { await audio.play(); } catch {}
+				}
+				muteBtn.textContent = audio.muted ? '🔇' : '🔊';
+				muteBtn.setAttribute('aria-pressed', String(!audio.muted));
+				muteBtn.setAttribute('aria-label', audio.muted ? 'Ativar som' : 'Desativar som');
+
+				// If script.js exists (index), remove our handler to avoid double toggle next times
+				if (hasScriptJs) {
+					muteBtn.removeEventListener('click', onFirstClick);
+				}
+			} catch (_) {}
+		};
+
+		muteBtn.addEventListener('click', onFirstClick);
+	}
+
+	document.addEventListener('DOMContentLoaded', function(){
+		optimizeImages();
+		trySwapBackground();
+		trySwapInlineImages();
+		initLazyAudio();
+	});
+})();

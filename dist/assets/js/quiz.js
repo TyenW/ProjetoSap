@@ -1,1 +1,836 @@
-let allQuestions=[],masterAchievements=[];const DEFAULT_ACHIEVEMENTS=[{id:"streak3",title:"3 Acertos Seguidos",description:"Acerte 3 questões consecutivas",icon:"🔥",goal:{type:"streak",target:3}},{id:"pro",title:"Acertou >= 80%",description:"Mantenha precisão de 80% ou mais em uma sessão",icon:"🎯",goal:{type:"accuracy",target:80}},{id:"perfect",title:"Pontuação Perfeita",description:"Acerte 100% das perguntas de uma sessão",icon:"🌟"},{id:"answered10",title:"Aquecendo",description:"Responda 10 perguntas",icon:"✅",goal:{type:"answered",target:10}},{id:"answered50",title:"Maratonista",description:"Responda 50 perguntas",icon:"🏃",goal:{type:"answered",target:50}},{id:"score20",title:"Pontuador",description:"Alcance 20 pontos em uma sessão",icon:"⚡",goal:{type:"score",target:20}}],DEFAULT_QUESTIONS=[{text:"O que significa SAP em SAP-1?",options:["Simple As Possible","Systematic Arithmetic Processor","Standard Architecture Platform","Single Accumulator Processor"],answer:0,difficulty:"fácil"},{text:"Qual registrador aponta para a próxima instrução?",options:["IR","MAR","PC","A"],answer:2,difficulty:"fácil"},{text:"Quantos estados T tem o ciclo de máquina do SAP-1?",options:["4","6","8","2"],answer:1,difficulty:"fácil"},{text:"Qual instrução carrega um valor da RAM para o Acumulador?",options:["OUT","ADD","HLT","LDA"],answer:3,difficulty:"médio"},{text:"Qual é a função do sinal Ep?",options:["Incrementar o PC","Colocar o conteúdo do PC no barramento","Carregar valor no PC","Zerar o PC"],answer:1,difficulty:"médio"}];let TRI_MODE="infinite";function showDataAlert(e,t="warn"){try{const o=document.getElementById("message");if(o)return o.textContent=e,void(o.style.color="error"===t?"#ff6b6b":"#ffb347");let a=document.getElementById("quiz-data-alert");a||(a=document.createElement("div"),a.id="quiz-data-alert",a.setAttribute("role","alert"),a.style.position="fixed",a.style.top="8px",a.style.left="50%",a.style.transform="translateX(-50%)",a.style.zIndex=9999,a.style.padding="10px 14px",a.style.borderRadius="8px",a.style.fontFamily="inherit",a.style.fontSize="0.9rem",a.style.boxShadow="0 2px 10px rgba(0,0,0,0.4)",document.body.appendChild(a)),a.style.background="error"===t?"#7a1f1f":"#7a5a1f",a.style.color="#fff",a.textContent=e,clearTimeout(a._timer),a._timer=setTimeout(()=>a.remove(),6e3)}catch(e){}}async function loadExternalData(){try{const e=await fetch("assets/data/questions.json",{cache:"no-store"});if(e.ok){const t=await e.json();Array.isArray(t.questions)?allQuestions=t.questions:console.warn('questions.json não possui "questions" como array.')}else console.warn("Falha HTTP ao buscar questions.json:",e.status,e.statusText),showDataAlert(`Não foi possível carregar perguntas (HTTP ${e.status}). Usando perguntas padrão.`,"warn")}catch(e){console.warn("Falha ao carregar questions.json, usando fallback interno se existir",e),showDataAlert("Erro ao carregar questions.json (CORS/offline/JSON inválido). Usando perguntas padrão.","warn")}allQuestions&&0!==allQuestions.length||(console.warn("Usando perguntas padrão (fallback), verifique se assets/data/questions.json está acessível via HTTP e com JSON válido."),allQuestions=DEFAULT_QUESTIONS);try{const e=await fetch("assets/data/achievements.json",{cache:"no-store"});if(e.ok){const t=await e.json();Array.isArray(t.achievements)?masterAchievements=t.achievements:console.warn('achievements.json não possui "achievements" como array, usando fallback.')}else console.warn("Falha HTTP ao buscar achievements.json:",e.status,e.statusText),showDataAlert(`Não foi possível carregar conquistas (HTTP ${e.status}). Usando padrão.`,"warn")}catch(e){console.warn("Falha ao carregar achievements.json",e),showDataAlert("Erro ao carregar achievements.json (CORS/offline/JSON inválido). Usando conquistas padrão.","warn")}masterAchievements&&0!==masterAchievements.length||(console.warn("Usando conquistas padrão (fallback), verifique se assets/data/achievements.json está acessível via HTTP e com JSON válido."),masterAchievements=DEFAULT_ACHIEVEMENTS)}let lives=3,currentQ=0,score=0,acertosSeguidos=0,usedQuestions=[],quizSet=[],respostasCorretas=[],answeredCount=0,maxStreak=0;function getRandomQuestion(e){const t=allQuestions.filter(t=>t.difficulty===e&&!usedQuestions.includes(t));return 0===t.length?null:t[Math.floor(Math.random()*t.length)]}function selectAdaptiveQuestion(){let e;e=score<3?"fácil":score<6?"médio":"difícil";let t=getRandomQuestion(e);return t||(allQuestions.find(e=>!usedQuestions.includes(e))||null)}function selectRandomQuestion(){if(!allQuestions||0===allQuestions.length)return null;const e=allQuestions.filter(e=>!usedQuestions.includes(e));return 0===e.length?(usedQuestions=[],allQuestions[Math.floor(Math.random()*allQuestions.length)]):e[Math.floor(Math.random()*e.length)]}function selectByDifficulty(e){const t=allQuestions.filter(t=>t.difficulty===e&&!usedQuestions.includes(t));return t.length>0?t[Math.floor(Math.random()*t.length)]:allQuestions.find(e=>!usedQuestions.includes(e))||null}function renderQuestion(){if(0===lives)return endQuiz();const e=quizSet[currentQ];if(!e){const e=document.getElementById("message");return void(e&&(e.textContent="Não há perguntas disponíveis no momento.",e.style.color="#ffd700"))}const t=document.getElementById("question");t&&(t.innerText=`[${(e.difficulty||"").toUpperCase()}] ${e.text}`);const o=document.getElementById("current-q");o&&(o.innerText=currentQ+1);const a=document.getElementById("lives");a&&(a.innerText="❤️".repeat(lives));const n=document.getElementById("options");n.innerHTML="",e.options.forEach((e,t)=>{const o=document.createElement("button");o.textContent=e,o.onclick=()=>checkAnswer(t),o.addEventListener("touchstart",()=>o.classList.add("pressed")),o.addEventListener("touchend",()=>o.classList.remove("pressed")),n.appendChild(o)}),document.getElementById("message").textContent=""}function checkAnswer(e){const t=e===quizSet[currentQ].answer,o=document.getElementById("message"),a=document.getElementById("options"),n=Array.from(a.querySelectorAll("button")),s=n[e];if(n.forEach(e=>e.disabled=!0),t)score++,acertosSeguidos++,acertosSeguidos>maxStreak&&(maxStreak=acertosSeguidos),o.textContent="Correto!",o.style.color="green",respostasCorretas.push(!0),s&&s.classList.add("correct");else{lives--,acertosSeguidos=0,o.textContent="Errado!",o.style.color="red",respostasCorretas.push(!1),s&&s.classList.add("wrong");const e=document.getElementById("lives");e.classList.add("remove"),setTimeout(()=>e.classList.remove("remove"),350)}document.getElementById("lives").innerText="❤️".repeat(lives),answeredCount++;const r=document.getElementById("answered-count");r&&(r.textContent=answeredCount),renderAchievementsList(),currentQ++,setTimeout(()=>{if(lives<=0)endQuiz();else{const e=selectRandomQuestion();if(!e)return void endQuiz();quizSet.push(e),usedQuestions.push(e),n.forEach(e=>{e.classList.remove("correct","wrong","pressed")}),renderQuestion()}},1500)}function endQuiz(){document.getElementById("options").innerHTML="",document.getElementById("restartBtn").style.display="block",0===lives?(document.getElementById("question").innerText="☠️ GAME OVER!",document.getElementById("message").innerHTML=`<div class="game-over">Você perdeu todas as vidas! Acertou ${score} perguntas.</div>`):(document.getElementById("question").innerText="🎉 PARABÉNS!",document.getElementById("message").innerHTML=`<div class="win-message">Você completou o quiz! Pontuação: ${score} pts</div>`),renderChart();try{setCookie("sap_last_score",score,7),setCookie("sap_last_date",(new Date).toISOString(),7)}catch(e){}try{submitScoreToLeaderboard(score)}catch(e){}}function startQuiz(){lives=3,currentQ=0,score=0,acertosSeguidos=0,usedQuestions=[],quizSet=[],respostasCorretas=[],answeredCount=0,maxStreak=0,document.getElementById("message").innerHTML="",document.getElementById("restartBtn").style.display="none";const e=selectRandomQuestion();if(e)quizSet.push(e),usedQuestions.push(e);else{const e=document.getElementById("message");e&&(e.textContent="Falha ao carregar perguntas. Verifique o arquivo questions.json.",e.style.color="orange")}renderQuestion()}function renderChart(){document.getElementById("chartModal").style.display="block";const e=document.getElementById("performanceChartModal").getContext("2d"),t={"fácil":{total:0,acertos:0},"médio":{total:0,acertos:0},"difícil":{total:0,acertos:0}};quizSet.forEach((e,o)=>{t[e.difficulty].total++,respostasCorretas[o]&&t[e.difficulty].acertos++});const o={labels:["Fácil","Médio","Difícil"],datasets:[{label:"Acertos",data:[t.fácil.acertos,t.médio.acertos,t.difícil.acertos],backgroundColor:["#4caf50","#ff9800","#f44336"]},{label:"Total",data:[t.fácil.total,t.médio.total,t.difícil.total],backgroundColor:["#a5d6a7","#ffcc80","#ef9a9a"]}]};window.performanceChartInstance&&window.performanceChartInstance.destroy(),window.performanceChartInstance=new Chart(e,{type:"bar",data:o,options:{responsive:!0,scales:{y:{beginAtZero:!0,stepSize:1}}}})}function closeChart(){document.getElementById("chartModal").style.display="none"}function exportarEstatisticas(){const e={"fácil":{total:0,acertos:0},"médio":{total:0,acertos:0},"difícil":{total:0,acertos:0}};quizSet.forEach((t,o)=>{e[t.difficulty].total++,respostasCorretas[o]&&e[t.difficulty].acertos++});const t=["=== Estatísticas do Quiz SAP-1 ===",`Data: ${(new Date).toLocaleString()}`,"",`Pontuação total: ${score}/${quizSet.length}`,"","Por nível de dificuldade:"];for(const o in e){const{acertos:a,total:n}=e[o],s=(a/(n||1)*100).toFixed(1);t.push(`${o.toUpperCase()}: ${a}/${n} acertos (${s}%)`)}const o=new Blob([t.join("\n")],{type:"text/plain;charset=utf-8"}),a=URL.createObjectURL(o),n=document.createElement("a");n.href=a,n.download="estatisticas_sap1.txt",n.click()}const music=document.getElementById("bg-music"),toggle=document.getElementById("muteToggle");toggle.onclick=()=>{music.muted=!music.muted,toggle.textContent=music.muted?"🔇":"🔊"};const ACHIEVEMENTS_KEY="sap_quiz_achievements";let _storageWarned=!1;function lsGet(e,t=null){try{const o=localStorage.getItem(e);return null==o?t:o}catch(e){return _storageWarned||(showDataAlert("Armazenamento desativado pelo navegador. Progresso pode não ser salvo.","warn"),_storageWarned=!0),t}}function lsSet(e,t){try{return localStorage.setItem(e,t),!0}catch(e){return _storageWarned||(showDataAlert("Armazenamento desativado pelo navegador. Progresso pode não ser salvo.","warn"),_storageWarned=!0),!1}}async function submitScoreToLeaderboard(e){try{let t=lsGet("sap_player_name","")||"";if(t=(t||"").trim(),!t){if(t=(prompt("Digite seu nome para o ranking:")||"").trim(),!t)return void showDataAlert("Nome vazio: pontuação não registrada no ranking.","warn");lsSet("sap_player_name",t)}const o={name:t.slice(0,32),score:Number(e)||0},a=await fetch("/api/leaderboard",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(o)});if(!a.ok)return void showDataAlert(`Falha ao registrar no ranking (HTTP ${a.status}).`,"warn");await a.json(),showDataAlert("Pontuação registrada no ranking! ✅","ok")}catch(e){console.warn("Falha ao registrar no leaderboard:",e),showDataAlert("Não foi possível registrar no ranking (offline/CORS).","warn")}}function loadAchievements(){try{return JSON.parse(lsGet(ACHIEVEMENTS_KEY,"[]"))}catch(e){return[]}}function setCookie(e,t,o){try{const a=new Date;a.setTime(a.getTime()+24*o*60*60*1e3);const n="expires="+a.toUTCString(),s=encodeURIComponent(JSON.stringify(t));document.cookie=`${e}=${s}; ${n}; path=/`}catch(e){console.warn("setCookie falhou",e)}}function getCookie(e){try{const t=document.cookie.split(";").map(e=>e.trim());for(const o of t)if(o.startsWith(e+"=")){const t=o.substring(e.length+1);return JSON.parse(decodeURIComponent(t))}}catch(e){}return null}function saveAchievement(e,t){const o=loadAchievements();if(!o.find(t=>t.id===e)){o.push({id:e,title:t,date:(new Date).toISOString()}),lsSet(ACHIEVEMENTS_KEY,JSON.stringify(o));try{setCookie(ACHIEVEMENTS_KEY,o,30)}catch(e){}showAchievementToast(t)}}function showAchievementToast(e){const t=document.createElement("div");t.className="achievement-toast",t.textContent=`🏆 Conquista desbloqueada: ${e}`,document.body.appendChild(t),setTimeout(()=>{t.classList.add("visible")},50),setTimeout(()=>{t.classList.remove("visible"),setTimeout(()=>t.remove(),400)},3500)}const LEADERBOARD_KEY="sap_quiz_leaderboard",LEADERBOARD_API="/api/leaderboard",LEADERBOARD_API_OVERRIDE_KEY="sap_quiz_leaderboard_api";let LB_API_SELECTED=null;function readApiOverrideFromQuery(){try{const e=new URLSearchParams(window.location.search),t=e.get("lbApi")||e.get("api");if(t&&/^https?:\/\//i.test(t)){try{localStorage.setItem("sap_quiz_leaderboard_api",t)}catch(e){}return t}}catch(e){}return null}function readApiOverrideFromStorage(){try{return localStorage.getItem("sap_quiz_leaderboard_api")}catch(e){return null}}function readApiOverrideFromWindow(){try{return"string"==typeof window.LEADERBOARD_API&&window.LEADERBOARD_API?window.LEADERBOARD_API:null}catch(e){return null}}function readApiOverrideFromMeta(){try{const e=document.querySelector('meta[name="leaderboard-api"]');return e&&e.content?e.content:null}catch(e){return null}}function getApiCandidates(){const e=[],t=readApiOverrideFromQuery();t&&e.push(t);const o=readApiOverrideFromStorage();o&&e.push(o);const a=readApiOverrideFromWindow();a&&e.push(a);const n=readApiOverrideFromMeta();n&&e.push(n);try{e.push(new URL(LEADERBOARD_API,window.location.origin).href)}catch(e){}e.push("http://localhost:8000/api/leaderboard");const s=new Set;return e.filter(e=>{if(!e)return!1;const t=e.trim();return!s.has(t)&&(s.add(t),!0)})}async function pickLeaderboardApi(){if(LB_API_SELECTED)return LB_API_SELECTED;const e=getApiCandidates();for(const t of e)try{if((await fetch(t,{method:"GET",cache:"no-store",mode:"cors"})).ok)return LB_API_SELECTED=t,t}catch(e){}return null}async function remoteLoadLeaderboard(){try{const e=await pickLeaderboardApi();if(!e)throw new Error("api indisponível");const t=await fetch(e,{cache:"no-store"});if(!t.ok)throw new Error("http "+t.status);const o=await t.json();return Array.isArray(o)?o:[]}catch(e){return console.warn("remoteLoadLeaderboard falhou, usando local:",e.message||e),null}}async function remoteSaveLeaderboard(e,t){try{const o=await pickLeaderboardApi();if(!o)throw new Error("api indisponível");const a=await fetch(o,{method:"POST",headers:{"Content-Type":"application/json"},mode:"cors",body:JSON.stringify({name:e,score:t})});if(!a.ok)throw new Error("http "+a.status);const n=await a.json();return Array.isArray(n)?n:[]}catch(e){return console.warn("remoteSaveLeaderboard falhou, fallback local:",e.message||e),null}}function localLoadLeaderboard(){return[]}function seedLeaderboardIfEmpty(){}async function saveToLeaderboard(e,t){const o=await remoteSaveLeaderboard(e,t);if(o&&Array.isArray(o))return renderLeaderboard(o),void showSaveToast(`${e} adicionado ao placar (global)!`);const a=localLoadLeaderboard();a.push({name:e||"---",score:t,date:(new Date).toISOString()}),a.sort((e,t)=>t.score-e.score||new Date(e.date)-new Date(t.date));const n=a.slice(0,10);lsSet(LEADERBOARD_KEY,JSON.stringify(n));try{setCookie(LEADERBOARD_KEY,n,30)}catch(e){}renderLeaderboard(n),showDataAlert("Servidor indisponível. Placar salvo localmente nesta máquina.","warn")}function showSaveToast(e){const t=document.createElement("div");t.className="achievement-toast",t.textContent=`✅ ${e}`,document.body.appendChild(t),setTimeout(()=>{t.classList.add("visible")},50),setTimeout(()=>{t.classList.remove("visible"),setTimeout(()=>t.remove(),400)},2800)}async function renderLeaderboard(e){const t=document.getElementById("leaderboard");if(!t)return;let o=Array.isArray(e)?e:await remoteLoadLeaderboard();Array.isArray(o)||(o=localLoadLeaderboard());const a=["🥇","🥈","🥉"],n=[...o];for(let e=n.length;e<10;e++)n.push({name:"---",score:0,date:new Date(0).toISOString(),_placeholder:!0});t.innerHTML='<h3>🏅 Placar de Líderes (Top 10)</h3><ol class="lb-list">'+n.map((e,t)=>{const o=a[t]||t+1,n=`lb-row lb-${t+1}`+(e._placeholder?" lb-empty":""),s=e._placeholder?"--/--/----":new Date(e.date).toLocaleDateString(),r=(e.score||0)+" pts";return`<li class="${n}"><span class="lb-medal">${o}</span><span class="lb-name">${e.name}</span><span class="lb-score">${r}</span><span class="lb-date">${s}</span></li>`}).join("")+"</ol>"}function exportResults(e="txt"){const t={"fácil":{total:0,acertos:0},"médio":{total:0,acertos:0},"difícil":{total:0,acertos:0}};quizSet.forEach((e,o)=>{t[e.difficulty].total++,respostasCorretas[o]&&t[e.difficulty].acertos++});const o={date:(new Date).toISOString(),score:score,totalQuestions:quizSet.length,perDifficulty:t,questions:quizSet.map((e,t)=>({text:e.text,difficulty:e.difficulty,correct:respostasCorretas[t]||!1}))};if("json"===e)downloadBlob(new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),"quiz_sap1.json");else if("csv"===e){const e=["pergunta,dificuldade,acertou"];o.questions.forEach(t=>e.push(`"${t.text.replace(/"/g,'""')}",${t.difficulty},${t.correct}`)),downloadBlob(new Blob([e.join("\n")],{type:"text/csv"}),"quiz_sap1.csv")}else{const e=[];e.push("=== Estatísticas do Quiz SAP-1 ==="),e.push(`Data: ${(new Date).toLocaleString()}`),e.push(`Pontuação total: ${score}/${quizSet.length}`),e.push("Por nível de dificuldade:");for(const o in t){const{acertos:a,total:n}=t[o],s=(a/(n||1)*100).toFixed(1);e.push(`${o.toUpperCase()}: ${a}/${n} acertos (${s}%)`)}downloadBlob(new Blob([e.join("\n")],{type:"text/plain;charset=utf-8"}),"estatisticas_sap1.txt")}}function downloadBlob(e,t){const o=URL.createObjectURL(e),a=document.createElement("a");a.href=o,a.download=t,a.click(),setTimeout(()=>URL.revokeObjectURL(o),5e3)}function startTutorial(){const e=document.getElementById("tutorialOverlay");e&&(e.style.display="block",e.classList.add("visible"))}function closeTutorial(){const e=document.getElementById("tutorialOverlay");e&&(e.classList.remove("visible"),setTimeout(()=>e.style.display="none",300))}function attachTouchHandlers(){const e=document.getElementById("options");e&&(e.addEventListener("touchstart",e=>{const t=e.target.closest("button");t&&t.classList.add("pressed")},{passive:!0}),e.addEventListener("touchend",e=>{const t=e.target.closest("button");t&&t.classList.remove("pressed")}))}function handleEndQuizSave(){score===quizSet.length&&saveAchievement("perfect","Pontuação Perfeita"),score>=Math.ceil(.8*quizSet.length)&&saveAchievement("pro","Acertou >= 80%"),acertosSeguidos>=3&&saveAchievement("streak3","3 Acertos Seguidos"),setTimeout(()=>{openNameModal(score)},300)}function renderAchievementsList(){const e=document.getElementById("achievements");if(!e)return;const t=loadAchievements(),o=computeStats();if(masterAchievements&&masterAchievements.length){const a=masterAchievements.length,n=t.length,s=masterAchievements.map(e=>{const a=t.find(t=>t.id===e.id),{pct:n,text:s}=computeAchievementProgress(e,o,a),r=a?"unlocked":"locked",i=e.icon?e.icon:a?"🏆":"🔒";return`\n        <div class="ach-card ${r}" title="${e.description||""}">\n          <div class="ach-head">\n            <span class="ach-icon">${i}</span>\n            <span class="ach-title">${e.title}</span>\n          </div>\n          <div class="ach-desc">${e.description||""}</div>\n          <div class="ach-progress"><div class="ach-progress-fill" style="width:${n}%;"></div></div>\n          <div class="ach-progress-text">${n}% • ${s}</div>\n        </div>`}).join("");e.innerHTML=`<h3>🏆 Conquistas (${n}/${a})</h3><div class="ach-grid">${s}</div>`}else e.innerHTML='<h3>🏆 Conquistas</h3><div class="empty-ach">Carregue achievements.json para ver a lista completa</div>'}function computeStats(){const e=answeredCount>0?Math.round(score/answeredCount*100):0;return{score:score,answeredCount:answeredCount,maxStreak:maxStreak,accuracy:e,lives:lives}}function computeAchievementProgress(e,t,o){if(o)return{pct:100,text:"Conquistada"};const a=e.goal||{},n=a.type||e.id,s=a.target||("streak3"===e.id?3:"pro"===e.id?80:100);let r=0,i="";switch(n){case"streak":case"streak3":r=Math.min(100,Math.round(t.maxStreak/s*100)),i=`Streak: ${t.maxStreak}/${s}`;break;case"accuracy":case"pro":r=Math.min(100,Math.round(t.accuracy/s*100)),i=`Precisão: ${t.accuracy}% (meta ${s}%)`;break;case"perfect":r=100===t.accuracy&&t.answeredCount>0?100:Math.min(99,t.accuracy),i=100===t.accuracy&&t.answeredCount>0?"Perfeito!":"Acerte 100% em uma sessão";break;case"answered":r=Math.min(100,Math.round(t.answeredCount/(s||10)*100)),i=`Responda ${s} perguntas (${t.answeredCount})`;break;case"score":r=Math.min(100,Math.round(t.score/(s||10)*100)),i=`Pontuação: ${t.score}/${s}`;break;default:r=0,i="Progrida jogando"}return{pct:r,text:i}}const originalEndQuiz=endQuiz;function openNameModal(e){const t=document.getElementById("nameModal");t&&(document.getElementById("modalScore").textContent=e,t.style.display="flex")}function closeNameModal(){const e=document.getElementById("nameModal");e&&(e.style.display="none")}function wireQuizUI(){const e=document.getElementById("saveNameBtn"),t=document.getElementById("cancelNameBtn"),o=document.getElementById("playerNameInput");e&&(e.onclick=()=>{const e=(o?.value||"").trim();e?(saveToLeaderboard(e,score),closeNameModal()):alert("Digite um nome para salvar no placar.")}),t&&(t.onclick=()=>closeNameModal())}endQuiz=function(){originalEndQuiz(),handleEndQuizSave()},loadExternalData().then(()=>{attachTouchHandlers(),renderLeaderboard(),renderAchievementsList(),wireQuizUI(),startQuiz()}).catch(e=>{console.warn("Erro na inicialização dos dados externos",e),attachTouchHandlers(),renderLeaderboard(),renderAchievementsList(),wireQuizUI(),startQuiz()});
+// As perguntas agora serão carregadas de `assets/data/questions.json`.
+let allQuestions = [];
+
+// Lista mestre de conquistas (pode ser carregada do JSON)
+let masterAchievements = [];
+
+// Fallback padrão de conquistas (usado se o JSON externo não carregar)
+const DEFAULT_ACHIEVEMENTS = [
+  { id: 'streak3', title: '3 Acertos Seguidos', description: 'Acerte 3 questões consecutivas', icon: '🔥', goal: { type: 'streak', target: 3 } },
+  { id: 'pro', title: 'Acertou >= 80%', description: 'Mantenha precisão de 80% ou mais em uma sessão', icon: '🎯', goal: { type: 'accuracy', target: 80 } },
+  { id: 'perfect', title: 'Pontuação Perfeita', description: 'Acerte 100% das perguntas de uma sessão', icon: '🌟' },
+  { id: 'answered10', title: 'Aquecendo', description: 'Responda 10 perguntas', icon: '✅', goal: { type: 'answered', target: 10 } },
+  { id: 'answered50', title: 'Maratonista', description: 'Responda 50 perguntas', icon: '🏃', goal: { type: 'answered', target: 50 } },
+  { id: 'score20', title: 'Pontuador', description: 'Alcance 20 pontos em uma sessão', icon: '⚡', goal: { type: 'score', target: 20 } }
+];
+
+// Fallback simples de perguntas caso o arquivo externo falhe
+const DEFAULT_QUESTIONS = [
+  { text: 'O que significa SAP em SAP-1?', options: ['Simple As Possible', 'Systematic Arithmetic Processor', 'Standard Architecture Platform', 'Single Accumulator Processor'], answer: 0, difficulty: 'fácil' },
+  { text: 'Qual registrador aponta para a próxima instrução?', options: ['IR', 'MAR', 'PC', 'A'], answer: 2, difficulty: 'fácil' },
+  { text: 'Quantos estados T tem o ciclo de máquina do SAP-1?', options: ['4', '6', '8', '2'], answer: 1, difficulty: 'fácil' },
+  { text: 'Qual instrução carrega um valor da RAM para o Acumulador?', options: ['OUT', 'ADD', 'HLT', 'LDA'], answer: 3, difficulty: 'médio' },
+  { text: 'Qual é a função do sinal Ep?', options: ['Incrementar o PC', 'Colocar o conteúdo do PC no barramento', 'Carregar valor no PC', 'Zerar o PC'], answer: 1, difficulty: 'médio' }
+];
+
+// Configurações dinâmicas
+// Modo infinito: perguntas aleatórias até o jogador perder 3 vidas
+let TRI_MODE = 'infinite';
+
+// Carrega dados externos (questions.json e achievements.json)
+function showDataAlert(text, tone = 'warn') {
+  try {
+    // Prefer a dedicated message area in the quiz
+    const msg = document.getElementById('message');
+    if (msg) {
+      msg.textContent = text;
+      msg.style.color = tone === 'error' ? '#ff6b6b' : '#ffb347';
+      return;
+    }
+    // Fallback: lightweight floating banner
+    let banner = document.getElementById('quiz-data-alert');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'quiz-data-alert';
+      banner.setAttribute('role', 'alert');
+      banner.style.position = 'fixed';
+      banner.style.top = '8px';
+      banner.style.left = '50%';
+      banner.style.transform = 'translateX(-50%)';
+      banner.style.zIndex = 9999;
+      banner.style.padding = '10px 14px';
+      banner.style.borderRadius = '8px';
+      banner.style.fontFamily = 'inherit';
+      banner.style.fontSize = '0.9rem';
+      banner.style.boxShadow = '0 2px 10px rgba(0,0,0,0.4)';
+      document.body.appendChild(banner);
+    }
+    banner.style.background = tone === 'error' ? '#7a1f1f' : '#7a5a1f';
+    banner.style.color = '#fff';
+    banner.textContent = text;
+    // Auto-hide after 6s
+    clearTimeout(banner._timer);
+    banner._timer = setTimeout(()=> banner.remove(), 6000);
+  } catch (_) { /* ignore */ }
+}
+
+async function loadExternalData() {
+  try {
+    const qResp = await fetch('assets/data/questions.json', { cache: 'no-store' });
+    if (qResp.ok) {
+      const qj = await qResp.json();
+      if (Array.isArray(qj.questions)) allQuestions = qj.questions;
+      else console.warn('questions.json não possui "questions" como array.');
+    } else {
+      console.warn('Falha HTTP ao buscar questions.json:', qResp.status, qResp.statusText);
+      showDataAlert(`Não foi possível carregar perguntas (HTTP ${qResp.status}). Usando perguntas padrão.`, 'warn');
+    }
+  } catch (e) {
+    console.warn('Falha ao carregar questions.json, usando fallback interno se existir', e);
+    showDataAlert('Erro ao carregar questions.json (CORS/offline/JSON inválido). Usando perguntas padrão.', 'warn');
+  }
+  if (!allQuestions || allQuestions.length === 0) {
+    console.warn('Usando perguntas padrão (fallback), verifique se assets/data/questions.json está acessível via HTTP e com JSON válido.');
+    allQuestions = DEFAULT_QUESTIONS;
+  }
+
+  try {
+    const aResp = await fetch('assets/data/achievements.json', { cache: 'no-store' });
+    if (aResp.ok) {
+      const aj = await aResp.json();
+      if (Array.isArray(aj.achievements)) masterAchievements = aj.achievements;
+      else console.warn('achievements.json não possui "achievements" como array, usando fallback.');
+    } else {
+      console.warn('Falha HTTP ao buscar achievements.json:', aResp.status, aResp.statusText);
+      showDataAlert(`Não foi possível carregar conquistas (HTTP ${aResp.status}). Usando padrão.`, 'warn');
+    }
+  } catch (e) {
+    console.warn('Falha ao carregar achievements.json', e);
+    showDataAlert('Erro ao carregar achievements.json (CORS/offline/JSON inválido). Usando conquistas padrão.', 'warn');
+  }
+
+  if (!masterAchievements || masterAchievements.length === 0) {
+    console.warn('Usando conquistas padrão (fallback), verifique se assets/data/achievements.json está acessível via HTTP e com JSON válido.');
+    masterAchievements = DEFAULT_ACHIEVEMENTS;
+  }
+}
+
+let lives = 3;
+let currentQ = 0;
+let score = 0;
+let acertosSeguidos = 0;
+let usedQuestions = [];
+let quizSet = [];
+let respostasCorretas = []; // armazena true/false para acertos
+let answeredCount = 0;
+let maxStreak = 0;
+
+function getRandomQuestion(difficulty) {
+  const pool = allQuestions.filter(q => q.difficulty === difficulty && !usedQuestions.includes(q));
+  if (pool.length === 0) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function selectAdaptiveQuestion() {
+  let dificuldade;
+  if (score < 3) dificuldade = "fácil";
+  else if (score < 6) dificuldade = "médio";
+  else dificuldade = "difícil";
+  let next = getRandomQuestion(dificuldade);
+  if (!next) {
+    // fallback se acabar perguntas da dificuldade atual
+    const restante = allQuestions.find(q => !usedQuestions.includes(q));
+    return restante || null;
+  }
+  return next;
+}
+
+function selectRandomQuestion() {
+  if (!allQuestions || allQuestions.length === 0) return null;
+  const pool = allQuestions.filter(q => !usedQuestions.includes(q));
+  if (pool.length === 0) {
+    // reset para reciclar perguntas quando acabar
+    usedQuestions = [];
+    // escolha diretamente de allQuestions para evitar recursão
+    return allQuestions[Math.floor(Math.random() * allQuestions.length)];
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function selectByDifficulty(nextDifficulty) {
+  // retorna próxima pergunta pela dificuldade exigida, se não houver, fallback
+  const pool = allQuestions.filter(q => q.difficulty === nextDifficulty && !usedQuestions.includes(q));
+  if (pool.length > 0) return pool[Math.floor(Math.random() * pool.length)];
+  return allQuestions.find(q => !usedQuestions.includes(q)) || null;
+}
+
+function renderQuestion() {
+  if (lives === 0) return endQuiz();
+
+  const q = quizSet[currentQ];
+  if (!q) {
+    const msg = document.getElementById('message');
+    if (msg) { msg.textContent = 'Não há perguntas disponíveis no momento.'; msg.style.color = '#ffd700'; }
+    return;
+  }
+
+  const questionEl = document.getElementById("question");
+  if (questionEl) questionEl.innerText = `[${(q.difficulty||'').toUpperCase()}] ${q.text}`;
+  const currEl = document.getElementById("current-q");
+  if (currEl) currEl.innerText = currentQ + 1;
+  const livesEl = document.getElementById("lives");
+  if (livesEl) livesEl.innerText = "❤️".repeat(lives);
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.textContent = opt;
+    btn.onclick = () => checkAnswer(idx);
+    // touch-friendly
+    btn.addEventListener('touchstart', ()=> btn.classList.add('pressed'));
+    btn.addEventListener('touchend', ()=> btn.classList.remove('pressed'));
+    optionsDiv.appendChild(btn);
+  });
+
+  document.getElementById("message").textContent = "";
+}
+
+function checkAnswer(selected) {
+  const q = quizSet[currentQ];
+  const correct = selected === q.answer;
+  const messageDiv = document.getElementById("message");
+  const optionsDiv = document.getElementById('options');
+  const buttons = Array.from(optionsDiv.querySelectorAll('button'));
+  const clickedBtn = buttons[selected];
+  // desabilita todos os botões ao responder
+  buttons.forEach(b => b.disabled = true);
+
+  if (correct) {
+    score++;
+    acertosSeguidos++;
+    if (acertosSeguidos > maxStreak) maxStreak = acertosSeguidos;
+    messageDiv.textContent = "Correto!";
+    messageDiv.style.color = "green";
+    respostasCorretas.push(true);
+    if (clickedBtn) { clickedBtn.classList.add('correct'); }
+  } else {
+    lives--;
+    acertosSeguidos = 0;
+    messageDiv.textContent = "Errado!";
+    messageDiv.style.color = "red";
+    respostasCorretas.push(false);
+    if (clickedBtn) { clickedBtn.classList.add('wrong'); }
+    // anima hearts
+    const hearts = document.getElementById('lives');
+    hearts.classList.add('remove');
+    setTimeout(()=> hearts.classList.remove('remove'), 350);
+  }
+
+  document.getElementById("lives").innerText = "❤️".repeat(lives);
+  answeredCount++;
+  const ansEl = document.getElementById('answered-count');
+  if (ansEl) ansEl.textContent = answeredCount;
+  // atualizar progresso de conquistas em tempo real
+  renderAchievementsList();
+
+  currentQ++;
+
+  setTimeout(() => {
+    if (lives <= 0) {
+      endQuiz();
+    } else {
+      // Sempre pergunta aleatória não usada (modo infinito)
+      const nextQ = selectRandomQuestion();
+      if (!nextQ) {
+        endQuiz();
+        return;
+      }
+      quizSet.push(nextQ);
+      usedQuestions.push(nextQ);
+      // limpar classes de feedback dos botões antes da próxima pergunta
+      buttons.forEach(b=>{ b.classList.remove('correct','wrong','pressed'); });
+      renderQuestion();
+    }
+  }, 1500);
+}
+
+function endQuiz() {
+  document.getElementById("options").innerHTML = "";
+  document.getElementById("restartBtn").style.display = "block";
+
+  if (lives === 0) {
+    document.getElementById("question").innerText = "☠️ GAME OVER!";
+    document.getElementById("message").innerHTML = `<div class="game-over">Você perdeu todas as vidas! Acertou ${score} perguntas.</div>`;
+  } else {
+    document.getElementById("question").innerText = "🎉 PARABÉNS!";
+    document.getElementById("message").innerHTML = `<div class="win-message">Você completou o quiz! Pontuação: ${score} pts</div>`;
+  }
+
+  renderChart();
+  // gravar cookies com resumo rápido
+  try { setCookie('sap_last_score', score, 7); setCookie('sap_last_date', new Date().toISOString(), 7); } catch(e){}
+
+  // Enviar pontuação para o leaderboard (Vercel KV via /api/leaderboard)
+  try { submitScoreToLeaderboard(score); } catch (_) { /* não bloquear a UI */ }
+}
+
+function startQuiz() {
+  lives = 3;
+  currentQ = 0;
+  score = 0;
+  acertosSeguidos = 0;
+  usedQuestions = [];
+  quizSet = [];
+  respostasCorretas = [];
+  answeredCount = 0;
+  maxStreak = 0;
+
+  document.getElementById("message").innerHTML = "";
+  document.getElementById("restartBtn").style.display = "none";
+
+  // Modo infinito: pegar primeira pergunta aleatória
+  const firstQ = selectRandomQuestion();
+  if (firstQ) { quizSet.push(firstQ); usedQuestions.push(firstQ); }
+  else {
+    const msg = document.getElementById('message');
+    if (msg) { msg.textContent = 'Falha ao carregar perguntas. Verifique o arquivo questions.json.'; msg.style.color = 'orange'; }
+  }
+
+  renderQuestion();
+}
+
+function renderChart() {
+  const modal = document.getElementById("chartModal");
+  modal.style.display = "block";
+
+  const ctx = document.getElementById("performanceChartModal").getContext("2d");
+
+  const stats = { fácil: { total: 0, acertos: 0 }, médio: { total: 0, acertos: 0 }, difícil: { total: 0, acertos: 0 } };
+
+  quizSet.forEach((q, i) => {
+    stats[q.difficulty].total++;
+    if (respostasCorretas[i]) stats[q.difficulty].acertos++;
+  });
+
+  const data = {
+    labels: ["Fácil", "Médio", "Difícil"],
+    datasets: [{
+      label: 'Acertos',
+      data: [
+        stats.fácil.acertos,
+        stats.médio.acertos,
+        stats.difícil.acertos
+      ],
+      backgroundColor: ['#4caf50', '#ff9800', '#f44336']
+    }, {
+      label: 'Total',
+      data: [
+        stats.fácil.total,
+        stats.médio.total,
+        stats.difícil.total
+      ],
+      backgroundColor: ['#a5d6a7', '#ffcc80', '#ef9a9a']
+    }]
+  };
+
+  if (window.performanceChartInstance) {
+    window.performanceChartInstance.destroy();
+  }
+
+  window.performanceChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, stepSize: 1 }
+      }
+    }
+  });
+}
+
+function closeChart() {
+  document.getElementById("chartModal").style.display = "none";
+}
+
+function exportarEstatisticas() {
+  const stats = { fácil: { total: 0, acertos: 0 }, médio: { total: 0, acertos: 0 }, difícil: { total: 0, acertos: 0 } };
+
+  quizSet.forEach((q, i) => {
+    stats[q.difficulty].total++;
+    if (respostasCorretas[i]) stats[q.difficulty].acertos++;
+  });
+
+  const linhas = [
+    `=== Estatísticas do Quiz SAP-1 ===`,
+    `Data: ${new Date().toLocaleString()}`,
+    ``,
+    `Pontuação total: ${score}/${quizSet.length}`,
+    ``,
+    `Por nível de dificuldade:`
+  ];
+
+  for (const nivel in stats) {
+    const { acertos, total } = stats[nivel];
+    const perc = ((acertos / (total || 1)) * 100).toFixed(1);
+    linhas.push(`${nivel.toUpperCase()}: ${acertos}/${total} acertos (${perc}%)`);
+  }
+
+  const blob = new Blob([linhas.join('\n')], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "estatisticas_sap1.txt";
+  link.click();
+}
+
+// Som e mute
+const music = document.getElementById("bg-music");
+const toggle = document.getElementById("muteToggle");
+toggle.onclick = () => {
+  music.muted = !music.muted;
+  toggle.textContent = music.muted ? "🔇" : "🔊";
+};
+
+// --- Novas funcionalidades: achievements, leaderboard e export em múltiplos formatos ---
+
+// Achievements simples
+const ACHIEVEMENTS_KEY = 'sap_quiz_achievements';
+let _storageWarned = false;
+
+function lsGet(key, fallback = null) {
+  try {
+    const v = localStorage.getItem(key);
+    return v == null ? fallback : v;
+  } catch (e) {
+    if (!_storageWarned) { showDataAlert('Armazenamento desativado pelo navegador. Progresso pode não ser salvo.', 'warn'); _storageWarned = true; }
+    return fallback;
+  }
+}
+
+function lsSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    if (!_storageWarned) { showDataAlert('Armazenamento desativado pelo navegador. Progresso pode não ser salvo.', 'warn'); _storageWarned = true; }
+    return false;
+  }
+}
+
+// --- Leaderboard (cliente) ---
+async function submitScoreToLeaderboard(finalScore) {
+  // Compat: mantém prompt, mas usa API configurada (Apps Script) internamente
+  try {
+    let name = lsGet('sap_player_name', '') || '';
+    name = (name || '').trim();
+    if (!name) {
+      name = (prompt('Digite seu nome para o ranking:') || '').trim();
+      if (!name) {
+        showDataAlert('Nome vazio: pontuação não registrada no ranking.', 'warn');
+        return;
+      }
+      lsSet('sap_player_name', name);
+    }
+    await saveToLeaderboard(name.slice(0, 32), Number(finalScore) || 0);
+  } catch (e) {
+    console.warn('Falha ao registrar no leaderboard:', e);
+    showDataAlert('Não foi possível registrar no ranking (offline/CORS).', 'warn');
+  }
+}
+function loadAchievements() {
+  try {
+    return JSON.parse(lsGet(ACHIEVEMENTS_KEY, '[]'));
+  } catch (_) { return []; }
+}
+
+// Cookie utilities (simples JSON wrapper)
+function setCookie(name, value, days) {
+  try {
+    const d = new Date(); d.setTime(d.getTime() + (days*24*60*60*1000));
+    const expires = "expires="+ d.toUTCString();
+    const v = encodeURIComponent(JSON.stringify(value));
+    document.cookie = `${name}=${v}; ${expires}; path=/`;
+  } catch(e) { console.warn('setCookie falhou', e); }
+}
+
+function getCookie(name) {
+  try {
+    const cookies = document.cookie.split(';').map(c=>c.trim());
+    for (const c of cookies) {
+      if (c.startsWith(name + '=')) {
+        const v = c.substring(name.length+1);
+        return JSON.parse(decodeURIComponent(v));
+      }
+    }
+  } catch(e) { /* ignore */ }
+  return null;
+}
+
+function saveAchievement(id, title) {
+  const unlocked = loadAchievements();
+  if (!unlocked.find(a => a.id === id)) {
+    unlocked.push({ id, title, date: new Date().toISOString() });
+    lsSet(ACHIEVEMENTS_KEY, JSON.stringify(unlocked));
+    try { setCookie(ACHIEVEMENTS_KEY, unlocked, 30); } catch(e){}
+    showAchievementToast(title);
+  }
+}
+
+function showAchievementToast(title) {
+  const toast = document.createElement('div');
+  toast.className = 'achievement-toast';
+  toast.textContent = `🏆 Conquista desbloqueada: ${title}`;
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.classList.add('visible'); }, 50);
+  setTimeout(() => { toast.classList.remove('visible'); setTimeout(()=>toast.remove(),400); }, 3500);
+}
+
+// Leaderboard compartilhado via API + fallback local
+const LEADERBOARD_KEY = 'sap_quiz_leaderboard';
+const LEADERBOARD_API = '/api/leaderboard';
+const LEADERBOARD_API_OVERRIDE_KEY = 'sap_quiz_leaderboard_api';
+let LB_API_SELECTED = null; // endpoint escolhido dinamicamente
+
+function readApiOverrideFromQuery() {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const q = p.get('lbApi') || p.get('api');
+    if (q && /^https?:\/\//i.test(q)) {
+      // persiste para próximas visitas
+      try { localStorage.setItem(LEADERBOARD_API_OVERRIDE_KEY, q); } catch(_) {}
+      return q;
+    }
+  } catch(_) {}
+  return null;
+}
+
+function readApiOverrideFromStorage() {
+  try { return localStorage.getItem(LEADERBOARD_API_OVERRIDE_KEY); } catch(_) { return null; }
+}
+
+function readApiOverrideFromWindow() {
+  try { return (typeof window.LEADERBOARD_API === 'string' && window.LEADERBOARD_API) ? window.LEADERBOARD_API : null; } catch(_) { return null; }
+}
+
+function readApiOverrideFromMeta() {
+  try {
+    const m = document.querySelector('meta[name="leaderboard-api"]');
+    return m && m.content ? m.content : null;
+  } catch(_) { return null; }
+}
+
+function preferredLeaderboardApi() {
+  if (LB_API_SELECTED) return LB_API_SELECTED;
+  // Prioridade: querystring > localStorage > window.LEADERBOARD_API > meta
+  const q = readApiOverrideFromQuery();
+  if (q) return (LB_API_SELECTED = q);
+  const s = readApiOverrideFromStorage();
+  if (s) return (LB_API_SELECTED = s);
+  const w = readApiOverrideFromWindow();
+  if (w) return (LB_API_SELECTED = w);
+  const mt = readApiOverrideFromMeta();
+  if (mt) return (LB_API_SELECTED = mt);
+  // Como removemos backend local, NÃO tentamos /api nem localhost por padrão
+  return null;
+}
+
+async function remoteLoadLeaderboard() {
+  try {
+    const api = preferredLeaderboardApi();
+    if (!api) throw new Error('api indisponível');
+    const resp = await fetch(api, { cache: 'no-store', redirect: 'follow' });
+    if (resp.redirected && /accounts\.google\.com/i.test(resp.url)) {
+      throw new Error('Apps Script requer login — publique como Web App com acesso "Anyone".');
+    }
+    if (!resp.ok) throw new Error('http ' + resp.status);
+    const data = await resp.json();
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.warn('remoteLoadLeaderboard falhou, usando local:', e.message || e);
+    return null; // sinaliza fallback
+  }
+}
+
+async function remoteSaveLeaderboard(name, score) {
+  try {
+    const api = preferredLeaderboardApi();
+    if (!api) throw new Error('api indisponível');
+    const resp = await fetch(api, {
+      method: 'POST',
+      // Use text/plain para evitar preflight CORS em alguns cenários
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ name, score }),
+      redirect: 'follow'
+    });
+    if (resp.redirected && /accounts\.google\.com/i.test(resp.url)) {
+      throw new Error('Apps Script requer login — publique como Web App com acesso "Anyone".');
+    }
+    if (!resp.ok) throw new Error('http ' + resp.status);
+    const data = await resp.json();
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.warn('remoteSaveLeaderboard falhou, fallback local:', e.message || e);
+    return null;
+  }
+}
+
+function localLoadLeaderboard() {
+  // Fallback desativado para evitar dados estáticos locais; exibir vazio
+  return [];
+}
+
+// Preenche o placar com exemplos se estiver vazio (apenas primeira carga)
+function seedLeaderboardIfEmpty() { /* removido: sem mais seed estático */ }
+
+async function saveToLeaderboard(name, score) {
+  // Tenta salvar no servidor; se falhar, usa local
+  const remote = await remoteSaveLeaderboard(name, score);
+  if (remote && Array.isArray(remote)) {
+    renderLeaderboard(remote);
+    showSaveToast(`${name} adicionado ao placar (global)!`);
+    return;
+  }
+  const lb = localLoadLeaderboard();
+  lb.push({ name: name || '---', score, date: new Date().toISOString() });
+  lb.sort((a,b)=> b.score - a.score || new Date(a.date) - new Date(b.date));
+  const top = lb.slice(0,10);
+  lsSet(LEADERBOARD_KEY, JSON.stringify(top));
+  try { setCookie(LEADERBOARD_KEY, top, 30); } catch(e){}
+  renderLeaderboard(top);
+  showDataAlert('Servidor indisponível. Placar salvo localmente nesta máquina.', 'warn');
+}
+
+function showSaveToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'achievement-toast';
+  toast.textContent = `✅ ${message}`;
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.classList.add('visible'); }, 50);
+  setTimeout(() => { toast.classList.remove('visible'); setTimeout(()=>toast.remove(),400); }, 2800);
+}
+
+async function renderLeaderboard(providedList) {
+  const container = document.getElementById('leaderboard');
+  if (!container) return;
+  let lb = Array.isArray(providedList) ? providedList : (await remoteLoadLeaderboard());
+  if (!Array.isArray(lb)) lb = localLoadLeaderboard();
+  const medals = ['🥇','🥈','🥉'];
+  // completar com linhas fictícias até 10
+  const filled = [...lb];
+  for (let i = filled.length; i < 10; i++) {
+    filled.push({ name: '---', score: 0, date: new Date(0).toISOString(), _placeholder: true });
+  }
+  container.innerHTML = '<h3>🏅 Placar de Líderes (Top 10)</h3>' + '<ol class="lb-list">' + filled.map((e,i)=>{
+    const medal = medals[i] || (i+1);
+    const rowCls = `lb-row lb-${i+1}` + (e._placeholder ? ' lb-empty' : '');
+    const date = e._placeholder ? '--/--/----' : new Date(e.date).toLocaleDateString();
+    const scoreTxt = (e.score||0) + ' pts';
+    return `<li class="${rowCls}"><span class="lb-medal">${medal}</span><span class="lb-name">${e.name}</span><span class="lb-score">${scoreTxt}</span><span class="lb-date">${date}</span></li>`;
+  }).join('') + '</ol>';
+}
+
+// Export em múltiplos formatos (JSON, CSV, TXT)
+function exportResults(format = 'txt') {
+  const stats = { fácil: { total: 0, acertos: 0 }, médio: { total: 0, acertos: 0 }, difícil: { total: 0, acertos: 0 } };
+  quizSet.forEach((q, i) => { stats[q.difficulty].total++; if (respostasCorretas[i]) stats[q.difficulty].acertos++; });
+
+  const payload = {
+    date: new Date().toISOString(),
+    score: score,
+    totalQuestions: quizSet.length,
+    perDifficulty: stats,
+    questions: quizSet.map((q,i)=>({ text: q.text, difficulty: q.difficulty, correct: respostasCorretas[i]||false }))
+  };
+
+  if (format === 'json') {
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    downloadBlob(blob, 'quiz_sap1.json');
+  } else if (format === 'csv') {
+    const lines = ['pergunta,dificuldade,acertou'];
+    payload.questions.forEach(q=> lines.push(`"${q.text.replace(/"/g,'""')}",${q.difficulty},${q.correct}`));
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+    downloadBlob(blob, 'quiz_sap1.csv');
+  } else { // txt
+    const linhas = [];
+    linhas.push('=== Estatísticas do Quiz SAP-1 ===');
+    linhas.push(`Data: ${new Date().toLocaleString()}`);
+    linhas.push(`Pontuação total: ${score}/${quizSet.length}`);
+    linhas.push('Por nível de dificuldade:');
+    for (const nivel in stats) {
+      const { acertos, total } = stats[nivel];
+      const perc = ((acertos / (total || 1)) * 100).toFixed(1);
+      linhas.push(`${nivel.toUpperCase()}: ${acertos}/${total} acertos (${perc}%)`);
+    }
+    const blob = new Blob([linhas.join('\n')], { type: 'text/plain;charset=utf-8' });
+    downloadBlob(blob, 'estatisticas_sap1.txt');
+  }
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+}
+
+// Tutorial interativo simples
+function startTutorial() {
+  const overlay = document.getElementById('tutorialOverlay');
+  if (!overlay) return;
+  overlay.style.display = 'block';
+  overlay.classList.add('visible');
+}
+
+function closeTutorial() {
+  const overlay = document.getElementById('tutorialOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('visible');
+  setTimeout(()=> overlay.style.display = 'none', 300);
+}
+
+// Touch: garantir que botões de opção suportem touchstart para resposta mais rápida
+function attachTouchHandlers() {
+  const optionsDiv = document.getElementById('options');
+  if (!optionsDiv) return;
+  optionsDiv.addEventListener('touchstart', (e) => {
+    const btn = e.target.closest('button');
+    if (btn) btn.classList.add('pressed');
+  }, { passive: true });
+  optionsDiv.addEventListener('touchend', (e) => {
+    const btn = e.target.closest('button');
+    if (btn) btn.classList.remove('pressed');
+  });
+}
+
+// Ao terminar o quiz, salvamos leaderboard e conquistas
+function handleEndQuizSave() {
+  // Achievements: várias condições
+  if (score === quizSet.length) saveAchievement('perfect', 'Pontuação Perfeita');
+  if (score >= Math.ceil(quizSet.length * 0.8)) saveAchievement('pro', 'Acertou >= 80%');
+  if (acertosSeguidos >= 3) saveAchievement('streak3', '3 Acertos Seguidos');
+
+  // Abre modal para salvar no leaderboard
+  setTimeout(()=>{
+    openNameModal(score);
+  }, 300);
+}
+
+function renderAchievementsList() {
+  const container = document.getElementById('achievements');
+  if (!container) return;
+  const unlocked = loadAchievements();
+  const stats = computeStats();
+  if (masterAchievements && masterAchievements.length) {
+    const total = masterAchievements.length;
+    const unlockedCount = unlocked.length;
+    const cards = masterAchievements.map(m => {
+      const found = unlocked.find(u => u.id === m.id);
+      const { pct, text } = computeAchievementProgress(m, stats, found);
+      const cls = found ? 'unlocked' : 'locked';
+      const icon = (m.icon) ? m.icon : (found ? '🏆' : '🔒');
+      return `
+        <div class="ach-card ${cls}" title="${m.description || ''}">
+          <div class="ach-head">
+            <span class="ach-icon">${icon}</span>
+            <span class="ach-title">${m.title}</span>
+          </div>
+          <div class="ach-desc">${m.description || ''}</div>
+          <div class="ach-progress"><div class="ach-progress-fill" style="width:${pct}%;"></div></div>
+          <div class="ach-progress-text">${pct}% • ${text}</div>
+        </div>`;
+    }).join('');
+  container.innerHTML = `<h3>🏆 Conquistas (${unlockedCount}/${total})</h3><div class="ach-grid">${cards}</div>`;
+  } else {
+    container.innerHTML = '<h3>🏆 Conquistas</h3><div class="empty-ach">Carregue achievements.json para ver a lista completa</div>';
+  }
+}
+
+function computeStats() {
+  const accuracy = answeredCount > 0 ? Math.round((score / answeredCount) * 100) : 0;
+  return { score, answeredCount, maxStreak, accuracy, lives };
+}
+
+// Suporta progresso por id conhecido ou por m.goal { type, target }
+function computeAchievementProgress(m, stats, isUnlocked) {
+  // unlocked: 100%
+  if (isUnlocked) return { pct: 100, text: 'Conquistada' };
+  const goal = m.goal || {};
+  const type = goal.type || m.id; // fallback para id conhecidos
+  const target = goal.target || ((m.id === 'streak3') ? 3 : (m.id === 'pro' ? 80 : 100));
+  let pct = 0;
+  let text = '';
+  switch (type) {
+    case 'streak':
+    case 'streak3':
+      pct = Math.min(100, Math.round((stats.maxStreak / target) * 100));
+      text = `Streak: ${stats.maxStreak}/${target}`;
+      break;
+    case 'accuracy':
+    case 'pro':
+      pct = Math.min(100, Math.round((stats.accuracy / target) * 100));
+      text = `Precisão: ${stats.accuracy}% (meta ${target}%)`;
+      break;
+    case 'perfect':
+      pct = stats.accuracy === 100 && stats.answeredCount > 0 ? 100 : Math.min(99, stats.accuracy);
+      text = stats.accuracy === 100 && stats.answeredCount > 0 ? 'Perfeito!' : 'Acerte 100% em uma sessão';
+      break;
+    case 'answered':
+      pct = Math.min(100, Math.round((stats.answeredCount / (target || 10)) * 100));
+      text = `Responda ${target} perguntas (${stats.answeredCount})`;
+      break;
+    case 'score':
+      pct = Math.min(100, Math.round((stats.score / (target || 10)) * 100));
+      text = `Pontuação: ${stats.score}/${target}`;
+      break;
+    default:
+      // fallback genérico
+      pct = 0;
+      text = 'Progrida jogando';
+  }
+  return { pct, text };
+}
+
+// Atualizar endQuiz para chamar salvamentos extras
+const originalEndQuiz = endQuiz;
+endQuiz = function() {
+  originalEndQuiz();
+  handleEndQuizSave();
+};
+
+// Inicialização adicional
+// Carrega dados externos primeiro, depois inicializa o quiz
+loadExternalData().then(()=>{
+  attachTouchHandlers();
+  renderLeaderboard();
+  renderAchievementsList();
+  wireQuizUI();
+  startQuiz();
+}).catch(err=>{
+  console.warn('Erro na inicialização dos dados externos', err);
+  attachTouchHandlers();
+  renderLeaderboard();
+  renderAchievementsList();
+  wireQuizUI();
+  startQuiz();
+});
+
+// Modal e ações auxiliares
+function openNameModal(sc) {
+  const overlay = document.getElementById('nameModal');
+  if (!overlay) return;
+  document.getElementById('modalScore').textContent = sc;
+  overlay.style.display = 'flex';
+}
+
+function closeNameModal() {
+  const overlay = document.getElementById('nameModal');
+  if (!overlay) return;
+  overlay.style.display = 'none';
+}
+
+function wireQuizUI() {
+  const saveBtn = document.getElementById('saveNameBtn');
+  const cancelBtn = document.getElementById('cancelNameBtn');
+  const nameInput = document.getElementById('playerNameInput');
+  if (saveBtn) saveBtn.onclick = () => {
+    const name = (nameInput?.value || '').trim();
+    if (name) { saveToLeaderboard(name, score); closeNameModal(); }
+    else { alert('Digite um nome para salvar no placar.'); }
+  };
+  if (cancelBtn) cancelBtn.onclick = () => closeNameModal();
+}

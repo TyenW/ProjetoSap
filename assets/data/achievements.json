@@ -1,199 +1,27 @@
 {
   "meta": {
-    "title": "Banco de Questões Avançado: Arquitetura SAP-1 (Malvino)",
-    "version": "2.0.0",
-    "description": "Uma coleção aprimorada de mais de 100 perguntas sobre a arquitetura do computador Simple-As-Possible 1. Cada objeto foi enriquecido com ID, tópico, dicas e explicações detalhadas para uma experiência de aprendizado completa.",
-    "lastUpdated": "2025-10-17",
-    "topicsCovered": [
-      "Arquitetura Geral",
-      "Função de Componentes",
-      "Conjunto de Instruções",
-      "Sinais de Controle",
-      "Ciclo de Busca e Execução",
-      "Micro-operações",
-      "Análise de Cenários"
-    ]
+    "title": "Conquistas do Quiz SAP-1",
+    "version": "1.0.0",
+    "description": "Lista de conquistas exibidas no painel do quiz." 
   },
-  "questions": [
-    {
-      "id": 1,
-      "topic": "Arquitetura Geral",
-      "text": "O que a sigla SAP-1, criada por Albert Paul Malvino, representa no contexto de arquitetura de computadores?",
-      "options": [
-        "System Architecture Prototype 1",
-        "Simple As Possible 1",
-        "Standard Arithmetic Processor 1",
-        "Single Accumulator Processor 1"
-      ],
-      "answer": 1,
-      "difficulty": "fácil",
-      "hint": "O nome reflete o propósito do projeto: ser uma ferramenta educacional.",
-      "explanation": "SAP significa 'Simple As Possible' (O Mais Simples Possível). Malvino projetou esta arquitetura como um modelo didático para introduzir os conceitos fundamentais de como um computador funciona em seu nível mais básico."
-    },
-    {
-      "id": 2,
-      "topic": "Função de Componentes",
-      "text": "Qual componente é responsável por manter o endereço da instrução que será buscada na memória no próximo ciclo?",
-      "options": [
-        "Acumulador (A)",
-        "Registrador de Instrução (IR)",
-        "Contador de Programa (PC)",
-        "Registrador de Endereço de Memória (MAR)"
-      ],
-      "answer": 2,
-      "difficulty": "fácil",
-      "hint": "Pense em qual registrador precisa 'contar' ou apontar para a sequência do programa.",
-      "explanation": "O Contador de Programa (Program Counter - PC) tem a função exclusiva de armazenar o endereço da próxima instrução a ser executada. Ele é incrementado a cada ciclo de busca para que o programa execute sequencialmente."
-    },
-    {
-      "id": 3,
-      "topic": "Ciclo de Busca e Execução",
-      "text": "Durante o ciclo de busca (Fetch Cycle), qual é a sequência correta de eventos nos estados T1, T2 e T3?",
-      "options": [
-        "T1: PC incrementa, T2: Instrução vai para IR, T3: Endereço vai para MAR",
-        "T1: Endereço vai para MAR, T2: PC incrementa, T3: Instrução vai para IR",
-        "T1: Instrução vai para IR, T2: Endereço vai para MAR, T3: PC incrementa",
-        "T1: Endereço vai para MAR, T2: Instrução vai para IR, T3: PC incrementa"
-      ],
-      "answer": 1,
-      "difficulty": "difícil",
-      "hint": "Primeiro, você precisa dizer à memória ONDE procurar. Depois, pode preparar o PC para o futuro. Por último, o dado (instrução) chega.",
-      "explanation": "A sequência correta é: T1: O conteúdo do PC é colocado no MAR (sinais Ep, Lm). T2: O PC é incrementado para apontar para a próxima instrução (sinal Cp). T3: O conteúdo da RAM (a instrução) é carregado no IR (sinais CE, Li)."
-    },
-    {
-      "id": 4,
-      "topic": "Sinal de Controle",
-      "text": "Qual micro-operação é iniciada pela ativação do sinal de controle 'Ep' (Enable Program Counter)?",
-      "options": [
-        "Incrementar o Contador de Programa (PC)",
-        "Carregar um valor do barramento W para o PC",
-        "Colocar o conteúdo do PC no barramento W",
-        "Zerar o Contador de Programa (PC)"
-      ],
-      "answer": 2,
-      "difficulty": "médio",
-      "hint": "O prefixo 'E' em sinais como 'Ep' ou 'Ea' geralmente se refere a 'Enable', que habilita a SAÍDA de um componente.",
-      "explanation": "O sinal 'Ep' habilita o buffer de três estados na saída do Contador de Programa (PC), permitindo que seu valor (o endereço da próxima instrução) seja colocado no barramento W para ser lido por outro componente, como o MAR."
-    },
-    {
-      "id": 5,
-      "topic": "Sinal de Controle",
-      "text": "Para realizar a operação A = A - B, qual combinação de sinais de controle deve ser ativada na ULA e no Acumulador?",
-      "options": [
-        "Eu, La",
-        "Su, La",
-        "Eu, Lb",
-        "Su, Eu, La"
-      ],
-      "answer": 3,
-      "difficulty": "difícil",
-      "hint": "Você precisa de três ações: configurar a ULA para subtrair, habilitar a saída da ULA e carregar o resultado no Acumulador.",
-      "explanation": "São necessários três sinais: 'Su' para configurar a ULA para subtrair; 'Eu' para habilitar a saída do resultado da ULA no barramento W; e 'La' para carregar o valor do barramento W para dentro do Acumulador."
-    },
-    {
-      "id": 6,
-      "topic": "Conjunto de Instruções",
-      "text": "Qual das instruções do SAP-1 NÃO utiliza a parte de endereço (4 bits menos significativos) da palavra de instrução?",
-      "options": [
-        "LDA (Load Accumulator)",
-        "ADD (Add)",
-        "OUT (Output)",
-        "SUB (Subtract)"
-      ],
-      "answer": 2,
-      "difficulty": "médio",
-      "hint": "Pense em qual instrução não precisa de um operando vindo da memória.",
-      "explanation": "As instruções LDA, ADD e SUB precisam de um endereço de 4 bits para saber de qual posição da memória devem buscar o operando. A instrução OUT, por outro lado, opera implicitamente sobre o conteúdo do Acumulador, não necessitando de um endereço de memória. Os 4 bits de endereço são ignorados para a instrução OUT."
-    },
-    {
-      "id": 7,
-      "topic": "Análise de Cenários",
-      "text": "Imagine que o sinal de controle 'Cp' (Clock Program Counter) está permanentemente travado em nível lógico 0. Qual seria o comportamento do SAP-1 ao tentar executar um programa?",
-      "options": [
-        "O computador executaria a mesma instrução repetidamente em um loop infinito.",
-        "O computador pararia imediatamente, pois o clock principal estaria desativado.",
-        "O programa executaria normalmente, mas não seria possível usar a instrução ADD.",
-        "O computador pularia instruções aleatoriamente."
-      ],
-      "answer": 0,
-      "difficulty": "difícil",
-      "hint": "O sinal Cp é responsável por qual ação fundamental no fluxo do programa?",
-      "explanation": "O sinal Cp é ativado no estado T2 para incrementar o Contador de Programa (PC). Se ele estiver sempre em 0, o PC nunca será incrementado. Como resultado, após buscar a primeira instrução no endereço 0000, o PC continuará apontando para 0000. O computador ficará preso buscando e executando a mesma primeira instrução indefinidamente."
-    },
-    {
-      "id": 8,
-      "topic": "Micro-operações",
-      "text": "A micro-operação M[MAR] -> B descreve a transferência de dados de uma localização de memória para o Registrador B. Em qual instrução e estado de tempo (T-state) isso ocorre?",
-      "options": [
-        "LDA, no T5",
-        "ADD, no T5",
-        "LDA, no T4",
-        "OUT, no T4"
-      ],
-      "answer": 1,
-      "difficulty": "médio",
-      "hint": "O Registrador B só é usado quando um segundo operando é necessário para uma operação aritmética.",
-      "explanation": "Esta operação ocorre nas instruções ADD e SUB. No estado T4, o endereço do operando é movido do IR para o MAR. No estado T5, o dado apontado pelo MAR na memória (M[MAR]) é carregado no Registrador B (sinais CE, Lb) para ser usado na operação aritmética que acontecerá em T6."
-    },
-    {
-      "id": 9,
-      "topic": "Função de Componentes",
-      "text": "Por que o Registrador de Endereço de Memória (MAR) é necessário? Por que o PC ou o IR não se conectam diretamente às entradas de endereço da RAM?",
-      "options": [
-        "Porque o MAR é mais rápido que o PC e o IR.",
-        "Porque o MAR atua como um buffer, permitindo que tanto o PC (no ciclo de busca) quanto o IR (no ciclo de execução) possam especificar um endereço para a RAM em momentos diferentes.",
-        "Porque a RAM só aceita endereços vindos do MAR por uma limitação de hardware.",
-        "Porque o MAR também armazena os dados, não apenas o endereço."
-      ],
-      "answer": 1,
-      "difficulty": "difícil",
-      "hint": "Pense sobre QUEM precisa falar com a RAM e QUANDO.",
-      "explanation": "O MAR serve como um ponto de entrada centralizado para o endereço da RAM. No ciclo de busca (T1), ele recebe o endereço do PC. Já no ciclo de execução de instruções como LDA, ADD ou SUB (T4), ele recebe o endereço do operando vindo do IR. O MAR isola a RAM dessas duas fontes diferentes, simplificando o controle do barramento."
-    },
-    {
-      "id": 10,
-      "topic": "Arquitetura Geral",
-      "text": "A principal limitação que impede o SAP-1 de executar laços (loops) ou desvios condicionais (if/else) é a ausência de:",
-      "options": [
-        "Memória RAM suficiente.",
-        "Uma ULA capaz de subtrair.",
-        "Instruções de Salto (Jump/Branch) e flags de estado (como Zero ou Carry).",
-        "Um barramento de 8 bits."
-      ],
-      "answer": 2,
-      "difficulty": "médio",
-      "hint": "Para mudar o fluxo de um programa, é preciso poder alterar o quê?",
-      "explanation": "Para implementar laços e desvios, um processador precisa de duas coisas: 1) Instruções que possam carregar um novo valor no Contador de Programa (PC), e 2) Flags (sinalizadores) que indiquem o resultado de uma operação anterior (ex: se o resultado foi zero). O SAP-1 não tem nenhum desses recursos, então seu fluxo é estritamente sequencial."
-    },
-    {
-        "id": 11,
-        "topic": "Conjunto de Instruções",
-        "text": "Se o Acumulador contém o valor 10 (00001010) e a posição de memória 15 (1111) contém o valor 3 (00000011), qual será o valor binário no Acumulador após a execução da instrução 'SUB 1111'?",
-        "options": [
-            "00001101 (13)",
-            "00000111 (7)",
-            "10000111 (-121 em complemento de 2)",
-            "00000011 (3)"
-        ],
-        "answer": 1,
-        "difficulty": "médio",
-        "hint": "A instrução SUB executa a operação A = A - M[endereço].",
-        "explanation": "A instrução 'SUB 1111' pega o valor do Acumulador (10) e subtrai o valor contido no endereço de memória 1111 (que é 3). O resultado da operação 10 - 3 é 7. Em binário, 7 é representado como 00000111."
-    },
-    {
-        "id": 12,
-        "topic": "Ciclo de Busca e Execução",
-        "text": "Qual é a principal diferença no ciclo de execução (estados T4, T5, T6) entre as instruções ADD e LDA?",
-        "options": [
-            "LDA usa 6 estados e ADD usa apenas 4.",
-            "ADD utiliza o Registrador B e a ULA em T5 e T6, enquanto LDA carrega o Acumulador diretamente da RAM em T5.",
-            "LDA escreve na memória, enquanto ADD lê da memória.",
-            "Não há diferença, os ciclos de execução são idênticos."
-        ],
-        "answer": 1,
-        "difficulty": "difícil",
-        "hint": "Pense no fluxo de dados. Para somar, você precisa de dois operandos. Para carregar, você precisa de apenas um.",
-        "explanation": "Para LDA, o ciclo de execução é simples: T4 (IR->MAR), T5 (RAM->A). Para ADD, o ciclo é mais complexo: T4 (IR->MAR), T5 (RAM->B) para buscar o segundo operando, e T6 (A+B->A) para realizar a soma na ULA e armazenar o resultado."
-    }
+  "achievements": [
+    { "id": "streak3",    "title": "3 Acertos Seguidos",   "description": "Acerte 3 questões consecutivas",                 "icon": "🔥", "goal": { "type": "streak",   "target": 3 } },
+    { "id": "streak5",    "title": "5 Acertos Seguidos",   "description": "Acerte 5 questões consecutivas",                 "icon": "🔥", "goal": { "type": "streak",   "target": 5 } },
+    { "id": "streak10",   "title": "10 Acertos Seguidos",  "description": "Acerte 10 questões consecutivas",                "icon": "🔥", "goal": { "type": "streak",   "target": 10 } },
+
+    { "id": "pro",        "title": "Acertou >= 80%",       "description": "Mantenha precisão de 80% ou mais em uma sessão", "icon": "🎯", "goal": { "type": "accuracy", "target": 80 } },
+    { "id": "accuracy90", "title": "Mira Fina (90%)",      "description": "Mantenha pelo menos 90% de acertos na sessão",   "icon": "🎯", "goal": { "type": "accuracy", "target": 90 } },
+    { "id": "perfect",    "title": "Pontuação Perfeita",   "description": "Acerte 100% das perguntas de uma sessão",       "icon": "🌟" },
+
+    { "id": "answered5",  "title": "Início Rápido",        "description": "Responda 5 perguntas",                           "icon": "✅", "goal": { "type": "answered", "target": 5 } },
+    { "id": "answered10", "title": "Aquecendo",            "description": "Responda 10 perguntas",                          "icon": "✅", "goal": { "type": "answered", "target": 10 } },
+    { "id": "answered20", "title": "Pegando Ritmo",        "description": "Responda 20 perguntas",                          "icon": "✅", "goal": { "type": "answered", "target": 20 } },
+    { "id": "answered50", "title": "Maratonista",          "description": "Responda 50 perguntas",                          "icon": "🏃", "goal": { "type": "answered", "target": 50 } },
+    { "id": "answered100","title": "Ultra Maratona",       "description": "Responda 100 perguntas",                         "icon": "🏆", "goal": { "type": "answered", "target": 100 } },
+
+    { "id": "score10",    "title": "Pontinho",             "description": "Alcance 10 pontos em uma sessão",                "icon": "⚡", "goal": { "type": "score",    "target": 10 } },
+    { "id": "score20",    "title": "Pontuador",            "description": "Alcance 20 pontos em uma sessão",                "icon": "⚡", "goal": { "type": "score",    "target": 20 } },
+    { "id": "score30",    "title": "Turbo",                "description": "Alcance 30 pontos em uma sessão",                "icon": "⚡", "goal": { "type": "score",    "target": 30 } },
+    { "id": "score50",    "title": "Lenda",                "description": "Alcance 50 pontos em uma sessão",                "icon": "⚡", "goal": { "type": "score",    "target": 50 } }
   ]
 }

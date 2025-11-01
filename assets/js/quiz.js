@@ -261,8 +261,6 @@ function endQuiz() {
   // gravar cookies com resumo rápido
   try { setCookie('sap_last_score', score, 7); setCookie('sap_last_date', new Date().toISOString(), 7); } catch(e){}
 
-  // Enviar pontuação para o leaderboard (Vercel KV via /api/leaderboard)
-  try { submitScoreToLeaderboard(score); } catch (_) { /* não bloquear a UI */ }
 }
 
 function startQuiz() {
@@ -384,7 +382,7 @@ toggle.onclick = () => {
   toggle.textContent = music.muted ? "🔇" : "🔊";
 };
 
-// --- Novas funcionalidades: achievements, leaderboard e export em múltiplos formatos ---
+// --- Funcionalidades: conquistas e export em múltiplos formatos (sem leaderboard) ---
 
 // Achievements simples
 const ACHIEVEMENTS_KEY = 'sap_quiz_achievements';
@@ -410,26 +408,7 @@ function lsSet(key, value) {
   }
 }
 
-// --- Leaderboard (cliente) ---
-async function submitScoreToLeaderboard(finalScore) {
-  // Compat: mantém prompt, mas usa API configurada (Apps Script) internamente
-  try {
-    let name = lsGet('sap_player_name', '') || '';
-    name = (name || '').trim();
-    if (!name) {
-      name = (prompt('Digite seu nome para o ranking:') || '').trim();
-      if (!name) {
-        showDataAlert('Nome vazio: pontuação não registrada no ranking.', 'warn');
-        return;
-      }
-      lsSet('sap_player_name', name);
-    }
-    await saveToLeaderboard(name.slice(0, 32), Number(finalScore) || 0);
-  } catch (e) {
-    console.warn('Falha ao registrar no leaderboard:', e);
-    showDataAlert('Não foi possível registrar no ranking (offline/CORS).', 'warn');
-  }
-}
+// Leaderboard removido
 function loadAchievements() {
   try {
     return JSON.parse(lsGet(ACHIEVEMENTS_KEY, '[]'));
@@ -478,187 +457,6 @@ function showAchievementToast(title) {
   setTimeout(() => { toast.classList.remove('visible'); setTimeout(()=>toast.remove(),400); }, 3500);
 }
 
-// Leaderboard compartilhado via API + fallback local
-const LEADERBOARD_KEY = 'sap_quiz_leaderboard';
-const LEADERBOARD_API = '/api/leaderboard';
-const LEADERBOARD_API_OVERRIDE_KEY = 'sap_quiz_leaderboard_api';
-let LB_API_SELECTED = null; // endpoint escolhido dinamicamente
-
-function readApiOverrideFromQuery() {
-  try {
-    const p = new URLSearchParams(window.location.search);
-    const q = p.get('lbApi') || p.get('api');
-    if (q && /^https?:\/\//i.test(q)) {
-      // persiste para próximas visitas
-      try { localStorage.setItem(LEADERBOARD_API_OVERRIDE_KEY, q); } catch(_) {}
-      return q;
-    }
-  } catch(_) {}
-  return null;
-}
-
-function readApiOverrideFromStorage() {
-  try { return localStorage.getItem(LEADERBOARD_API_OVERRIDE_KEY); } catch(_) { return null; }
-}
-
-function readApiOverrideFromWindow() {
-  try { return (typeof window.LEADERBOARD_API === 'string' && window.LEADERBOARD_API) ? window.LEADERBOARD_API : null; } catch(_) { return null; }
-}
-
-function readApiOverrideFromMeta() {
-  try {
-    const m = document.querySelector('meta[name="leaderboard-api"]');
-    return m && m.content ? m.content : null;
-  } catch(_) { return null; }
-}
-
-function preferredLeaderboardApi() {
-  if (LB_API_SELECTED) return LB_API_SELECTED;
-  // Prioridade: querystring > localStorage > window.LEADERBOARD_API > meta
-  const q = readApiOverrideFromQuery();
-  if (q) return (LB_API_SELECTED = q);
-  const s = readApiOverrideFromStorage();
-  if (s) return (LB_API_SELECTED = s);
-  const w = readApiOverrideFromWindow();
-  if (w) return (LB_API_SELECTED = w);
-  const mt = readApiOverrideFromMeta();
-  if (mt) return (LB_API_SELECTED = mt);
-  // Como removemos backend local, NÃO tentamos /api nem localhost por padrão
-  return null;
-}
-
-async function remoteLoadLeaderboard() {
-  try {
-    const api = preferredLeaderboardApi();
-    if (!api) throw new Error('api indisponível');
-    const resp = await fetch(api, { cache: 'no-store', redirect: 'follow' });
-    if (resp.redirected && /accounts\.google\.com/i.test(resp.url)) {
-      throw new Error('Apps Script requer login — publique como Web App com acesso "Anyone".');
-    }
-    if (!resp.ok) throw new Error('http ' + resp.status);
-    const data = await resp.json();
-    return Array.isArray(data) ? data : [];
-  } catch (e) {
-    console.warn('remoteLoadLeaderboard falhou, usando local:', e.message || e);
-    return null; // sinaliza fallback
-  }
-}
-
-async function remoteSaveLeaderboard(name, score) {
-  try {
-    const api = preferredLeaderboardApi();
-    if (!api) throw new Error('api indisponível');
-    const resp = await fetch(api, {
-      method: 'POST',
-      // Use text/plain para evitar preflight CORS em alguns cenários
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ name, score }),
-      redirect: 'follow'
-    });
-    if (resp.redirected && /accounts\.google\.com/i.test(resp.url)) {
-      throw new Error('Apps Script requer login — publique como Web App com acesso "Anyone".');
-    }
-    if (!resp.ok) throw new Error('http ' + resp.status);
-    const data = await resp.json();
-    return Array.isArray(data) ? data : [];
-  } catch (e) {
-    console.warn('remoteSaveLeaderboard falhou, fallback local:', e.message || e);
-    return null;
-  }
-}
-
-function localLoadLeaderboard() {
-  // Fallback desativado para evitar dados estáticos locais; exibir vazio
-  return [];
-}
-
-// Preenche o placar com exemplos se estiver vazio (apenas primeira carga)
-function seedLeaderboardIfEmpty() { /* removido: sem mais seed estático */ }
-
-async function saveToLeaderboard(name, score) {
-  // Tenta salvar no servidor; se falhar, usa local
-  const remote = await remoteSaveLeaderboard(name, score);
-  if (remote && Array.isArray(remote)) {
-    renderLeaderboard(remote);
-    showSaveToast(`${name} adicionado ao placar (global)!`);
-    return;
-  }
-  const lb = localLoadLeaderboard();
-  lb.push({ name: name || '---', score, date: new Date().toISOString() });
-  lb.sort((a,b)=> b.score - a.score || new Date(a.date) - new Date(b.date));
-  const top = lb.slice(0,10);
-  lsSet(LEADERBOARD_KEY, JSON.stringify(top));
-  try { setCookie(LEADERBOARD_KEY, top, 30); } catch(e){}
-  renderLeaderboard(top);
-  showDataAlert('Servidor indisponível. Placar salvo localmente nesta máquina.', 'warn');
-}
-
-function showSaveToast(message) {
-  const toast = document.createElement('div');
-  toast.className = 'achievement-toast';
-  toast.textContent = `✅ ${message}`;
-  document.body.appendChild(toast);
-  setTimeout(() => { toast.classList.add('visible'); }, 50);
-  setTimeout(() => { toast.classList.remove('visible'); setTimeout(()=>toast.remove(),400); }, 2800);
-}
-
-async function renderLeaderboard(providedList) {
-  const container = document.getElementById('leaderboard');
-  if (!container) return;
-  let lb = Array.isArray(providedList) ? providedList : (await remoteLoadLeaderboard());
-  if (!Array.isArray(lb)) lb = localLoadLeaderboard();
-  const medals = ['🥇','🥈','🥉'];
-  // completar com linhas fictícias até 10
-  const filled = [...lb];
-  for (let i = filled.length; i < 10; i++) {
-    filled.push({ name: '---', score: 0, date: new Date(0).toISOString(), _placeholder: true });
-  }
-  container.innerHTML = '<h3>🏅 Placar de Líderes (Top 10)</h3>' + '<ol class="lb-list">' + filled.map((e,i)=>{
-    const medal = medals[i] || (i+1);
-    const rowCls = `lb-row lb-${i+1}` + (e._placeholder ? ' lb-empty' : '');
-    const date = e._placeholder ? '--/--/----' : new Date(e.date).toLocaleDateString();
-    const scoreTxt = (e.score||0) + ' pts';
-    return `<li class="${rowCls}"><span class="lb-medal">${medal}</span><span class="lb-name">${e.name}</span><span class="lb-score">${scoreTxt}</span><span class="lb-date">${date}</span></li>`;
-  }).join('') + '</ol>';
-}
-
-// Export em múltiplos formatos (JSON, CSV, TXT)
-function exportResults(format = 'txt') {
-  const stats = { fácil: { total: 0, acertos: 0 }, médio: { total: 0, acertos: 0 }, difícil: { total: 0, acertos: 0 } };
-  quizSet.forEach((q, i) => { stats[q.difficulty].total++; if (respostasCorretas[i]) stats[q.difficulty].acertos++; });
-
-  const payload = {
-    date: new Date().toISOString(),
-    score: score,
-    totalQuestions: quizSet.length,
-    perDifficulty: stats,
-    questions: quizSet.map((q,i)=>({ text: q.text, difficulty: q.difficulty, correct: respostasCorretas[i]||false }))
-  };
-
-  if (format === 'json') {
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    downloadBlob(blob, 'quiz_sap1.json');
-  } else if (format === 'csv') {
-    const lines = ['pergunta,dificuldade,acertou'];
-    payload.questions.forEach(q=> lines.push(`"${q.text.replace(/"/g,'""')}",${q.difficulty},${q.correct}`));
-    const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
-    downloadBlob(blob, 'quiz_sap1.csv');
-  } else { // txt
-    const linhas = [];
-    linhas.push('=== Estatísticas do Quiz SAP-1 ===');
-    linhas.push(`Data: ${new Date().toLocaleString()}`);
-    linhas.push(`Pontuação total: ${score}/${quizSet.length}`);
-    linhas.push('Por nível de dificuldade:');
-    for (const nivel in stats) {
-      const { acertos, total } = stats[nivel];
-      const perc = ((acertos / (total || 1)) * 100).toFixed(1);
-      linhas.push(`${nivel.toUpperCase()}: ${acertos}/${total} acertos (${perc}%)`);
-    }
-    const blob = new Blob([linhas.join('\n')], { type: 'text/plain;charset=utf-8' });
-    downloadBlob(blob, 'estatisticas_sap1.txt');
-  }
-}
-
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -703,11 +501,7 @@ function handleEndQuizSave() {
   if (score === quizSet.length) saveAchievement('perfect', 'Pontuação Perfeita');
   if (score >= Math.ceil(quizSet.length * 0.8)) saveAchievement('pro', 'Acertou >= 80%');
   if (acertosSeguidos >= 3) saveAchievement('streak3', '3 Acertos Seguidos');
-
-  // Abre modal para salvar no leaderboard
-  setTimeout(()=>{
-    openNameModal(score);
-  }, 300);
+  // Sem leaderboard: apenas registra as conquistas
 }
 
 function renderAchievementsList() {
@@ -796,41 +590,13 @@ endQuiz = function() {
 // Carrega dados externos primeiro, depois inicializa o quiz
 loadExternalData().then(()=>{
   attachTouchHandlers();
-  renderLeaderboard();
   renderAchievementsList();
-  wireQuizUI();
   startQuiz();
 }).catch(err=>{
   console.warn('Erro na inicialização dos dados externos', err);
   attachTouchHandlers();
-  renderLeaderboard();
   renderAchievementsList();
-  wireQuizUI();
   startQuiz();
 });
 
-// Modal e ações auxiliares
-function openNameModal(sc) {
-  const overlay = document.getElementById('nameModal');
-  if (!overlay) return;
-  document.getElementById('modalScore').textContent = sc;
-  overlay.style.display = 'flex';
-}
-
-function closeNameModal() {
-  const overlay = document.getElementById('nameModal');
-  if (!overlay) return;
-  overlay.style.display = 'none';
-}
-
-function wireQuizUI() {
-  const saveBtn = document.getElementById('saveNameBtn');
-  const cancelBtn = document.getElementById('cancelNameBtn');
-  const nameInput = document.getElementById('playerNameInput');
-  if (saveBtn) saveBtn.onclick = () => {
-    const name = (nameInput?.value || '').trim();
-    if (name) { saveToLeaderboard(name, score); closeNameModal(); }
-    else { alert('Digite um nome para salvar no placar.'); }
-  };
-  if (cancelBtn) cancelBtn.onclick = () => closeNameModal();
-}
+// UI do placar removida (sem modal)
