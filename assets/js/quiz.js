@@ -412,8 +412,8 @@ function lsSet(key, value) {
 
 // --- Leaderboard (cliente) ---
 async function submitScoreToLeaderboard(finalScore) {
+  // Compat: mantém prompt, mas usa API configurada (Apps Script) internamente
   try {
-    // Recupera nome salvo ou pergunta ao usuário
     let name = lsGet('sap_player_name', '') || '';
     name = (name || '').trim();
     if (!name) {
@@ -424,25 +424,8 @@ async function submitScoreToLeaderboard(finalScore) {
       }
       lsSet('sap_player_name', name);
     }
-
-    const payload = { name: name.slice(0, 32), score: Number(finalScore) || 0 };
-    const resp = await fetch('/api/leaderboard', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    if (!resp.ok) {
-      showDataAlert(`Falha ao registrar no ranking (HTTP ${resp.status}).`, 'warn');
-      return;
-    }
-
-    const top = await resp.json();
-    // Feedback leve (não intrusivo)
-    showDataAlert('Pontuação registrada no ranking! ✅', 'ok');
-    // Se desejar, poderia atualizar uma lista de ranking na página com "top"
+    await saveToLeaderboard(name.slice(0, 32), Number(finalScore) || 0);
   } catch (e) {
-    // Não bloquear a experiência do usuário se falhar
     console.warn('Falha ao registrar no leaderboard:', e);
     showDataAlert('Não foi possível registrar no ranking (offline/CORS).', 'warn');
   }
@@ -529,46 +512,29 @@ function readApiOverrideFromMeta() {
   } catch(_) { return null; }
 }
 
-function getApiCandidates() {
-  const candidates = [];
-  // 1) URL param (highest priority)
-  const q = readApiOverrideFromQuery();
-  if (q) candidates.push(q);
-  // 2) localStorage override
-  const s = readApiOverrideFromStorage();
-  if (s) candidates.push(s);
-  // 3) window global
-  const w = readApiOverrideFromWindow();
-  if (w) candidates.push(w);
-  // 4) meta tag
-  const mt = readApiOverrideFromMeta();
-  if (mt) candidates.push(mt);
-  // 5) same-origin relative
-  try { candidates.push(new URL(LEADERBOARD_API, window.location.origin).href); } catch(_) {}
-  // 6) localhost dev
-  candidates.push('http://localhost:8000/api/leaderboard');
-  // dedup while keeping order
-  const seen = new Set();
-  return candidates.filter(u => { if (!u) return false; const k = u.trim(); if (seen.has(k)) return false; seen.add(k); return true; });
-}
-
-async function pickLeaderboardApi() {
+function preferredLeaderboardApi() {
   if (LB_API_SELECTED) return LB_API_SELECTED;
-  const candidates = getApiCandidates();
-  for (const url of candidates) {
-    try {
-      const resp = await fetch(url, { method: 'GET', cache: 'no-store', mode: 'cors' });
-      if (resp.ok) { LB_API_SELECTED = url; return url; }
-    } catch (_) { /* tenta próximo */ }
-  }
+  // Prioridade: querystring > localStorage > window.LEADERBOARD_API > meta
+  const q = readApiOverrideFromQuery();
+  if (q) return (LB_API_SELECTED = q);
+  const s = readApiOverrideFromStorage();
+  if (s) return (LB_API_SELECTED = s);
+  const w = readApiOverrideFromWindow();
+  if (w) return (LB_API_SELECTED = w);
+  const mt = readApiOverrideFromMeta();
+  if (mt) return (LB_API_SELECTED = mt);
+  // Como removemos backend local, NÃO tentamos /api nem localhost por padrão
   return null;
 }
 
 async function remoteLoadLeaderboard() {
   try {
-    const api = await pickLeaderboardApi();
+    const api = preferredLeaderboardApi();
     if (!api) throw new Error('api indisponível');
-    const resp = await fetch(api, { cache: 'no-store' });
+    const resp = await fetch(api, { cache: 'no-store', redirect: 'follow' });
+    if (resp.redirected && /accounts\.google\.com/i.test(resp.url)) {
+      throw new Error('Apps Script requer login — publique como Web App com acesso "Anyone".');
+    }
     if (!resp.ok) throw new Error('http ' + resp.status);
     const data = await resp.json();
     return Array.isArray(data) ? data : [];
@@ -580,14 +546,18 @@ async function remoteLoadLeaderboard() {
 
 async function remoteSaveLeaderboard(name, score) {
   try {
-    const api = await pickLeaderboardApi();
+    const api = preferredLeaderboardApi();
     if (!api) throw new Error('api indisponível');
     const resp = await fetch(api, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      mode: 'cors',
-      body: JSON.stringify({ name, score })
+      // Use text/plain para evitar preflight CORS em alguns cenários
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ name, score }),
+      redirect: 'follow'
     });
+    if (resp.redirected && /accounts\.google\.com/i.test(resp.url)) {
+      throw new Error('Apps Script requer login — publique como Web App com acesso "Anyone".');
+    }
     if (!resp.ok) throw new Error('http ' + resp.status);
     const data = await resp.json();
     return Array.isArray(data) ? data : [];
