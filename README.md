@@ -16,7 +16,9 @@
 ---
 
 ## 💻 Acesse
-[Vídeo Explicativo do Youtube]() _Em breve..._
+
+- Vídeo (inglês): https://youtu.be/V5gf7JoHoz4
+- Vídeo (português): https://youtu.be/1v1M63wBKyM
 
 ## 📋 Índice
 
@@ -1349,10 +1351,10 @@ Ao usar este projeto, pedimos que mantenha:
 
 ### 📧 Contato Direto
 
-#### **Redes Sociais**
-- **GitHub**: [github.com/usuario/ProjetoSap](https://github.com/usuario/ProjetoSap)
-- **Twitter**: [@ProjetoSap](https://twitter.com/projetosap)
-- **YouTube**: [Canal BitLab](https://youtube.com/projetosap)
+#### **Redes Sociais e E-mail**
+- **GitHub**: [github.com/TyenW](https://github.com/TyenW)
+- **LinkedIn**: [linkedin.com/in/pedro-guimarães-3a23b3269](https://www.linkedin.com/in/pedro-guimarães-3a23b3269)
+- **E-mail**: [pedrogaf55@gmail.com](mailto:pedrogaf55@gmail.com)
 
 ### 🎓 Uso Educacional
 
@@ -1506,13 +1508,13 @@ Este projeto é baseado no trabalho de **Albert Paul Malvino**, especialmente se
 ### 🆘 Suporte Técnico
 
 #### **Issues no GitHub**
-- **URL**: https://github.com/usuario/ProjetoSap/issues
+- **URL**: https://github.com/TyenW/ProjetoSap/issues
 - **Tempo de Resposta**: 24-48 horas
 - **Tipos**: Bugs, dúvidas, sugestões, melhorias
 
 #### **Documentação**
 - **README**: Documentação principal (este arquivo)
-- **Wiki**: https://github.com/usuario/ProjetoSap/wiki
+- **Wiki**: https://github.com/TyenW/ProjetoSap/wiki
 - **FAQ**: Perguntas frequentes e troubleshooting
 - **Tutoriais**: Guias passo a passo para usar o emulador e quiz
 
@@ -1579,9 +1581,9 @@ SOFTWARE.
 
 Feito com 💛 e muito ☕ | © 2024–2025 Projeto BitLab
 
-[![Stars](https://img.shields.io/github/stars/usuario/ProjetoSap?style=social)](https://github.com/usuario/ProjetoSap)
-[![Forks](https://img.shields.io/github/forks/usuario/ProjetoSap?style=social)](https://github.com/usuario/ProjetoSap/fork)
-[![Issues](https://img.shields.io/github/issues/usuario/ProjetoSap)](https://github.com/usuario/ProjetoSap/issues)
+[![Stars](https://img.shields.io/github/stars/TyenW/ProjetoSap?style=social)](https://github.com/TyenW/ProjetoSap)
+[![Forks](https://img.shields.io/github/forks/TyenW/ProjetoSap?style=social)](https://github.com/TyenW/ProjetoSap/fork)
+[![Issues](https://img.shields.io/github/issues/TyenW/ProjetoSap)](https://github.com/TyenW/ProjetoSap/issues)
 
 </div>
 
