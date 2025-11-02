@@ -1,22 +1,22 @@
- # 🎮 SapMan - Emulador SAP-1 Interativo
+# 🔬 BitLab — SAP‑1 Interativo
 
 <div align="center">
-  <img src="/assets/img/logo.png" alt="SapMan Logo" width="200"/>
+  <img src="assets/img/logoBitLab.png" alt="BitLab Logo" width="200"/>
   
-  [![Status](https://img.shields.io/badge/Status-Ativo-brightgreen)](https://github.com/user/sapman)
-  [![Versão](https://img.shields.io/badge/Versão-1.1.0-blue)](https://github.com/user/sapman)
+  [![Status](https://img.shields.io/badge/Status-Ativo-brightgreen)](https://github.com/TyenW/ProjetoSap)
+  [![Versão](https://img.shields.io/badge/Versão-1.2.0-blue)](https://github.com/TyenW/ProjetoSap)
   [![Licença](https://img.shields.io/badge/Licença-MIT-yellow)](LICENSE)
   [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow?logo=javascript)](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
   [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/pt-BR/docs/Web/HTML)
   [![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)](https://developer.mozilla.org/pt-BR/docs/Web/CSS)
 
-  <h3>🏆 Projeto educacional interativo para aprendizado da arquitetura SAP-1 com estética retro Pac-Man</h3>
+  <h3>🏆 Projeto educacional interativo para aprendizado da arquitetura SAP‑1 com identidade visual BitLab (blueprint tecno‑neon)</h3>
 </div>
 
 ---
 
 ## 💻 Acesse
-[Vídeo Explicativo do Youtube](https://youtu.be/EplJ32BYQ0o)
+[Vídeo Explicativo do Youtube]() _Em breve..._
 
 ## 📋 Índice
 
@@ -41,7 +41,7 @@
 
 ## 🎯 Sobre o Projeto
 
-**SapMan** é um emulador web interativo do processador **SAP-1** (Simple As Possible - 1), desenvolvido como ferramenta educacional para ensino de arquitetura de computadores. O projeto combina funcionalidade educativa com uma interface visual inspirada no clássico jogo Pac-Man, tornando o aprendizado mais envolvente e divertido.
+**BitLab** é um emulador web interativo do processador **SAP‑1** (Simple As Possible ‑ 1), desenvolvido como ferramenta educacional para ensino de arquitetura de computadores. O projeto combina funcionalidades didáticas com uma identidade visual própria (BitLab), focada em legibilidade, acessibilidade e estética tecno‑neon.
 
 ### 🎓 Objetivo Educacional
 
@@ -57,63 +57,49 @@ O SAP-1 é um processador didático de 8 bits criado por **Albert Paul Malvino**
 
 ## ✨ Características
 
-### 🎨 Interface Visual
-- **Tema Pac-Man**: Interface retro com cores vibrantes e fonte pixelizada
-- **Animações fluidas**: Visualização do fluxo de dados entre componentes
-- **Design responsivo**: Totalmente adaptável para desktop, tablet e mobile
-- **Controles intuitivos**: Botões de estilo arcade para navegação
-- **Layout moderno e limpo**: Cards com sombras e bordas refinadas
+### 🎨 Interface Visual (Identidade BitLab)
+- **Tema BitLab (blueprint tecno‑neon)**: Paleta ciano/menta com destaque âmbar; tipografia Share Tech Mono / VT323 / Roboto Mono
+- **Fundo animado (Canvas)**: Partículas conectadas e responsivas em `assets/js/bg-anim.js`
+- **Acessibilidade**: Header fixo com navegação móvel, “skip link”, e foco/ARIA revisados
+- **Design responsivo**: Grid/Flex e glass‑neomorphism sutil nas superfícies
+- **Controles claros**: Botões amplos, estados de hover/active consistentes
 
 ### 🧠 Funcionalidades Educacionais
-- **Emulador completo** do processador SAP-1
-- **Execução passo a passo** para análise detalhada
-- **Modo automático** com velocidade ajustável
-- **Quiz interativo gamificado** com modo infinito e sistema de vidas
-- **Sistema de conquistas** com progresso em tempo real
-- **Placar de líderes Top 10** persistente (localStorage + cookies)
-- **Material didático** completo sobre arquitetura
+- **Emulador completo** do processador SAP‑1
+- **Execução passo a passo** e **execução contínua** com velocidade ajustável
+- **Editor RAM/Assembly** com montagem automática (sem DOM) e feedback de erros
+- **Quiz interativo** com modo infinito, vidas e conquistas 
+- **Sistema de conquistas** com progresso em tempo real e persistência local
+- **Material didático** com figuras animadas (10‑2, 10‑16) e explicações
 
 ### 🔧 Recursos Técnicos
-- **Importação de programas** via arquivos CSV/TXT
-- **Editor de memória** integrado
-- **Conversão automática** de hexadecimal para assembly
-- **Sistema de logging** para depuração
-- **Estatísticas detalhadas** com gráficos (Chart.js)
-- **Export de resultados** em múltiplos formatos (TXT, JSON, CSV)
-- **Persistência de dados** via cookies e localStorage
+- **Corações do projeto (sem DOM)**: `assets/js/core/assembler-core.js` e `assets/js/core/emulator-core.js`
+- **Reatividade da RAM**: `assets/js/core/memory-store.js`
+- **Web Workers**: `assets/js/workers/*` para montar/executar sem travar a UI
+- **Importação de programas** via CSV/TXT e edição direta na RAM
+- **Conversão automática** Hex ⇄ Assembly e validação de entrada
+- **Otimizações de mídia**: lazy media, WebP opcional (`assets/js/media-opt.js`)
+- **Áudio global**: preferências persistentes e botão Mudo/Volume (`assets/js/audio-menu.js`)
 
 ---
 
-## 🆕 Novidades v1.1.0
+## 🆕 Novidades (BitLab v1.2.0)
 
 ### 🎯 Quiz Gamificado
 - **Modo Infinito**: Responda perguntas aleatórias até perder 3 vidas
-- **Sistema de Vidas**: Animação de corações com feedback visual
-- **Perguntas Externas**: Carregadas de JSON configurável com fallback interno
-- **Dificuldades Variadas**: Fácil, médio e difícil com indicação visual
+- **Sistema de Vidas**: Corações com feedback visual
+- **Perguntas Externas**: Carregadas de `assets/data/questions.json` (fallback interno)
+- **Dificuldades**: fácil, médio e difícil com indicação visual
 
 ### 🏆 Sistema de Conquistas
-- **Conquistas Desbloqueáveis**: 6 conquistas com ícones e descrições
-- **Progresso em Tempo Real**: Barra de progresso durante a sessão
-- **Objetivos Claros**: Metas de streak, precisão, pontuação e perguntas respondidas
-- **Visualização Grid Responsiva**: 3 colunas (desktop) → 2 → 1 (mobile)
-- **Estado Locked/Unlocked**: Filtro visual para conquistas não desbloqueadas
-- **Persistência**: Salvamento em localStorage + cookies (30 dias)
+- **Conquistas desbloqueáveis** (streak, accuracy, answered, score)
+- **Progresso em tempo real** com persistência local (storage/cookies)
+- **Grid responsivo** com estados Locked/Unlocked
 
-### 📊 Placar de Líderes
-- **Top 10 Global (via API opcional)**: Classificação por pontuação e data; usa API remota quando disponível (ex.: Vercel KV)
-- **Medalhas**: 🥇🥈🥉 para os 3 primeiros lugares
-- **Modal de Salvamento**: Interface moderna para inserir nome
-- **Toast de Confirmação**: Feedback visual ao salvar
-- **Atualização Instantânea**: Sem necessidade de reload
-- **Placeholders**: Linhas fictícias até completar 10 posições
-- **Sem Seed Estático**: Não há jogadores de exemplo — a lista fica vazia até salvar/receber dados da API
-
-### 📦 Export de Dados
-- **Formato TXT**: Estatísticas legíveis em texto plano
-- **Formato JSON**: Dados estruturados para processamento
-- **Formato CSV**: Compatível com Excel e planilhas
-- **Download Automático**: Via Blob API sem servidor
+### �️ Nova Identidade Visual
+- Paleta ciano/menta/âmbar declarada em `assets/css/base.css`
+- Canvas de fundo com partículas, respeita prefers‑reduced‑motion
+- Cabeçalho e navegação revisados para mobile/desktop
 
 ### 🎓 Tutorial Interativo
 - **Overlay Explicativo**: Instruções passo a passo
@@ -135,6 +121,15 @@ O SAP-1 é um processador didático de 8 bits criado por **Albert Paul Malvino**
 - **Modal Estilizado**: Backdrop blur e animações
 - **Toast Notifications**: Conquistas e salvamentos com fade
 
+## 🎨 Identidade Visual BitLab
+
+- Paleta e variáveis em `assets/css/base.css` (ciano, menta, âmbar, roxos profundos)
+- Tipografia técnica: Share Tech Mono (títulos), VT323 (destaques) e Roboto Mono (código)
+- Fundo dinâmico em Canvas (`assets/js/bg-anim.js`) com pausa automática quando a aba não está visível e respeito a `prefers-reduced-motion`
+- Header fixo com navegação móvel (`assets/js/nav.js`) e link “Pular para conteúdo” para acessibilidade
+- Botão de áudio global e preferências persistentes (`assets/js/audio-menu.js`)
+- Componentização CSS: páginas específicas importam `base.css` e adicionam estilos focados (e.g., `emular.css`, `quiz.css`, `oqueesap.css`)
+
 ---
 
 ## 🛠 Tecnologias Utilizadas
@@ -146,7 +141,7 @@ O SAP-1 é um processador didático de 8 bits criado por **Albert Paul Malvino**
 
 ### Bibliotecas e APIs
 - **Chart.js**: Gráficos estatísticos do quiz
-- **Google Fonts**: Fonte "Press Start 2P" para estética retro
+- **Google Fonts**: Share Tech Mono, VT323 e Roboto Mono
 - **Web Audio API**: Controle de áudio de fundo
 
 ### Ferramentas de Desenvolvimento
@@ -178,33 +173,29 @@ ProjetoSap/
 │   │   └── footer.css       # Estilos do rodapé
 │   │
 │   ├── 📁 js/               # Scripts JavaScript
-│   │   ├── audio-menu.js    # Controle global de áudio
-│   │   ├── bg-anim.js       # Fundo animado (partículas)
-│   │   ├── media-opt.js     # Otimizações de mídia/carregamento
-│   │   ├── nav.js           # Navegação e acessibilidade
+│   │   ├── audio-menu.js    # Controle global de áudio (mudo/volume + prefs)
+│   │   ├── bg-anim.js       # Fundo animado (Canvas; respeita reduced-motion)
+│   │   ├── media-opt.js     # Lazy mídia e trocas WebP opcionais
+│   │   ├── nav.js           # Navegação e acessibilidade (menu mobile)
 │   │   ├── oqesap.js        # Utilidades para páginas didáticas
-│   │   ├── script.js        # Lógica principal do emulador
+│   │   ├── script.js        # Lógica principal do emulador (UI)
 │   │   ├── carrosel.js      # Efeitos/Animações auxiliares
-│   │   ├── quiz.js          # Quiz (perguntas, conquistas, placar)
-│   │   ├── fig-10-2.js      # Fig. 10-2: contador em anel
-│   │   └── fig-10-16.js     # Fig. 10-16: controle microprogramado
+│   │   ├── quiz.js          # Quiz (perguntas + conquistas)
+│   │   ├── fig-10-2.js      # Fig. 10-2: contador em anel (interativo)
+│   │   ├── fig-10-16.js     # Fig. 10-16: controle microprogramado (interativo)
+│   │   └── core/ + workers  # Núcleo sem DOM + Web Workers
 │   │
 │   ├── 📁 data/             # Dados externos do quiz
-│   │   ├── achievements.json # Definição de conquistas
-│   │   ├── leaderboard.json  # (Opcional) seed/local do placar
+│   │   ├── achievements.json # Definição de conquistas (utilizado)
 │   │   └── questions.json    # Banco de perguntas do quiz
 │   │
 │   ├── 📁 img/              # Imagens e recursos visuais
-│   │   ├── logo.png         # Logo principal
-│   │   ├── logo-page.png    # Favicon
-│   │   ├── pacman.png       # Textura de fundo
-│   │   ├── moeda.png        # Ícone decorativo
+│   │   ├── logoBitLab.png   # Logo principal (utilizado nos HTMLs)
 │   │   ├── equipe/          # Fotos da equipe
 │   │   ├── setas/           # Ícones de setas
 │   │   └── w/               # Animações do barramento
 │   │
-│   ├── 📁 audio/            # Recursos de áudio
-│   │   └── pacman.mp3       # Música de fundo
+│   ├── 📁 audio/            # Recursos de áudio (sons de UI/quiz)
 │   │
 │   └── 📁 docs/             # Documentação técnica
 │       ├── Artigo_SAP1_Malvino.pdf
@@ -278,25 +269,6 @@ ProjetoSap/
   - Primeiro aplica diretivas nos endereços solicitados
   - Depois aloca instruções sequencialmente nas posições livres
 - Visualização alternável na mesma área: em modo RAM mostra “Assembly em tempo real”; em modo ASM mostra “Memória RAM 4×4” em tempo real
-
-Exemplo de teste (cobre todos os opcodes; propósito didático):
-
-```
-0A
-1B
-SUB C
-50
-INC
-DEC
-60
-E0
-F0
-A 05
-B 03
-C 01
-```
-
-Observação: o `60` (JMP 0) salta para o endereço 0 e pode formar laço ao executar tudo; use como teste de aceitação das instruções. Ajuste o destino se quiser evitar loop.
 
 ### 3. 📝 Sistema de Quiz Gamificado
 
@@ -868,7 +840,6 @@ Este arquivo representa o programa de soma básica e pode ser carregado diretame
 
 #### Recursos Necessários
 - **JavaScript**: Deve estar habilitado
-- **Cookies**: Para salvar leaderboard e conquistas (v1.1.0)
 - **LocalStorage**: Para persistência de dados do quiz
 - **Áudio**: Para música de fundo (opcional)
 
@@ -1181,7 +1152,6 @@ function computeStats() {
 - Sistema de save/load de sessões
 - Modo debug avançado
 - Novas conquistas para o quiz
-- Melhorias no sistema de leaderboard
 
 #### 4. 🏆 Quiz e Gamificação (⭐ Novo v1.1.0)
 - Adicionar novas conquistas criativas
@@ -1219,7 +1189,7 @@ function computeStats() {
 ```
 MIT License
 
-Copyright (c) 2024 Equipe SapMan
+Copyright (c) 2024–2025 Equipe BitLab
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1303,12 +1273,12 @@ Ao usar este projeto, pedimos que mantenha:
 ### 🎨 Recursos Visuais
 
 #### **Fonte Tipográfica**
-- **Press Start 2P**: Google Fonts
+- **Share Tech Mono / VT323 / Roboto Mono**: Google Fonts
 - **Licença**: Open Font License
 - **Uso**: Interface retro estilo arcade
 
 #### **Áudio**
-- **Música de Fundo**: Estilo Pac-Man (livre de direitos)
+- **Música de Fundo**: Trilha e SFX sci‑fi (packs Kenney)
 - **Efeitos Sonoros**: Criação própria
 - **Formato**: MP3 (compatibilidade)
 
@@ -1330,10 +1300,8 @@ Ao usar este projeto, pedimos que mantenha:
 - **Figma**: Prototipação e design
 - **Canva:** 
 #### **Bibliotecas**
-- **Chart.js**: Gráficos do quiz
 - **Google Fonts**: Tipografia
-- **Normalize.css**: Reset CSS
-- **Modern Browsers**: APIs nativas
+- **Modern Browsers**: APIs nativas (Canvas, Web Audio, Web Workers)
 
 ### 🌟 Agradecimentos Especiais
 
@@ -1344,7 +1312,7 @@ Ao usar este projeto, pedimos que mantenha:
 - Comunidade open-source
 
 #### **Inspirações**
-- **Pac-Man**: Namco (tema visual)
+- (legado removido)
 - **Malvino**: Base acadêmica sólida
 - **Ben Eater**: Vídeos educacionais sobre computadores
 - **Nand2Tetris**: Projeto educacional similar
@@ -1370,12 +1338,12 @@ Ao usar este projeto, pedimos que mantenha:
 ### 🆘 Suporte Técnico
 
 #### **Issues no GitHub**
-- **URL**: https://github.com/usuario/sapman/issues
+- **URL**: https://github.com/TyenW/ProjetoSap/issues
 - **Tempo de Resposta**: 24-48 horas
 - **Tipos**: Bugs, dúvidas, sugestões
 
 #### **Documentação**
-- **Wiki**: https://github.com/usuario/sapman/wiki
+- **Wiki**: https://github.com/TyenW/ProjetoSap/wiki
 - **FAQ**: Perguntas frequentes
 - **Tutoriais**: Guias passo a passo
 
@@ -1384,7 +1352,7 @@ Ao usar este projeto, pedimos que mantenha:
 #### **Redes Sociais**
 - **GitHub**: [github.com/usuario/ProjetoSap](https://github.com/usuario/ProjetoSap)
 - **Twitter**: [@ProjetoSap](https://twitter.com/projetosap)
-- **YouTube**: [Canal Projeto SAP](https://youtube.com/projetosap)
+- **YouTube**: [Canal BitLab](https://youtube.com/projetosap)
 
 ### 🎓 Uso Educacional
 
@@ -1438,7 +1406,6 @@ Ao usar este projeto, pedimos que mantenha:
 - ✅ **Export Múltiplo**: TXT, JSON, CSV para análise de resultados
 - ✅ **Tutorial Interativo**: Overlay com instruções passo a passo
 - ✅ **Responsividade Completa**: Layout adaptado para mobile e touch
-- ✅ **Seed de Leaderboard**: 6 jogadores iniciais pré-carregados
 
 ##### 🎨 Melhorias de Design
 - ✅ **Gradientes Modernos**: Botões e painéis com degradê escuro (180deg)
@@ -1466,7 +1433,7 @@ Ao usar este projeto, pedimos que mantenha:
 #### **v1.0.0** - *Lançamento Inicial* (2024-12-29)
 ##### ✨ Funcionalidades
 - ✅ Emulador SAP-1 completo e funcional
-- ✅ Interface visual com tema Pac-Man
+- ✅ Interface visual (legado) — substituída pela identidade BitLab
 - ✅ Sistema de quiz básico com 13+ perguntas
 - ✅ Material didático abrangente
 - ✅ Importação de programas CSV/TXT
@@ -1480,7 +1447,7 @@ Ao usar este projeto, pedimos que mantenha:
 - ✅ CSS3 com Grid e Flexbox
 - ✅ JavaScript ES6+ vanilla
 - ✅ Chart.js para gráficos de desempenho
-- ✅ Google Fonts: "Press Start 2P"
+- ✅ Google Fonts: Share Tech Mono / VT323 / Roboto Mono
 
 ##### 📚 Documentação
 - ✅ README completo com exemplos
@@ -1511,7 +1478,7 @@ Este projeto é baseado no trabalho de **Albert Paul Malvino**, especialmente se
 - Comunidade open-source
 
 #### **Inspirações Técnicas**
-- **Pac-Man**: Namco (tema visual retro)
+- (legado removido)
 - **Malvino**: Base acadêmica sólida para SAP-1
 - **Ben Eater**: Vídeos educacionais sobre computadores de 8 bits
 - **Nand2Tetris**: Projeto educacional inspirador
@@ -1519,7 +1486,7 @@ Este projeto é baseado no trabalho de **Albert Paul Malvino**, especialmente se
 #### **Apoio Técnico**
 - **MDN Web Docs**: Documentação técnica completa
 - **Chart.js**: Biblioteca de gráficos
-- **Google Fonts**: Fonte "Press Start 2P"
+- **Google Fonts**: Share Tech Mono, VT323 e Roboto Mono
 - **Stack Overflow**: Resolução de problemas
 - **GitHub Community**: Boas práticas de desenvolvimento
 - **W3C**: Padrões web modernos
@@ -1558,7 +1525,7 @@ Este projeto é licenciado sob a [MIT License](LICENSE).
 ```
 MIT License
 
-Copyright (c) 2024 Projeto SAP
+Copyright (c) 2024–2025 Projeto BitLab
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1583,21 +1550,20 @@ SOFTWARE.
 
 ## 🎯 Resumo Executivo
 
-**Projeto SAP** é uma plataforma educacional interativa para aprendizado de arquitetura de computadores através do emulador SAP-1 (Simple As Possible). Combinando simulação visual, material didático e sistema de quiz gamificado (**v1.1.0**), o projeto oferece uma experiência completa e envolvente para estudantes e entusiastas.
+**BitLab** é uma plataforma educacional interativa para aprendizado de arquitetura de computadores através do emulador SAP‑1 (Simple As Possible). Combina simulação visual, material didático e um quiz gamificado com conquistas — agora com nova identidade visual e foco em acessibilidade.
 
-### ✨ Destaques v1.1.0
-- 🎮 **Quiz Infinito**: Modo gamificado com vidas e pontuação
-- 🏆 **6 Conquistas**: Sistema de achievements com progresso em tempo real
-- 🥇 **Top 10 Global**: Placar de líderes com medalhas e persistência
-- 📦 **Export TXT/JSON/CSV**: Análise completa de resultados
-- 📱 **100% Responsivo**: Interface adaptada para mobile e touch
-- 🎨 **Design Moderno**: Gradientes escuros, sombras e animações
+### ✨ Destaques
+- 🎮 **Quiz Infinito**: Vidas e pontuação com feedback visual
+- 🏆 **Conquistas**: Streak, precisão, volume de respostas e score
+- 🖼️ **Identidade BitLab**: Paleta ciano/menta, canvas animado e tipografia técnica
+- 🧩 **Editor RAM/ASM**: Montagem automática, validação e alternância rápida
+- 📱 **Responsivo**: Interface adaptada para mobile e touch
 
 ### 🚀 Como Começar
-1. Clone o repositório: `git clone https://github.com/usuario/ProjetoSap.git`
-2. Inicie servidor local: `python -m http.server 8000`
-3. Acesse: `http://localhost:8000`
-4. Explore o emulador SAP-1 e desafie-se no quiz!
+1. Clone o repositório: `git clone https://github.com/TyenW/ProjetoSap.git`
+2. Abra no VS Code e use “Open with Live Server” em `home.html` ou `index.html`
+3. Alternativamente, execute qualquer servidor HTTP estático e acesse pelo navegador
+4. Explore o emulador SAP‑1 e o quiz de fixação!
 
 ### 🎓 Público-Alvo
 - Estudantes de Ciência da Computação e Engenharia
@@ -1611,7 +1577,7 @@ SOFTWARE.
 
 **[⬆ Voltar ao Topo](#-projeto-sap---emulador-educacional-do-processador-sap-1)**
 
-Feito com 💛 e muito ☕ | © 2024 Projeto SAP
+Feito com 💛 e muito ☕ | © 2024–2025 Projeto BitLab
 
 [![Stars](https://img.shields.io/github/stars/usuario/ProjetoSap?style=social)](https://github.com/usuario/ProjetoSap)
 [![Forks](https://img.shields.io/github/forks/usuario/ProjetoSap?style=social)](https://github.com/usuario/ProjetoSap/fork)
@@ -1656,122 +1622,6 @@ Publicação:
 - ✅ Design responsivo
 - ✅ Performance otimizada
 
----
-
-## 🌐 Hospedar só a API (Vercel) e o site em outro lugar
-
-Você pode manter o site estático (HTML/CSS/JS) em qualquer hospedagem (GitHub Pages, Netlify, servidor próprio) e hospedar apenas a API do placar na Vercel.
-
-### 1) Subir apenas a API na Vercel (serverless + KV)
-
-- A pasta `api/` já contém `api/leaderboard.mjs` pronto para rodar como Function.
-- No painel da Vercel:
-  1. Crie um novo projeto apontando para este repositório (ou copie só a pasta `api/`).
-  2. Em “Storage”, crie um banco **Vercel KV** e vincule ao projeto.
-  3. Faça o deploy. O endpoint ficará assim: `https://SEU-PROJETO.vercel.app/api/leaderboard`.
-
-Observações:
-- O handler já responde com CORS liberado (GET/POST/OPTIONS), então pode ser chamado de qualquer origem.
-- Para testes locais, você pode usar o servidor Express (`server.mjs`) com `http://localhost:8000/api/leaderboard`.
-
-Se você estiver fazendo um deploy SOMENTE da API, pode adicionar um `vercel.json` com um redirect opcional da raiz `/` para `/api/leaderboard` (para evitar “Cannot GET /”).
-
-Se você pretende hospedar o site completo (frontend + API) na Vercel, NÃO utilize esse redirect — deixe sem `redirects` para que a Vercel sirva seu `index.html` na raiz normalmente.
-
-### Dica importante (deploy do site completo na Vercel)
-
-Se o projeto contém um arquivo `server.mjs` na raiz (útil para desenvolvimento local), a Vercel pode tentar tratá-lo como entrada de servidor e não servir os arquivos estáticos como esperado. Para evitar isso ao hospedar o site completo:
-
-1. Crie um arquivo `.vercelignore` na raiz do repositório.
-2. Adicione a linha abaixo dentro dele:
-
-```
-server.mjs
-```
-
-Isso instrui a Vercel a ignorar `server.mjs` no deploy, garantindo que a URL raiz (`/`) sirva seu `index.html`. A API continuará disponível normalmente em `/api/leaderboard` (pasta `api/`).
-
-Além disso, inclua um `vercel.json` simples para a Vercel construir e servir a pasta estática `dist/` (as funções em `api/` são detectadas automaticamente):
-
-```json
-{
-  "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist"
-}
-```
-
-Isso elimina o erro “No entrypoint found” e garante que `/` sirva o conteúdo de `dist/` após o build. A API permanece disponível em `/api/*` (pasta `api/`).
-
-Se sua conta/projeto na Vercel ainda mostrar o erro “No entrypoint found in output directory: dist”, use a configuração alternativa com builds e routes explícitos:
-
-```json
-{
-  "version": 2,
-  "buildCommand": "npm run build",
-  "builds": [
-    { "src": "api/**/*.mjs", "use": "@vercel/node" },
-    { "src": "dist/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/dist/$1" }
-  ]
-}
-```
-
-Essa configuração direciona a Vercel para servir explicitamente os arquivos estáticos de `dist/` e manter as funções em `/api/*`.
-
-### 2) Hospedar o site estático (HTML/CSS/JS)
-
-- Gere a pasta `dist/` (opcional, minificada) e publique em:
-  - GitHub Pages (branch `gh-pages` ou `docs/`),
-  - Netlify,
-  - Qualquer servidor estático.
-
-### 3) Apontar o frontend para a API remota
-
-O frontend agora aceita configurar o endpoint do placar de forma flexível. Escolha uma das opções a seguir (na ordem de prioridade):
-
-1. Parâmetro de URL (mais rápido, sem editar código):
-  - Acesse o quiz com: `https://SEU-SITE/quiz.html?lbApi=https://SEU-PROJETO.vercel.app/api/leaderboard`
-  - A URL será lembrada em `localStorage` para as próximas visitas.
-
-2. Variável global antes de `assets/js/quiz.js`:
-  ```html
-  <script>
-    window.LEADERBOARD_API = 'https://SEU-PROJETO.vercel.app/api/leaderboard';
-  </script>
-  <script src="assets/js/quiz.js"></script>
-  ```
-
-3. Meta tag no `<head>`:
-  ```html
-  <meta name="leaderboard-api" content="https://SEU-PROJETO.vercel.app/api/leaderboard" />
-  ```
-
-4. Fallbacks automáticos (caso nada seja configurado):
-  - Tenta `same-origin` → `/api/leaderboard`.
-  - Tenta `http://localhost:8000/api/leaderboard` (modo desenvolvimento).
-
-### 4) CORS
-
-- A API serverless (Vercel) já inclui cabeçalhos CORS: `Access-Control-Allow-Origin: *`, `Allow-Methods: GET,POST,OPTIONS`, `Allow-Headers: Content-Type`.
-- O servidor Express local também habilita CORS por padrão (`cors()`).
-
-Pronto! Assim você mantém o site onde quiser e usa um placar global compartilhado via Vercel KV.
-
-##### 📚 Documentação
-- ✅ README.md completo e detalhado
-- ✅ Comentários no código
-- ✅ Estrutura de projeto organizada
-- ✅ Exemplos de uso
-
-##### 🎯 Objetivos Alcançados
-- ✅ Ferramenta educacional funcional
-- ✅ Interface atrativa e intuitiva
-- ✅ Base sólida para expansões futuras
-- ✅ Código limpo e manutenível
 
 ---
 
@@ -1783,11 +1633,9 @@ Pronto! Assim você mantém o site onde quiser e usa um placar global compartilh
 
 ---
 
-*Desenvolvido com ❤️ pela Equipe SapMan*  
-*Projeto Educacional - Arquitetura de Computadores*
+*Desenvolvido com ❤️ pela Equipe BitLab*  
+*Projeto Educacional — Arquitetura de Computadores*
 
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/usuario/sapman)
-[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen?style=for-the-badge)](https://usuario.github.io/sapman)
-[![Docs](https://img.shields.io/badge/Docs-Wiki-blue?style=for-the-badge)](https://github.com/usuario/sapman/wiki)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/TyenW/ProjetoSap)
 
 </div>
