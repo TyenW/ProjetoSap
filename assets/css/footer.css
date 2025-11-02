@@ -50,10 +50,10 @@
   gap: 12px;
   margin-bottom: 12px;
 }
-.site-footer .brand .logo-frasco { filter: drop-shadow(0 0 10px rgba(0,255,255,0.25)); }
-.site-footer .brand .logo-text { font-family: 'Share Tech Mono', monospace; font-size: 1.6rem; color: var(--cor-ciano); text-transform: uppercase; text-shadow: 0 0 10px rgba(0,255,255,0.25); }
+.site-footer .brand .logo-frasco { filter: drop-shadow(0 0 12px rgba(0,255,255,0.3)); transform-origin: left center; transform: scale(1.15); }
+.site-footer .brand .logo-text { font-family: 'Share Tech Mono', monospace; font-size: 2.8rem; color: var(--cor-ciano); text-transform: uppercase; text-shadow: 0 0 14px rgba(0,255,255,0.35); line-height: 1; }
 
-.site-footer .tagline { margin: 6px 0 0 0; color: #e6f1ff; opacity: 0.85; }
+.site-footer .tagline { margin: 6px 0 0 2px; color: #e6f1ff; opacity: 0.95; font-size: 1rem; text-shadow: 0 0 6px rgba(0,255,255,0.12); }
 
 .footer-title {
   font-size: 1.1em;
@@ -110,62 +110,8 @@
 }
 
 /* Embelezamento da seção "Sobre" do footer */
-.footer-section.footer-info {
-  background: linear-gradient(180deg, rgba(0, 20, 32, 0.55), rgba(0, 20, 32, 0.25));
-  border: 1px solid rgba(0,255,255,0.25);
-  border-radius: 12px;
-  padding: 14px 16px;
-  box-shadow: inset 0 0 0 1px rgba(0,255,255,0.05), 0 8px 24px rgba(0,0,0,0.35);
-}
-
-.footer-section.footer-info h4 {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.footer-section.footer-info h4::before {
-  content: "";
-  width: 18px;
-  height: 18px;
-  display: inline-block;
-  background: url("../../kenney_board-game-icons/Double (128px)/notepad.png") center/contain no-repeat;
-  filter: drop-shadow(0 0 6px rgba(0,255,255,0.35));
-}
-
-.footer-about p {
-  line-height: 1.7;
-}
-
-.footer-about a {
-  color: var(--cor-ciano);
-  text-decoration: none;
-  border-bottom: 1px dashed rgba(0,255,255,0.35);
-}
-.footer-about a:hover {
-  color: var(--cor-menta);
-  border-bottom-color: rgba(100,255,218,0.6);
-  text-shadow: 0 0 6px rgba(0,255,255,0.3);
-}
-
-/* Badge para links importantes (PDF, seção explicativa) */
-.footer-about a[download],
-.footer-about a[href*="oqueesap.html"] {
-  display: inline-block;
-  margin: 2px 0;
-  padding: 3px 8px;
-  border: 1px solid var(--cor-ciano);
-  border-radius: 8px;
-  background: rgba(0,255,255,0.08);
-  box-shadow: 0 0 8px rgba(0,255,255,0.12) inset;
-  border-bottom: none;
-}
-.footer-about a[download]:hover,
-.footer-about a[href*="oqueesap.html"]:hover {
-  background: rgba(0,255,255,0.15);
-  box-shadow: 0 0 12px rgba(0,255,255,0.18) inset;
-}
+/* Simplificação do bloco Sobre (agora segue o estilo de navegação) */
+.footer-section.footer-info, .footer-about { all: unset; }
 
 /* Autor / Contato */
 .site-footer .contact p { margin: 0 0 10px 0; color: #e6f1ff; opacity: 0.9; }

@@ -115,22 +115,7 @@ let respostasCorretas = []; // armazena true/false para acertos
 let answeredCount = 0;
 let maxStreak = 0;
 
-// SFX do Quiz (acerto/erro), sincronizados com o botão de mute da página
-const quizSfx = (()=>{
-  try {
-    const s = {
-      correct: new Audio('assets/audio/quiz_correct.ogg'),
-      wrong: new Audio('assets/audio/quiz_wrong.ogg'),
-      setMuted(m){ this.correct.muted = m; this.wrong.muted = m; },
-      init(){ this.correct.volume = 0.22; this.wrong.volume = 0.24; const music = document.getElementById('bg-music'); this.setMuted(music ? music.muted : true); }
-    };
-    s.init();
-    // sincroniza com o toggle global se existir
-    const toggle = document.getElementById('muteToggle');
-    if (toggle) toggle.addEventListener('click', ()=>{ const music = document.getElementById('bg-music'); s.setMuted(music ? music.muted : true); });
-    return s;
-  } catch(_) { return { correct:{play(){}}, wrong:{play(){}}, setMuted(){} }; }
-})();
+// SFX do Quiz (acerto/erro) agora via <audio> no HTML controlado por audio-menu.js
 
 function getRandomQuestion(difficulty) {
   const pool = allQuestions.filter(q => q.difficulty === difficulty && !usedQuestions.includes(q));
@@ -221,7 +206,7 @@ function checkAnswer(selected) {
     messageDiv.style.color = "green";
     respostasCorretas.push(true);
     if (clickedBtn) { clickedBtn.classList.add('correct'); }
-    try { quizSfx.correct.currentTime = 0; quizSfx.correct.play(); } catch(_) {}
+  try { const sfx = document.getElementById('sfx-correct'); if (sfx) { sfx.currentTime = 0; sfx.play(); } } catch(_) {}
   } else {
     lives--;
     acertosSeguidos = 0;
@@ -229,7 +214,7 @@ function checkAnswer(selected) {
     messageDiv.style.color = "red";
     respostasCorretas.push(false);
   if (clickedBtn) { clickedBtn.classList.add('wrong'); }
-  try { quizSfx.wrong.currentTime = 0; quizSfx.wrong.play(); } catch(_) {}
+  try { const sfxw = document.getElementById('sfx-wrong'); if (sfxw) { sfxw.currentTime = 0; sfxw.play(); } } catch(_) {}
     // anima hearts
     const hearts = document.getElementById('lives');
     hearts.classList.add('remove');

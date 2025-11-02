@@ -293,35 +293,77 @@ function resetAnimations() {
     document.querySelectorAll('.sap1-block').forEach(block => {
         block.classList.remove('active', 'operation-fetch', 'operation-execute', 'operation-store');
     });
-    document.querySelectorAll('.arrow-img').forEach(arrow => {
-        arrow.classList.remove('active');
+    document.querySelectorAll('.bus-tap').forEach(tap => {
+        tap.classList.remove('bus-tap-active');
     });
     document.getElementById('barramento').classList.remove('active');
 }
 
 function animateDataTransfer(fromElement, toElement) {
+    if (!fromElement || !toElement) return;
+    const busTrack = document.querySelector('#barramento .bus-track');
     const fromRect = fromElement.getBoundingClientRect();
     const toRect = toElement.getBoundingClientRect();
-    
-    const dataPoint = document.createElement('div');
-    dataPoint.className = 'data-transfer';
-    dataPoint.style.left = (fromRect.left + fromRect.width / 2) + 'px';
-    dataPoint.style.top = (fromRect.top + fromRect.height / 2) + 'px';
-    dataPoint.style.position = 'fixed';
-    
-    document.body.appendChild(dataPoint);
-    
-    // Anima o movimento
-    const deltaX = (toRect.left + toRect.width / 2) - (fromRect.left + fromRect.width / 2);
-    const deltaY = (toRect.top + toRect.height / 2) - (fromRect.top + fromRect.height / 2);
-    
-    dataPoint.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-    
+    const busRect = busTrack ? busTrack.getBoundingClientRect() : null;
+
+    const fromBlock = fromElement.closest('.sap1-block');
+    const toBlock = toElement.closest('.sap1-block');
+    if (fromBlock) fromBlock.classList.add('writing');
+    if (toBlock) toBlock.classList.add('reading');
+    const barramento = document.getElementById('barramento');
+    if (barramento) barramento.classList.add('active');
+
+    // Posição inicial (centro da origem)
+    const startX = fromRect.left + fromRect.width / 2;
+    const startY = fromRect.top + fromRect.height / 2;
+    const endX = toRect.left + toRect.width / 2;
+    const endY = toRect.top + toRect.height / 2;
+    const busX = busRect ? (busRect.left + busRect.width / 2) : ((startX + endX) / 2);
+
+    const packet = document.createElement('div');
+    packet.className = 'data-transfer';
+    packet.style.position = 'fixed';
+    packet.style.left = `${startX}px`;
+    packet.style.top = `${startY}px`;
+    packet.style.transform = 'translate(0,0)';
+    document.body.appendChild(packet);
+
+    // Durations (ajustadas pela distância vertical)
+    const vdist = Math.abs(endY - startY);
+    const seg1 = 260;
+    const seg2 = Math.min(900, Math.max(300, vdist * 0.8));
+    const seg3 = 260;
+
+    // Fase 1: até o barramento (horizontal)
     setTimeout(() => {
-        if (dataPoint.parentNode) {
-            dataPoint.parentNode.removeChild(dataPoint);
-        }
-    }, 1000);
+        const dx1 = busX - startX;
+        packet.style.transition = `transform ${seg1}ms ease-in-out`;
+        packet.style.transform = `translate(${dx1}px, 0px)`;
+    }, 10);
+
+    // Fase 2: deslocamento vertical dentro do barramento
+    setTimeout(() => {
+        const dx1 = busX - startX;
+        const dy2 = endY - startY;
+        packet.style.transition = `transform ${seg2}ms linear`;
+        packet.style.transform = `translate(${dx1}px, ${dy2}px)`;
+    }, seg1 + 40);
+
+    // Fase 3: do barramento ao destino (horizontal)
+    setTimeout(() => {
+        const dx3 = endX - startX;
+        const dy3 = endY - startY;
+        packet.style.transition = `transform ${seg3}ms ease-in-out`;
+        packet.style.transform = `translate(${dx3}px, ${dy3}px)`;
+    }, seg1 + seg2 + 80);
+
+    // Encerrar e limpar
+    setTimeout(() => {
+        if (packet.parentNode) packet.parentNode.removeChild(packet);
+        if (fromBlock) fromBlock.classList.remove('writing');
+        if (toBlock) toBlock.classList.remove('reading');
+        if (barramento) barramento.classList.remove('active');
+    }, seg1 + seg2 + seg3 + 160);
 }
 
 function animateInstructionFetch() {
@@ -330,8 +372,9 @@ function animateInstructionFetch() {
     // Etapa 1: PC aponta para endereço
     setTimeout(() => {
         document.getElementById('pc').classList.add('active', 'operation-fetch');
-        // Ativa seta do PC para barramento
-        document.querySelector('#pc .arrow-img').classList.add('active');
+        // Ativa linha de ativação do PC para o barramento
+        const tap = document.querySelector('#pc .bus-tap');
+        if (tap) tap.classList.add('bus-tap-active');
     }, 100);
     
     // Etapa 2: Barramento transporta endereço
@@ -346,7 +389,8 @@ function animateInstructionFetch() {
     // Etapa 3: RAM acessa a instrução
     setTimeout(() => {
         document.getElementById('ram').classList.add('active', 'operation-fetch');
-        document.querySelector('#ram .arrow-img').classList.add('active');
+        const tap = document.querySelector('#ram .bus-tap');
+        if (tap) tap.classList.add('bus-tap-active');
         // Destaca a célula atual no preview 4x4 (endereço PC)
         try { highlightRamPreviewCell(PC); } catch (e) {}
     }, 600);
@@ -354,7 +398,8 @@ function animateInstructionFetch() {
     // Etapa 4: Instrução vai para RI
     setTimeout(() => {
         document.getElementById('ri').classList.add('active', 'operation-fetch');
-        document.querySelector('#ri .arrow-img').classList.add('active');
+        const tap = document.querySelector('#ri .bus-tap');
+        if (tap) tap.classList.add('bus-tap-active');
         animateDataTransfer(
             document.getElementById('ram'),
             document.getElementById('ri')
@@ -364,7 +409,6 @@ function animateInstructionFetch() {
     // Etapa 5: RI envia para controlador
     setTimeout(() => {
         document.getElementById('controlador').classList.add('active', 'operation-fetch');
-        document.querySelector('#controlador .arrow-img').classList.add('active');
     }, 1200);
 }
 
@@ -412,7 +456,8 @@ function animateInstructionExecute(operation, hasMemoryAccess = false, targetAdd
         setTimeout(() => {
             // RAM acessa dados
             document.getElementById('ram').classList.add('active', 'operation-execute');
-            document.querySelector('#ram .arrow-img').classList.add('active');
+            const tap = document.querySelector('#ram .bus-tap');
+            if (tap) tap.classList.add('bus-tap-active');
             // Destaca a célula alvo no preview 4x4
             try { highlightRamPreviewCell(targetAddress); } catch (e) {}
         }, 400);
@@ -421,12 +466,16 @@ function animateInstructionExecute(operation, hasMemoryAccess = false, targetAdd
             // Dados vão para Registrador B ou ACC
             if (operation === 'LDA') {
                 document.getElementById('acc').classList.add('active', 'operation-execute');
+                const tapAcc = document.querySelector('#acc .bus-tap');
+                if (tapAcc) tapAcc.classList.add('bus-tap-active');
                 animateDataTransfer(
                     document.getElementById('ram'),
                     document.getElementById('acc')
                 );
             } else {
                 document.getElementById('regb').classList.add('active', 'operation-execute');
+                const tapRb = document.querySelector('#regb .bus-tap');
+                if (tapRb) tapRb.classList.add('bus-tap-active');
                 animateDataTransfer(
                     document.getElementById('ram'),
                     document.getElementById('regb')
@@ -438,7 +487,6 @@ function animateInstructionExecute(operation, hasMemoryAccess = false, targetAdd
             // ALU processa os dados
             setTimeout(() => {
                 document.getElementById('alu').classList.add('active', 'operation-execute');
-                document.querySelector('#alu .arrow-img').classList.add('active');
                 animateDataTransfer(
                     document.getElementById('regb'),
                     document.getElementById('alu')
@@ -459,7 +507,6 @@ function animateInstructionExecute(operation, hasMemoryAccess = false, targetAdd
         setTimeout(() => {
             document.getElementById('acc').classList.add('active', 'operation-execute');
             document.getElementById('alu').classList.add('active', 'operation-execute');
-            document.querySelector('#alu .arrow-img').classList.add('active');
         }, 400);
     }
 }
@@ -468,7 +515,8 @@ function animateOutput() {
     setTimeout(() => {
         // ACC para registrador de saída
         document.getElementById('saida').classList.add('active', 'operation-store');
-        document.querySelector('#saida .arrow-img').classList.add('active');
+        const tap = document.querySelector('#saida .bus-tap');
+        if (tap) tap.classList.add('bus-tap-active');
         animateDataTransfer(
             document.getElementById('acc'),
             document.getElementById('saida')

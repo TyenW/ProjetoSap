@@ -281,7 +281,7 @@
         </div>
         Contador de Programa (PC)
         <div class="block-value" id="pc-value">0</div>
-        <img src="assets/img/setas/off/dir.png" alt="Seta para o barramento" class="arrow-img" />
+        <span class="bus-tap bus-tap-right" aria-hidden="true"></span>
       </div>
 
       <div class="sap1-block block-mar" id="entrada-rem" title="Memory Address Register: Armazena o endereço de memória que está sendo acessado">
@@ -295,9 +295,7 @@
         </div>
         Entrada / REM
         <div class="block-value" id="mar-value">--</div>
-        <img src="assets/img/setas/off/down.png" alt="Seta para baixo" class="arrow-img" />
-        <img src="assets/img/setas/off/down.png" alt="Seta para baixo" class="arrow-img" />
-        <img src="assets/img/setas/off/esq.png" alt="Seta do barramento" class="arrow-img" />
+        <span class="bus-tap bus-tap-right" aria-hidden="true"></span>
       </div>
 
       <div class="sap1-block block-ram" id="ram" title="Memória RAM: Armazena instruções e dados do programa (16 endereços x 8 bits)">
@@ -311,7 +309,7 @@
         </div>
         RAM 16x8
         <div class="block-value" id="ram-value">--</div>
-        <img src="assets/img/setas/off/dir.png" alt="Seta para o barramento" class="arrow-img" />
+        <span class="bus-tap bus-tap-right" aria-hidden="true"></span>
       </div>
 
       <div class="sap1-block block-ir" id="ri" title="Registrador de Instruções: Armazena a instrução atual sendo decodificada">
@@ -325,8 +323,7 @@
         </div>
         Registrador de Instruções (RI)
         <div class="block-value" id="ri-value">--</div>
-        <img src="assets/img/setas/off/down.png" alt="Seta para controlador" class="arrow-img" />
-        <img src="assets/img/setas/off/dupla.png" alt="Seta dupla" class="arrow-img" />
+        <span class="bus-tap bus-tap-right" aria-hidden="true"></span>
       </div>
 
       <div class="sap1-block block-controller" id="controlador" title="Controlador/Sequencializador: Decodifica instruções e gera sinais de controle">
@@ -340,7 +337,6 @@
         </div>
         Controlador / Sequencializador
         <div class="block-value" id="controller-value">IDLE</div>
-        <img src="assets/img/setas/off/down.png" alt="Seta para baixo" class="arrow-img" />
       </div>
 
       <!-- Imagem do Barramento Central -->
@@ -353,8 +349,10 @@
           Mais detalhes
         </button>
       </div>
-        <img id="bus-img" src="assets/img/w/w1.png" alt="Imagem do Barramento" />
-        <img src="assets/img/data_packet.png" alt="" aria-hidden="true" class="decor-icon" />
+        <div class="bus" aria-hidden="true">
+          <div class="bus-track"></div>
+          <div class="bus-layer" id="bus-layer"></div>
+        </div>
     </div>
 
       <!-- Blocos da direita -->
@@ -369,9 +367,8 @@
         </div>
         Acumulador (ACC)
         <div class="block-value" id="acc-value">0</div>
-          <img src="assets/img/setas/off/dir.png" alt="Seta para ALU" class="arrow-img" />
           <img src="assets/img/bitbot.png" alt="" aria-hidden="true" class="decor-icon" />
-        <img src="assets/img/setas/off/dupla.png" alt="Seta dupla" class="arrow-img" />
+        <span class="bus-tap bus-tap-left" aria-hidden="true"></span>
       </div>
 
       <div class="sap1-block block-alu" id="alu" title="Unidade Lógica Aritmética: Realiza operações de soma, subtração e outras operações">
@@ -385,7 +382,6 @@
         </div>
         Somador / Subtrator (ALU)
         <div class="block-value" id="alu-value">--</div>
-        <img src="assets/img/setas/off/esq.png" alt="Seta do barramento" class="arrow-img" />
       </div>
 
       <div class="sap1-block block-regb" id="regb" title="Registrador B: Armazena temporariamente dados para operações na ALU">
@@ -399,8 +395,7 @@
         </div>
         Registrador B
         <div class="block-value" id="regb-value">0</div>
-        <img src="assets/img/setas/off/dir.png" alt="Seta do barramento" class="arrow-img" />
-        <img src="assets/img/setas/off/up.png" alt="Seta do barramento" class="arrow-img" />
+        <span class="bus-tap bus-tap-left" aria-hidden="true"></span>
       </div>
 
       <div class="sap1-block block-out" id="saida" title="Registrador de Saída: Armazena dados que serão exibidos no display">
@@ -414,8 +409,7 @@
         </div>
         Registrador de Saída
         <div class="block-value" id="output-value">0</div>
-        <img src="assets/img/setas/off/down.png" alt="Seta para Visual" class="arrow-img" />
-        <img src="assets/img/setas/off/dir.png" alt="Seta do barramento" class="arrow-img" />
+        <span class="bus-tap bus-tap-left" aria-hidden="true"></span>
       </div>
 
       <div class="sap1-block block-display" id="visual" title="Display Visual: Mostra o resultado das operações em formato binário">
@@ -462,7 +456,7 @@
             <div class="logo-text">BitLab</div>
           </div>
         </a>
-        <p class="tagline">Aprenda arquitetura de computadores com o SAP‑1.</p>
+        
       </div>
       <div class="col nav">
         <h4>Navegação</h4>
@@ -474,33 +468,28 @@
           <li><a href="#emulacao"><img class="icon" src="kenney_board-game-icons/Double (128px)/hexagon.png" alt="" aria-hidden="true">Emulação</a></li>
         </ul>
       </div>
-      <div class="col about footer-about footer-section footer-info">
+      <div class="col about">
         <h4>Sobre</h4>
-        <p>
-          BitLab é um projeto acadêmico focado em ensinar Arquitetura de Computadores por meio do SAP‑1 (Simple‑As‑Possible).<br>
-          Saiba mais em <a href="oqueesap.html">O que é SAP</a> e confira a referência principal:
-          <a href="assets/docs/Artigo_SAP1_Malvino.pdf" download>Artigo_SAP1_Malvino.pdf</a> (Albert P. Malvino).<br>
-          Professor orientador: Prof. Bernardo Guerra
-        </p>
+        <ul>
+          <li><a href="oqueesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true">O que é SAP</a></li>
+          <li><a href="assets/docs/Artigo_SAP1_Malvino.pdf" download><img class="icon" src="kenney_board-game-icons/Double (128px)/notepad.png" alt="" aria-hidden="true">Artigo SAP‑1 (PDF)</a></li>
+        </ul>
       </div>
     </div>
     <div class="footer-credits">
       <div class="credits">
-        <p><strong>Autor:</strong> tyenw</p>
-        <p><strong>Orientador:</strong> Prof. Bernardo Guerra</p>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/TyenW/ProjetoSap" target="_blank" rel="noopener">Ver o Projeto no GitHub</a>
+        <p><strong>Autor:</strong> Pedro Freitas</p>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2025 BitLab. Todos os direitos reservados.</p>
+      <p>&copy; 2025 BitLab. Todos os direitos reservados a Pedro Guimarães.</p>
     </div>
   </footer>
 
 </main>
 
   <script src="assets/js/media-opt.js" defer></script>
+  <script src="assets/js/bg-anim.js" defer></script>
   <script src="assets/js/audio-menu.js" defer></script>
   <script src="assets/js/nav.js" defer></script>
   <script src="assets/js/core/memory-store.js" defer></script>

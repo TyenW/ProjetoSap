@@ -67,6 +67,9 @@
   </header>
 
   <audio id="bg-music" data-src="assets/audio/brute_force_loop.mp3" preload="none" loop muted></audio>
+  <!-- SFX do Quiz controlados globalmente pelo audio-menu.js -->
+  <audio id="sfx-correct" src="assets/audio/quiz_correct.ogg" preload="auto"></audio>
+  <audio id="sfx-wrong" src="assets/audio/quiz_wrong.ogg" preload="auto"></audio>
 
   <!-- Título da página -->
   <div class="container" style="margin-bottom: 20px;">
@@ -80,7 +83,7 @@
 
   <a href="#main" class="skip-link">Pular para conteúdo</a>
   <main id="main" class="quiz-container" tabindex="-1">
-    <!-- Coluna principal: status, pergunta, opções e botões -->
+    <!-- Bloco principal: status, pergunta, opções e botões -->
     <div class="quiz-main">
       <div id="status" class="status-bar">
         <span class="status-item">Modo: Infinito</span>
@@ -96,10 +99,10 @@
       <button id="restartBtn" class="restart-btn" onclick="startQuiz()" style="display:none;">Jogar Novamente</button>
     </div>
 
-    <!-- Aside: Conquistas (Leaderboard removido) -->
-    <aside id="sidePanel" class="quiz-side">
-      <div id="achievements" class="panel card-modern"> </div>
-    </aside>
+    <!-- Conquistas abaixo das perguntas -->
+    <section class="achievements-section" aria-label="Conquistas do Quiz">
+      <div id="achievements" class="panel card-modern"></div>
+    </section>
   </main>
 
   <!-- Botão para baixar estatísticas -->
@@ -118,8 +121,8 @@
       <h2 id="tutorialTitle">Tutorial Rápido</h2>
       <ol>
         <li>Leia a pergunta e escolha uma das opções.</li>
-        <li>Você tem 3 vidas. Ao errar, perde uma vida.</li>
-  <li>Acompanhe seu progresso nas conquistas ao lado.</li>
+    <li>Você tem 3 vidas. Ao errar, perde uma vida.</li>
+    <li>Acompanhe seu progresso nas conquistas abaixo.</li>
         <li>Use o botão de export para baixar suas estatísticas.</li>
       </ol>
       <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
@@ -149,7 +152,7 @@
             <div class="logo-text">BitLab</div>
           </div>
         </a>
-        <p class="tagline">Aprenda arquitetura de computadores com o SAP‑1.</p>
+        
       </div>
       <div class="col nav">
         <h4>Navegação</h4>
@@ -161,33 +164,28 @@
           <li><a href="index.html#emulacao"><img class="icon" src="kenney_board-game-icons/Double (128px)/hexagon.png" alt="" aria-hidden="true">Emulação</a></li>
         </ul>
       </div>
-      <div class="col about footer-about footer-section footer-info">
+      <div class="col about">
         <h4>Sobre</h4>
-        <p>
-          BitLab é um projeto acadêmico focado em ensinar Arquitetura de Computadores por meio do SAP‑1 (Simple‑As‑Possible).<br />
-          Saiba mais em <a href="oqueesap.html">O que é SAP</a> e confira a referência principal:
-          <a href="assets/docs/Artigo_SAP1_Malvino.pdf" download>Artigo_SAP1_Malvino.pdf</a> (Albert P. Malvino).<br />
-          Professor orientador: Prof. Bernardo Guerra
-        </p>
+        <ul>
+          <li><a href="oqueesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true">O que é SAP</a></li>
+          <li><a href="assets/docs/Artigo_SAP1_Malvino.pdf" download><img class="icon" src="kenney_board-game-icons/Double (128px)/notepad.png" alt="" aria-hidden="true">Artigo SAP‑1 (PDF)</a></li>
+        </ul>
       </div>
     </div>
     <div class="footer-credits">
       <div class="credits">
-        <p><strong>Autor:</strong> tyenw</p>
-        <p><strong>Orientador:</strong> Prof. Bernardo Guerra</p>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/TyenW/ProjetoSap" target="_blank" rel="noopener">Ver o Projeto no GitHub</a>
+        <p><strong>Autor:</strong> Pedro Freitas</p>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2025 BitLab. Todos os direitos reservados.</p>
+      <p>&copy; 2025 BitLab. Todos os direitos reservados a Pedro Guimarães.</p>
     </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- config.js removido (sem leaderboard) -->
   <script src="assets/js/media-opt.js" defer></script>
+  <script src="assets/js/bg-anim.js" defer></script>
   <script src="assets/js/audio-menu.js" defer></script>
   <script src="assets/js/nav.js" defer></script>
   <script src="assets/js/quiz.js" defer></script>

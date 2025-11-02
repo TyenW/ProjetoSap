@@ -42,20 +42,39 @@ html {
 
 /* Tipografia e fundo padrão do site */
 body {
-  background-color: var(--cor-fundo);
   color: var(--cor-texto);
   font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   margin: 0;
   padding: 0;
   text-align: center;
-  /* Grelha de pontos sutil + vinheta */
+  background: none; /* fundo movido para ::before para permitir canvas animado entre camadas */
+}
+
+/* Camada de fundo em CSS (grelha + vinheta) abaixo do canvas */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-color: var(--cor-fundo);
   background-image:
     linear-gradient(rgba(136,146,176,0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(136,146,176,0.08) 1px, transparent 1px);
   background-size: 16px 16px;
   background-position: center center;
-  background-attachment: fixed; /* fundo fica fixo; só o conteúdo rola (efeito de camadas) */
-  box-shadow: 0 0 200px rgba(0,0,0,0.8) inset;
+  box-shadow: inset 0 0 200px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
+
+/* Canvas animado do fundo (JS injeta no DOM) */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1; /* acima do ::before e abaixo do conteúdo */
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  pointer-events: none;
 }
 
 /* Ícones nos botões do menu */

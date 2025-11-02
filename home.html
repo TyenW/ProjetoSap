@@ -69,7 +69,15 @@
   <main id="main" tabindex="-1">
   <!-- Seção Hero -->
   <section class="hero-section">
-  <h1 class="hero-title">🤖 BitLab</h1>
+  <div class="hero-logo" aria-label="BitLab">
+    <div class="logo-frasco" role="img" aria-label="BitLab">
+      <div class="logo-icon">
+        <span class="bolha bolha1"></span>
+        <span class="bolha bolha2"></span>
+      </div>
+      <div class="logo-text">BitLab</div>
+    </div>
+  </div>
     <h2 class="hero-subtitle">Desvendando o SAP-1</h2>
     <p class="hero-description">
       Mergulhe no fascinante mundo da arquitetura de computadores com nosso simulador interativo do SAP-1 de Malvino. 
@@ -184,14 +192,29 @@
     <div class="author-wrapper">
       <article class="author-card" aria-label="Autor do projeto">
         <div class="member-avatar">
-          <img src="assets/img/fantasma/1.png" alt="Avatar de Pedro Guimarães" class="avatar-img">
+          <img src="assets/img/equipe/pedro.png" alt="Foto de Pedro Guimarães" class="avatar-img">
         </div>
         <h3 class="member-name">Pedro Guimarães</h3>
         <p class="member-role">Desenvolvedor do BitLab</p>
         <div class="social-links">
-          <a class="li-btn" href="mailto:contato@projetosap.com.br">E-mail</a>
-          <a class="li-btn" href="#" target="_blank" rel="noopener">GitHub</a>
-          <a class="li-btn" href="#" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="li-btn" href="mailto:contato@projetosap.com.br?subject=%5BBitLab%5D%20Contato&body=Ol%C3%A1%20Pedro%2C%0A%0A" aria-label="Enviar e-mail para Pedro" title="Enviar e-mail">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="18" height="18" style="margin-right:8px;">
+              <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/>
+            </svg>
+            E-mail
+          </a>
+          <a class="li-btn" href="https://github.com/TyenW" target="_blank" rel="noopener" aria-label="Abrir perfil no GitHub" title="GitHub">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="18" height="18" style="margin-right:8px;">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 .5A11.5 11.5 0 0 0 .5 12.6c0 5.34 3.46 9.86 8.26 11.47.6.1.82-.27.82-.6v-2.2c-3.36.75-4.06-1.62-4.06-1.62-.55-1.42-1.34-1.8-1.34-1.8-1.1-.77.08-.76.08-.76 1.22.09 1.87 1.29 1.87 1.29 1.08 1.9 2.83 1.35 3.52 1.03.11-.8.42-1.35.76-1.66-2.68-.31-5.49-1.37-5.49-6.09 0-1.35.47-2.45 1.26-3.31-.13-.31-.55-1.57.12-3.27 0 0 1.03-.34 3.38 1.26a11.6 11.6 0 0 1 6.16 0c2.35-1.6 3.38-1.26 3.38-1.26.67 1.7.25 2.96.12 3.27.79.86 1.26 1.96 1.26 3.31 0 4.73-2.82 5.77-5.5 6.08.43.38.81 1.12.81 2.26v3.35c0 .33.22.71.83.6A11.52 11.52 0 0 0 23.5 12.6 11.5 11.5 0 0 0 12 .5Z"/>
+            </svg>
+            GitHub
+          </a>
+          <a class="li-btn" href="https://www.linkedin.com/in/pedrofreitas" target="_blank" rel="noopener" aria-label="Abrir perfil no LinkedIn" title="LinkedIn">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="18" height="18" style="margin-right:8px;">
+              <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V24h-4V8zm7.5 0h3.8v2.2h.05c.53-1 1.8-2.2 3.7-2.2 4 0 4.7 2.6 4.7 6V24h-4v-7.1c0-1.7 0-3.9-2.4-3.9s-2.8 1.8-2.8 3.8V24h-4V8z"/>
+            </svg>
+            LinkedIn
+          </a>
         </div>
       </article>
     </div>
@@ -213,7 +236,7 @@
             <div class="logo-text">BitLab</div>
           </div>
         </a>
-        <p class="tagline">Aprenda arquitetura de computadores com o SAP‑1.</p>
+        
       </div>
       <div class="col nav">
         <h4>Navegação</h4>
@@ -225,34 +248,29 @@
           <li><a href="index.html#emulacao"><img class="icon" src="kenney_board-game-icons/Double (128px)/hexagon.png" alt="" aria-hidden="true">Emulação</a></li>
         </ul>
       </div>
-      <div class="col about footer-about footer-section footer-info">
+      <div class="col about">
         <h4>Sobre</h4>
-        <p>
-          BitLab é um projeto acadêmico focado em ensinar Arquitetura de Computadores por meio do SAP‑1 (Simple‑As‑Possible).<br>
-          Saiba mais em <a href="oqueesap.html">O que é SAP</a> e confira a referência principal:
-          <a href="assets/docs/Artigo_SAP1_Malvino.pdf" download>Artigo_SAP1_Malvino.pdf</a> (Albert P. Malvino).<br>
-          Professor orientador: Prof. Bernardo Guerra
-        </p>
+        <ul>
+          <li><a href="oqueesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true">O que é SAP</a></li>
+          <li><a href="assets/docs/Artigo_SAP1_Malvino.pdf" download><img class="icon" src="kenney_board-game-icons/Double (128px)/notepad.png" alt="" aria-hidden="true">Artigo SAP‑1 (PDF)</a></li>
+        </ul>
       </div>
       
     </div>
     <div class="footer-credits">
       <div class="credits">
-        <p><strong>Autor:</strong> tyenw</p>
-        <p><strong>Orientador:</strong> Prof. Bernardo Guerra</p>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/TyenW/ProjetoSap" target="_blank" rel="noopener">Ver o Projeto no GitHub</a>
+        <p><strong>Autor:</strong> Pedro Freitas</p>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2025 BitLab. Todos os direitos reservados.</p>
+      <p>&copy; 2025 BitLab. Todos os direitos reservados a Pedro Guimarães.</p>
     </div>
   </footer>
 
   </main>
 
   <script src="assets/js/media-opt.js" defer></script>
+  <script src="assets/js/bg-anim.js" defer></script>
   <script src="assets/js/audio-menu.js" defer></script>
   <script src="assets/js/nav.js" defer></script>
   <script src="assets/js/oqesap.js" defer></script>
