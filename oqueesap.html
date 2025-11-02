@@ -247,9 +247,31 @@
                 seis estados &tau;.</p>
 
             <div class="image-container">
-                <img src="assets/img/Fig41_DIG222802.png"
-                    alt="Diagrama de Temporização do Contador em Anel">
-                <p class="image-caption">Fig. 10-2: Sinais de Relógio e Temporização do Contador em Anel.</p>
+                <div class="sap-circuito-anel" id="fig-10-2-animada" aria-label="Fig. 10-2: Contador em anel interativo (FF1..FF6)">
+                    <div class="container-flipflops" role="group" aria-label="Flip-flops do contador em anel">
+                        <div class="flipflop" id="ff1"><span class="ff-label">FF1</span><span class="ff-valor">1</span></div>
+                        <div class="flipflop" id="ff2"><span class="ff-label">FF2</span><span class="ff-valor">0</span></div>
+                        <div class="flipflop" id="ff3"><span class="ff-label">FF3</span><span class="ff-valor">0</span></div>
+                        <div class="flipflop" id="ff4"><span class="ff-label">FF4</span><span class="ff-valor">0</span></div>
+                        <div class="flipflop" id="ff5"><span class="ff-label">FF5</span><span class="ff-valor">0</span></div>
+                        <div class="flipflop" id="ff6"><span class="ff-label">FF6</span><span class="ff-valor">0</span></div>
+                    </div>
+
+                    <div class="container-saidas-t" role="group" aria-label="Sinais de temporização gerados T1..T6">
+                        <div class="saida-t" id="t1">T1</div>
+                        <div class="saida-t" id="t2">T2</div>
+                        <div class="saida-t" id="t3">T3</div>
+                        <div class="saida-t" id="t4">T4</div>
+                        <div class="saida-t" id="t5">T5</div>
+                        <div class="saida-t" id="t6">T6</div>
+                    </div>
+
+                    <div class="controles-circuito">
+                        <button id="btn-clk-anel" class="li-btn" type="button" aria-controls="fig-10-2-animada">► CLK (Pulso)</button>
+                        <button id="btn-reset-anel" class="li-btn" type="button">CLR (Resetar)</button>
+                    </div>
+                </div>
+                <p class="image-caption">Fig. 10-2: Contador em anel (FF1..FF6) gerando os sinais T1..T6.</p>
             </div>
 
             <h3>4.2. Ciclo de Busca (FETCH)</h3>
@@ -335,9 +357,73 @@
 
             <h3>5.2. Componentes da Microprogramação</h3>
             <div class="image-container">
-                <img src="assets/img/SAP1_ContadorAnel.png"
-                    alt="Controle Microprogramado do SAP-1">
-                <p class="image-caption">Fig. 10-16: Controle microprogramado do SAP-1.</p>
+                <div class="sap-interactive-module" id="modulo-microprograma" aria-label="Fig. 10-16: Controle Microprogramado interativo">
+                    <h4>Animação: Controle Microprogramado (Fig. 10-16)</h4>
+
+                    <div class="controles-microprograma">
+                        <label for="instrucao-select">1. Escolha uma Instrução:</label>
+                        <select id="instrucao-select" aria-label="Escolha uma instrução">
+                            <option value="LDA" data-op="0000">LDA (0000)</option>
+                            <option value="ADD" data-op="0001">ADD (0001)</option>
+                            <option value="SUB" data-op="0010">SUB (0010)</option>
+                            <option value="OUT" data-op="1110">OUT (1110)</option>
+                        </select>
+                        <button id="btn-play-microprograma" class="li-btn" type="button">► Iniciar Simulação</button>
+                    </div>
+
+                    <div class="container-circuito-microprograma" role="group" aria-label="Circuito do controle microprogramado">
+                        <div class="bloco" id="micro-rom-addr">
+                            <span class="titulo">ROM de Endereço 16x4</span>
+                            <div class="io-port in">
+                                <span class="label">OpCode (de RI)</span>
+                                <span class="valor" id="val-opcode">--</span>
+                            </div>
+                            <div class="io-port out">
+                                <span class="label">Endereço de Partida</span>
+                                <span class="valor" id="val-start-addr">--</span>
+                            </div>
+                        </div>
+
+                        <div class="bloco" id="micro-contador">
+                            <span class="titulo">Contador Pré-ajustável</span>
+                            <div class="io-port in">
+                                <span class="label">Sinal de Carga (T3)</span>
+                                <span class="sinal" id="sinal-t3" aria-hidden="true"></span>
+                            </div>
+                            <div class="io-port out">
+                                <span class="label">Endereço p/ ROM</span>
+                                <span class="valor" id="val-current-addr">--</span>
+                            </div>
+                        </div>
+
+                        <div class="bloco" id="micro-rom-ctrl">
+                            <span class="titulo">ROM de Controle 16x12</span>
+                            <div class="io-port out">
+                                <span class="label">Microinstrução (CON)</span>
+                                <span class="valor" id="val-microinst">--</span>
+                            </div>
+                        </div>
+
+                        <div class="fluxo" id="fluxo-addr-contador" aria-hidden="true"></div>
+                        <div class="fluxo" id="fluxo-contador-rom" aria-hidden="true"></div>
+                    </div>
+
+                    <div class="container-log-microprograma">
+                        <h4>Log de Microprograma (ROM de Controle)</h4>
+                        <table id="log-tabela">
+                            <thead>
+                                <tr>
+                                    <th>Estado T</th>
+                                    <th>Fase</th>
+                                    <th>Endereço (do Contador)</th>
+                                    <th>Microinstrução (Saída da ROM)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="log-corpo"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <p class="image-caption">Fig. 10-16: Controle microprogramado do SAP-1 — simulação do fluxo e log de microinstruções.</p>
             </div>
             <ul>
                 <li><strong>ROM de Endereços</strong>: Contém os endereços de partida de cada rotina de microinstruções.
@@ -350,6 +436,105 @@
                     contador pré-ajustável e produz a microinstrução adequada, que por sua vez gera os sinais de
                     controle (ex: para busca, produz 5E3H, BE3H, 263H).</li>
             </ul>
+
+            <h4 id="exemplos-sequencia">Exemplos práticos da sequência (aplicação)</h4>
+            <p>Para efeitos de exemplo, abaixo estão as sequências completas (em ordem de aplicação) de endereços e
+                microinstruções emitidas pela ROM de controle para cada instrução. Os três primeiros estados T são
+                sempre de busca e iguais para todas as instruções; os três seguintes dependem da rotina selecionada.</p>
+
+            <details>
+                <summary><strong>Sequência comum de Busca (T1–T3)</strong></summary>
+                <table aria-label="Sequência de busca T1–T3">
+                    <thead>
+                        <tr>
+                            <th>Estado T</th>
+                            <th>Endereço (bin)</th>
+                            <th>Saída da ROM de Controle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>T1</td><td>0000 (0H)</td><td>5E3H</td></tr>
+                        <tr><td>T2</td><td>0001 (1H)</td><td>BE3H</td></tr>
+                        <tr><td>T3</td><td>0010 (2H)</td><td>263H</td></tr>
+                    </tbody>
+                </table>
+            </details>
+
+            <details>
+                <summary><strong>LDA</strong> — endereço de partida: 0011 (3H)</summary>
+                <table aria-label="Sequência da instrução LDA (T4–T6)">
+                    <thead>
+                        <tr>
+                            <th>Estado T</th>
+                            <th>Endereço (bin)</th>
+                            <th>Saída da ROM de Controle</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>T4</td><td>0011 (3H)</td><td>1A3H</td><td>Decodifica instr.; RI → REM</td></tr>
+                        <tr><td>T5</td><td>0100 (4H)</td><td>2C3H</td><td>RAM → A</td></tr>
+                        <tr><td>T6</td><td>0101 (5H)</td><td>3E3H</td><td>nop</td></tr>
+                    </tbody>
+                </table>
+            </details>
+
+            <details>
+                <summary><strong>ADD</strong> — endereço de partida: 0110 (6H)</summary>
+                <table aria-label="Sequência da instrução ADD (T4–T6)">
+                    <thead>
+                        <tr>
+                            <th>Estado T</th>
+                            <th>Endereço (bin)</th>
+                            <th>Saída da ROM de Controle</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>T4</td><td>0110 (6H)</td><td>1A3H</td><td>RI → REM</td></tr>
+                        <tr><td>T5</td><td>0111 (7H)</td><td>2E1H</td><td>RAM → B</td></tr>
+                        <tr><td>T6</td><td>1000 (8H)</td><td>3C7H</td><td>A ← A + B</td></tr>
+                    </tbody>
+                </table>
+            </details>
+
+            <details>
+                <summary><strong>SUB</strong> — endereço de partida: 1001 (9H)</summary>
+                <table aria-label="Sequência da instrução SUB (T4–T6)">
+                    <thead>
+                        <tr>
+                            <th>Estado T</th>
+                            <th>Endereço (bin)</th>
+                            <th>Saída da ROM de Controle</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>T4</td><td>1001 (9H)</td><td>1A3H</td><td>RI → REM</td></tr>
+                        <tr><td>T5</td><td>1010 (AH)</td><td>2E1H</td><td>RAM → B</td></tr>
+                        <tr><td>T6</td><td>1011 (BH)</td><td>3CFH</td><td>A ← A − B</td></tr>
+                    </tbody>
+                </table>
+            </details>
+
+            <details>
+                <summary><strong>OUT</strong> — endereço de partida: 1100 (CH)</summary>
+                <table aria-label="Sequência da instrução OUT (T4–T6)">
+                    <thead>
+                        <tr>
+                            <th>Estado T</th>
+                            <th>Endereço (bin)</th>
+                            <th>Saída da ROM de Controle</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>T4</td><td>1100 (CH)</td><td>3F2H</td><td>A → OUT</td></tr>
+                        <tr><td>T5</td><td>1101 (DH)</td><td>3E3H</td><td>nop</td></tr>
+                        <tr><td>T6</td><td>1110 (EH)</td><td>3E3H</td><td>nop</td></tr>
+                    </tbody>
+                </table>
+            </details>
 
             <h3>5.3. Ciclo Variável de Máquina</h3>
             <p>O SAP-1 utiliza um ciclo de máquina fixo (seis estados &tau;) para todas as instruções, o que inclui estados
@@ -479,6 +664,8 @@
     <script src="assets/js/media-opt.js" defer></script>
         <script src="assets/js/bg-anim.js" defer></script>
         <script src="assets/js/audio-menu.js" defer></script>
+    <script src="assets/js/fig-10-2.js" defer></script>
+    <script src="assets/js/fig-10-16.js" defer></script>
     <script src="assets/js/nav.js" defer></script>
 </body>
 

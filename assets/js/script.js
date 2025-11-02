@@ -5,7 +5,7 @@ let ACC = 0;
 let passos = [];
 let saida = [];
 let running = false;
-let animationSpeed = 1500; // Velocidade da animação em ms
+let animationSpeed = 1000; // Velocidade padrão reduzida (ms)
 let assemblyAnterior = []; // Para acompanhar mudanças no assembly
 let asmDebounce = null;    // Debounce para montagem automática
 let editMode = 'ram';      // 'ram' | 'asm'
@@ -21,6 +21,7 @@ let assemblerWorker = null;
 let workerRunning = false;
 let tickQueue = [];
 let animatingTick = false;
+let uiAnimating = false; // trava UI durante uma animação única (passo)
 
 // Tabela de conversão de hex para assembly
 const hexParaAssembly = {
@@ -301,7 +302,8 @@ function resetAnimations() {
 
 function animateDataTransfer(fromElement, toElement) {
     if (!fromElement || !toElement) return;
-    const busTrack = document.querySelector('#barramento .bus-track');
+    // Suporte ao novo barramento W (8 linhas). Usa .bus-track se existir; senão, usa o próprio #barramento quando ele é .w-bus
+    const busTrack = document.querySelector('#barramento .bus-track') || document.querySelector('#barramento.w-bus') || document.getElementById('barramento');
     const fromRect = fromElement.getBoundingClientRect();
     const toRect = toElement.getBoundingClientRect();
     const busRect = busTrack ? busTrack.getBoundingClientRect() : null;
@@ -364,6 +366,24 @@ function animateDataTransfer(fromElement, toElement) {
         if (toBlock) toBlock.classList.remove('reading');
         if (barramento) barramento.classList.remove('active');
     }, seg1 + seg2 + seg3 + 160);
+}
+
+// Atualiza os LEDs binários do display (8 bits, MSB à esquerda)
+function updateBinaryLEDs(value) {
+    try {
+        const container = document.querySelector('.binary-leds');
+        if (!container) return;
+        const bits = (parseInt(value, 10) >>> 0) & 0xFF;
+        const leds = Array.from(container.querySelectorAll('.led'));
+        // leds estão em ordem MSB..LSB (data-bit: 7..0)
+        leds.forEach((led) => {
+            const idx = parseInt(led.getAttribute('data-bit'), 10) || 0;
+            const on = ((bits >> idx) & 1) === 1;
+            led.classList.toggle('on', on);
+        });
+    } catch (_) {
+        // ignora erros de DOM
+    }
 }
 
 function animateInstructionFetch() {
@@ -761,6 +781,7 @@ function atualizarStatus(instrucaoAtual = '') {
     if (displayValue) {
         const lastOutput = saida.length > 0 ? parseInt(saida[saida.length - 1]) : 0;
         displayValue.textContent = lastOutput.toString(2).padStart(8, '0');
+        updateBinaryLEDs(lastOutput);
     }
     
     // Destaca a linha atual sendo executada
@@ -858,8 +879,16 @@ function removerDestaqueExecucao() {
 
 // Executa um passo
 function executarPasso() {
+    if (uiAnimating || workerRunning || animatingTick) {
+        try { mostrarMensagemEstiloMario('Aguarde a animação terminar.'); } catch(_) {}
+        return;
+    }
+    uiAnimating = true;
+    setControlsDisabled(true);
     if (!running || !core || core.halted || PC >= 16) {
         mostrarMensagemEstiloMario(passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : ''));
+        uiAnimating = false;
+        setControlsDisabled(false);
         return;
     }
     // Obter instrução atual (antes do step)
@@ -884,7 +913,11 @@ function executarPasso() {
     setTimeout(() => setTState(2), stepDur);
     setTimeout(() => setTState(3), stepDur * 2);
 
-    // Aguarda a animação de busca terminar, então executa
+    // Calcula um atraso mínimo para garantir que a busca termine antes do step
+    const FETCH_TOTAL_MS = 1300; // último marco da busca é ~1200ms, margem +100ms
+    const stepDelay = Math.max(animationSpeed, FETCH_TOTAL_MS);
+
+    // Aguarda a animação de busca terminar (ou o delay configurado), então executa
     setTimeout(() => {
         // Executa 1 passo no núcleo determinístico
         const result = core.step();
@@ -936,6 +969,7 @@ function executarPasso() {
             // Mostrar como valor com sinal
             atualizarValorBloco('output-value', toSigned8(last));
             atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
+            updateBinaryLEDs(last >>> 0);
             passos.push(`OUT: ${last}`);
             try { sfx.out.currentTime = 0; sfx.out.play(); } catch(_) {}
         }
@@ -958,16 +992,36 @@ function executarPasso() {
 
         mostrarMensagemEstiloMario(passos[passos.length - 1]);
         
-        // Atualiza status após a animação
+        // Atualiza status após um pequeno intervalo
         setTimeout(() => {
             atualizarStatus(instr);
         }, 500);
+
+        // Janela total de animações após o step (dependendo da operação)
+        let execTotal = 0;
+        if (opName === 'OUT') {
+            execTotal = 900; // animateOutput: ~900ms
+        } else if (hasMem) {
+            execTotal = (opName === 'LDA') ? 1000 : 1600; // LDA ~1s | ADD/SUB/MUL ~1.6s
+        } else if (opName === 'INC' || opName === 'DEC') {
+            execTotal = 600; // simples
+        } else {
+            execTotal = 400; // default curto
+        }
+
+        // Libera UI após terminar busca (já considerada em stepDelay) + execução
+        const SAFETY = 250; // margem extra
+        setTimeout(() => { uiAnimating = false; setControlsDisabled(false); }, execTotal + SAFETY);
         
-    }, animationSpeed);
+    }, stepDelay);
 }
 
 // Executa tudo com animações
 function executarTudo() {
+    if (uiAnimating || workerRunning || animatingTick) {
+        try { mostrarMensagemEstiloMario('Execução em andamento.'); } catch(_) {}
+        return;
+    }
     // Executa via Web Worker para não travar a UI
     // Sempre reinicializa para garantir ACC=0, PC=0 e limpeza de estado entre execuções
     try {
@@ -981,6 +1035,7 @@ function executarTudo() {
     inicializar();
     resetAnimations();
     mostrarMensagemEstiloMario("Executando (worker)...");
+    setControlsDisabled(true);
 
     ensureWorkers();
     if (!emulatorWorker) {
@@ -1024,6 +1079,7 @@ function executarTudo() {
                 setTimeout(() => {
                     mostrarMensagemEstiloMario(base + aviso);
                     resetAnimations();
+                    setControlsDisabled(false);
                 }, 300);
                 emulatorWorker.removeEventListener('message', onMsg);
             }
@@ -1034,6 +1090,18 @@ function executarTudo() {
     } catch (e) {
         workerRunning = false;
     }
+}
+
+function setControlsDisabled(disabled) {
+    try {
+        const ids = ['passo', 'emular', 'passo-atras', 'resetar', 'loadCSV'];
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = !!disabled;
+        });
+        const range = document.getElementById('speedRange');
+        if (range) range.disabled = !!disabled;
+    } catch(_) {}
 }
 
 function processTickQueue() {
@@ -1102,6 +1170,7 @@ function renderTickFromWorker(tick) {
             saida.push(last);
             atualizarValorBloco('output-value', toSigned8(last));
             atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
+            updateBinaryLEDs(last >>> 0);
             passos.push(`OUT: ${last}`);
             try { sfx.out.currentTime = 0; sfx.out.play(); } catch(_) {}
         }
@@ -1168,6 +1237,21 @@ function escreverNaLabel(mensagem) {
 
 // Botões e eventos
 document.addEventListener('DOMContentLoaded', function () {
+    // Sincroniza label de velocidade com valor inicial do slider
+    try {
+        const range = document.getElementById('speedRange');
+        const label = document.getElementById('speedValue');
+        if (range && label) {
+            const map = {
+                500: 'Rápido', 750: 'Rápido', 1000: 'Rápido',
+                1250: 'Normal', 1500: 'Normal', 1750: 'Normal',
+                2000: 'Lento', 2250: 'Lento', 2500: 'Muito Lento', 2750: 'Muito Lento', 3000: 'Muito Lento'
+            };
+            const v = parseInt(range.value, 10);
+            label.textContent = map[v] || 'Rápido';
+            animationSpeed = v;
+        }
+    } catch(_) {}
     // Cria MemoryStore e conecta assinantes
     if (!store && window.MemoryStore && typeof window.MemoryStore.create === 'function') {
         store = window.MemoryStore.create();
@@ -1399,6 +1483,56 @@ document.addEventListener('DOMContentLoaded', function () {
             console.warn('Falha ao conectar switch de modo:', e);
         }
 });
+
+// Calcula dinamicamente o comprimento das "taps" (linhas) até o centro do barramento
+function updateBusTaps() {
+    try {
+        const bus = document.getElementById('barramento');
+        if (!bus) return;
+        const busRect = bus.getBoundingClientRect();
+        const busX = busRect.left + busRect.width / 2;
+        const blocks = document.querySelectorAll('.sap1-block');
+        blocks.forEach(block => {
+            const tap = block.querySelector('.bus-tap');
+            if (!tap) return;
+            tap.classList.add('dynamic');
+            const rect = block.getBoundingClientRect();
+            const blockCenterY = rect.top + rect.height / 2;
+            const isLeft = (rect.right < busX);
+            const isRight = (rect.left > busX);
+            // Ajusta posição vertical relativa dentro do bloco
+            tap.style.top = '50%';
+            tap.style.height = '3px';
+            tap.style.transform = 'translateY(-50%)';
+            tap.style.position = 'absolute';
+            tap.style.pointerEvents = 'none';
+            // Direções
+            if (isLeft) {
+                const dist = Math.max(0, Math.round(busX - rect.right));
+                tap.style.left = '100%';
+                tap.style.right = 'auto';
+                tap.style.width = dist + 'px';
+                tap.classList.add('bus-tap-right');
+                tap.classList.remove('bus-tap-left');
+            } else if (isRight) {
+                const dist = Math.max(0, Math.round(rect.left - busX));
+                tap.style.right = '100%';
+                tap.style.left = 'auto';
+                tap.style.width = dist + 'px';
+                tap.classList.add('bus-tap-left');
+                tap.classList.remove('bus-tap-right');
+            } else {
+                // Caso raro: bloco alinhado sobre o barramento; mantém tap curta
+                tap.style.left = '50%';
+                tap.style.width = '0px';
+            }
+        });
+    } catch(_) {}
+}
+
+// Atualiza taps em resize e após layout
+window.addEventListener('resize', () => { try { updateBusTaps(); } catch(_) {} });
+document.addEventListener('DOMContentLoaded', () => { try { updateBusTaps(); } catch(_) {} });
 
 const memoryDiv = document.querySelector('.memoryran');
 const otherLogicDiv = document.querySelector('.other-logic');

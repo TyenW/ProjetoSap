@@ -73,7 +73,7 @@
   <!-- Controles de Animação -->
   <div class="animation-controls">
     <button id="passo" class="btn-wide">⏯️ Executar Passo</button>
-    <button id="emular" class="btn-wide">⏩ Executar Tudo</button>
+  <button id="emular" class="btn-wide">⏩ Executar Tudo</button>
     <button id="passo-atras" class="btn-wide">⏪ Passo Atrás</button>
     <button id="resetar" class="btn-wide">🔄 Resetar</button>
     <input type="file" id="csvInput" accept=".csv,.txt" style="display: none;">
@@ -82,8 +82,8 @@
     <!-- Controle de velocidade -->
     <div class="speed-control">
       <label for="speedRange">Velocidade:</label>
-      <input type="range" id="speedRange" min="500" max="3000" value="1500" step="250">
-      <span id="speedValue">Normal</span>
+  <input type="range" id="speedRange" min="500" max="3000" value="1000" step="250">
+  <span id="speedValue">Rápido</span>
     </div>
 
     <!-- Indicador de Estado T (T1–T6) -->
@@ -339,20 +339,24 @@
         <div class="block-value" id="controller-value">IDLE</div>
       </div>
 
-      <!-- Imagem do Barramento Central -->
-    <div class="sap1-block block-bus" id="barramento" title="Barramento de Dados: Transporta dados entre os componentes do processador">
+      <!-- Barramento Central (W) em 8 linhas neon CSS (sem wrapper de bloco) -->
+    <div class="w-bus" id="barramento">
       <div class="block-tooltip">
-        <h4>🌐 Barramento de Dados</h4>
-        <p>Via de comunicação principal</p>
-        <p>🔄 Transporta dados entre componentes</p>
+        <h4>🌐 Barramento de Dados (W)</h4>
+        <p>Via de comunicação principal do SAP‑1</p>
+        <p>🔄 8 trilhas paralelas para transporte de dados</p>
         <button class="tooltip-btn-small" onclick="window.location.href='oqueesap.html#arquitetura'">
           Mais detalhes
         </button>
       </div>
-        <div class="bus" aria-hidden="true">
-          <div class="bus-track"></div>
-          <div class="bus-layer" id="bus-layer"></div>
-        </div>
+      <span class="bus-line" aria-hidden="true"></span>
+      <span class="bus-line" aria-hidden="true"></span>
+      <span class="bus-line" aria-hidden="true"></span>
+      <span class="bus-line" aria-hidden="true"></span>
+      <span class="bus-line" aria-hidden="true"></span>
+      <span class="bus-line" aria-hidden="true"></span>
+      <span class="bus-line" aria-hidden="true"></span>
+      <span class="bus-line" aria-hidden="true"></span>
     </div>
 
       <!-- Blocos da direita -->
@@ -367,7 +371,6 @@
         </div>
         Acumulador (ACC)
         <div class="block-value" id="acc-value">0</div>
-          <img src="assets/img/bitbot.png" alt="" aria-hidden="true" class="decor-icon" />
         <span class="bus-tap bus-tap-left" aria-hidden="true"></span>
       </div>
 
@@ -422,15 +425,25 @@
           </button>
         </div>
         Indicador Visual Binário
-        <div class="block-value" id="display-value">00000000</div>
+        <div class="binary-leds" role="img" aria-label="Indicador de 8 LEDs binários (MSB à esquerda)">
+          <span class="led" data-bit="7" aria-hidden="true"></span>
+          <span class="led" data-bit="6" aria-hidden="true"></span>
+          <span class="led" data-bit="5" aria-hidden="true"></span>
+          <span class="led" data-bit="4" aria-hidden="true"></span>
+          <span class="led" data-bit="3" aria-hidden="true"></span>
+          <span class="led" data-bit="2" aria-hidden="true"></span>
+          <span class="led" data-bit="1" aria-hidden="true"></span>
+          <span class="led" data-bit="0" aria-hidden="true"></span>
+        </div>
+        <div class="block-value sr-only" id="display-value" aria-live="polite">00000000</div>
       </div>
 
       <!-- Conexões extras -->
-      <div class="connection conn-alu-acc"></div>
-      <div class="connection conn-alu-regb"></div>
-      <div class="connection conn-ir-controller"></div>
-      <div class="connection conn-out-display"></div>
-      <div class="controller-bus-connection"></div>
+  <div class="connection conn-alu-acc"></div>
+  <div class="connection conn-alu-regb"></div>
+  <div class="connection conn-ir-controller"></div>
+  <div class="connection conn-out-display"></div>
+  <div class="controller-bus-connection"></div>
 
     </section>
 

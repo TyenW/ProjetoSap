@@ -1,3 +1,146 @@
+/* ===== Fig. 10-2: Contador em Anel (circuito) ===== */
+.sap-circuito-anel {
+  background: rgba(9, 14, 28, 0.5);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 0 0 1px rgba(0,255,255,0.05) inset;
+}
+.sap-circuito-anel .controles-circuito {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.container-flipflops,
+.container-saidas-t {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.flipflop {
+  background: rgba(0, 150, 200, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(0, 255, 255, 0.35);
+  border-radius: 8px;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow .25s ease, border-color .25s ease, transform .15s ease;
+}
+.flipflop .ff-label {
+  font-size: .8rem;
+  color: #7ae7ff;
+  letter-spacing: .02em;
+}
+.flipflop .ff-valor {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #7a8aa0;
+}
+.flipflop.ativo {
+  border-color: #00ffff;
+  box-shadow: 0 0 10px rgba(0,255,255,.5), 0 0 24px rgba(0,255,255,.35);
+  transform: translateY(-1px);
+}
+.flipflop.ativo .ff-valor {
+  color: #ffffff;
+  text-shadow: 0 0 8px #00ffff, 0 0 14px rgba(0,255,255,.7);
+}
+.flipflop.clk-flash {
+  box-shadow: 0 0 12px rgba(0,255,255,.65), 0 0 22px rgba(0,255,255,.45);
+}
+.saida-t {
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 700;
+  color: #7a8aa0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: color .25s ease, text-shadow .25s ease, border-color .25s ease;
+}
+.saida-t.ativo {
+  color: #ffffff;
+  text-shadow: 0 0 8px #00ffff;
+  border-color: rgba(0,255,255,.35);
+}
+
+/* ===== Fig. 10-10: Ciclos de Instrução (SVG + scrubber) ===== */
+.sap-diagrama-ciclos {
+  background: #fff;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 12px;
+}
+.sap-diagrama-ciclos .ciclo-container + .ciclo-container {
+  margin-top: 18px;
+}
+.controles-tempo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+.container-diagrama {
+  position: relative;
+  overflow: hidden;
+}
+.timeline-scrubber {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: #ff2d2d;
+  opacity: .75;
+  transform: translateX(0);
+}
+.timeline-scrubber.blink-neg {
+  background: #ff2d2d;
+  box-shadow: 0 0 8px rgba(255,45,45,.9);
+}
+.timeline-scrubber.blink-pos {
+  background: #00bcd4;
+  box-shadow: 0 0 8px rgba(0,188,212,.9);
+}
+.camada-waveforms {
+  width: 100%;
+  height: auto;
+  background: #fdfdfd;
+}
+.label-onda {
+  font-size: 13px;
+  fill: #222;
+  font-weight: 700;
+}
+.onda {
+  stroke: #222;
+  stroke-width: 2px;
+  fill: none;
+}
+.onda.base {
+  stroke: #333;
+}
+.destacado {
+  stroke: #00bcd4 !important;
+  filter: drop-shadow(0 0 4px rgba(0,188,212,.9));
+  stroke-width: 3px;
+}
+.destacado-texto {
+  fill: #00bcd4 !important;
+  filter: drop-shadow(0 0 4px rgba(0,188,212,.9));
+}
+
+@media (max-width: 680px) {
+  .flipflop { width: 76px; height: 76px; }
+}
 /* Import de fontes e variáveis centralizados em base.css */
 
 .mini-menu {
@@ -258,3 +401,187 @@ table th, table td { border: 2px solid var(--cor-ciano); padding: 12px 14px; tex
 table th { background-color: rgba(0,255,255,0.1); color: #e6f1ff; font-weight: bold; text-shadow: 0 0 6px rgba(0,255,255,0.15); }
 table tr:nth-child(even) { background-color: rgba(255,255,255,0.04); }
 table tr:hover { background-color: rgba(0,255,255,0.12); color: #fff; transition: background 0.2s, color 0.2s; }
+
+/* =====================
+   Fig. 10-16 (Controle Microprogramado) — Módulo Interativo
+   ===================== */
+.sap-interactive-module {
+  background: linear-gradient(135deg, rgba(4,9,38,0.8), rgba(10,25,47,0.3));
+  border: 2px solid var(--cor-ciano);
+  border-radius: 12px;
+  box-shadow: 0 0 18px rgba(0,255,255,0.15);
+  padding: 16px;
+  color: #e6f1ff;
+}
+.sap-interactive-module h4 {
+  margin: 0 0 10px 0;
+  color: var(--cor-titulo);
+}
+.controles-microprograma {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.controles-microprograma select {
+  background: #0b162e;
+  color: #e6f1ff;
+  border: 1px solid var(--cor-ciano);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.container-circuito-microprograma {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  align-items: stretch;
+  margin-bottom: 14px;
+}
+.bloco {
+  background: rgba(0, 150, 200, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(0, 255, 255, 0.35);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow .25s ease, border-color .25s ease;
+}
+.bloco .titulo {
+  font-weight: 700;
+  color: #7ae7ff;
+}
+.bloco .io-port {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+.bloco .io-port .label { color: #91a6c6; font-size: .92em; }
+.bloco .io-port .valor { font-family: 'Share Tech Mono', monospace; font-weight: 700; }
+.bloco.ativo { border-color: #00ffff; box-shadow: 0 0 12px rgba(0,255,255,.4); }
+.bloco.carregando { animation: blocoPulse .85s ease-in-out 2; }
+@keyframes blocoPulse { from{ box-shadow: 0 0 0 rgba(0,255,255,0);} 50%{ box-shadow:0 0 18px rgba(0,255,255,.5);} to{ box-shadow:0 0 0 rgba(0,255,255,0);} }
+
+.fluxo {
+  position: absolute;
+  top: 50%;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, rgba(0,255,255,.2) 0 8px, rgba(0,255,255,.05) 8px 16px);
+  box-shadow: 0 0 8px rgba(0,255,255,.15);
+  border-radius: 2px;
+  transform: translateY(-50%);
+  opacity: .5;
+}
+/* ROM Endereço -> Contador */
+#fluxo-addr-contador { left: 32%; right: 35%; }
+/* Contador -> ROM Controle */
+#fluxo-contador-rom { left: 65%; right: 2%; }
+.fluxo.ativo { animation: fluxoMove 1.2s linear infinite; opacity: .95; }
+@keyframes fluxoMove { from { background-position: 0 0; } to { background-position: 32px 0; } }
+
+.container-log-microprograma table {
+  background: rgba(4,9,38,0.8);
+}
+.container-log-microprograma tbody tr { animation: fadeInRow .35s ease both; }
+@keyframes fadeInRow { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: translateY(0);} }
+
+@media (max-width: 900px) {
+  .container-circuito-microprograma { grid-template-columns: 1fr; }
+  #fluxo-addr-contador, #fluxo-contador-rom { display: none; }
+}
+
+/* =====================
+   Fig. 10-2 (Diagrama de Tempo Interativo)
+   ===================== */
+.sap-diagrama-tempo {
+  background: #ffffff;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 14px 14px 18px 14px;
+  margin: 0 auto;
+  max-width: 980px;
+}
+
+.sap-diagrama-tempo .controles-tempo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.sap-diagrama-tempo .info-estado {
+  font-weight: 700;
+  color: #333;
+  font-family: 'Share Tech Mono', monospace;
+}
+.sap-diagrama-tempo .info-estado span { color: var(--cor-ciano); text-shadow: 0 0 6px rgba(0,255,255,0.35); }
+
+.sap-diagrama-tempo .container-diagrama {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.sap-diagrama-tempo .timeline-scrubber {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--cor-amarelo-energia);
+  box-shadow: 0 0 12px rgba(255,215,0,0.55);
+  opacity: 0.9;
+  transform: translateX(0);
+  will-change: transform;
+  z-index: 2;
+}
+
+.sap-diagrama-tempo .camada-waveforms {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #ffffff;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.sap-diagrama-tempo .label-onda,
+.sap-diagrama-tempo .label-estado {
+  font-size: 14px;
+  fill: #333;
+  font-weight: 700;
+}
+.sap-diagrama-tempo .label-estado.destacado {
+  fill: var(--cor-ciano);
+  filter: drop-shadow(0 0 5px rgba(0,255,255,0.85));
+}
+
+.sap-diagrama-tempo .onda {
+  stroke: #333;
+  stroke-width: 2px;
+  fill: none;
+  transition: stroke 0.15s ease, stroke-width 0.15s ease, filter 0.15s ease;
+}
+.sap-diagrama-tempo .onda.destacado {
+  stroke: var(--cor-ciano);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 5px rgba(0,255,255,0.8));
+}
+.sap-diagrama-tempo .onda-CLK.destacada {
+  stroke: var(--cor-ciano);
+  filter: drop-shadow(0 0 5px rgba(0,255,255,0.8));
+}
+
+@media (max-width: 680px) {
+  .sap-diagrama-tempo { padding: 12px; }
+  .sap-diagrama-tempo .label-onda, .sap-diagrama-tempo .label-estado { font-size: 12px; }
+}
