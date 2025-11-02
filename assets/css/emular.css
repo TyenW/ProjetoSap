@@ -1377,16 +1377,16 @@
   position: absolute;
   top: 50px;
   right: 0;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-  border: 2px solid var(--cor-amarelo-energia);
+  background: linear-gradient(135deg, rgba(4,9,38,0.95), rgba(10,25,47,0.7));
+  border: 2px solid var(--cor-ciano);
   border-radius: 16px;
   padding: 20px;
   width: 380px;
   backdrop-filter: blur(10px);
-  box-shadow: 
-    0 15px 35px rgba(0, 0, 0, 0.9),
-    0 0 30px rgba(255, 215, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(0, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
   opacity: 0;
   visibility: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -1403,13 +1403,11 @@
 }
 
 .sap-tooltip h3 {
-  color: var(--cor-amarelo-energia);
+  color: var(--cor-menta);
   margin: 0 0 18px 0;
-  font-size: 0.85em;
+  font-size: 0.95em;
   text-align: center;
-  text-shadow: 
-    0 0 10px rgba(255, 215, 0, 0.8),
-    2px 2px 4px #000;
+  text-shadow: 0 0 10px rgba(100,255,218,0.35);
   position: relative;
 }
 
@@ -1419,9 +1417,9 @@
   bottom: -8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
+  width: 80px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--cor-amarelo-energia), transparent);
+  background: linear-gradient(90deg, transparent, var(--cor-ciano), transparent);
 }
 
 .sap-tooltip-content { display: block; }
@@ -1442,8 +1440,8 @@
   flex-direction: column;
   align-items: center;
   padding: 10px 8px;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 215, 0, 0.15));
-  border: 1px solid rgba(255, 215, 0, 0.4);
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.06), rgba(0, 255, 255, 0.12));
+  border: 1px solid rgba(0, 255, 255, 0.35);
   border-radius: 8px;
   transition: all 0.3s ease;
   position: relative;
@@ -1467,8 +1465,8 @@
 
 .instruction-item:hover {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.25));
-  border-color: rgba(255, 215, 0, 0.7);
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 255, 255, 0.25));
+  border-color: rgba(0, 255, 255, 0.6);
   animation: instructionGlow 2s infinite;
 }
 
@@ -1564,13 +1562,13 @@
 .tooltip-note {
   margin: 15px 0 0 0;
   font-size: 0.55em;
-  color: #b0b0b0;
+  color: #9dd6ff;
   text-align: center;
   font-style: italic;
   padding: 8px 12px;
-  background: rgba(255, 215, 0, 0.05);
+  background: rgba(0, 255, 255, 0.05);
   border-radius: 8px;
-  border: 1px dashed rgba(255, 215, 0, 0.3);
+  border: 1px dashed rgba(0, 255, 255, 0.35);
   position: relative;
 }
 
@@ -1590,7 +1588,7 @@
   bottom: 100%;
   right: 20px;
   border: 10px solid transparent;
-  border-bottom-color: var(--cor-amarelo-energia);
+  border-bottom-color: var(--cor-ciano);
   filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.3));
 }
 
@@ -1600,7 +1598,7 @@
   bottom: 100%;
   right: 22px;
   border: 8px solid transparent;
-  border-bottom-color: #1a1a2e;
+  border-bottom-color: rgba(4,9,38,0.95);
   z-index: 1;
 }
 
@@ -1664,8 +1662,8 @@
   top: -15px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  border: 3px solid #ffcc00;
+  background: linear-gradient(135deg, rgba(4,9,38,0.95), rgba(10,25,47,0.7));
+  border: 2px solid var(--cor-ciano);
   border-radius: 10px;
   padding: 16px;
   min-width: 260px;
@@ -1689,9 +1687,9 @@
 
 .block-tooltip h4 {
   margin: 0 0 10px 0;
-  color: #ffcc00;
+  color: var(--cor-menta);
   font-size: 12px;
-  border-bottom: 2px solid #ffcc00;
+  border-bottom: 2px solid var(--cor-ciano);
   padding-bottom: 6px;
   text-shadow: 1px 1px #000;
 }
@@ -1704,28 +1702,6 @@
   text-shadow: 1px 1px #000;
 }
 
-.tooltip-btn-small {
-  background: linear-gradient(135deg, #ffcc00, #ff9900);
-  border: none;
-  color: #000;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 8px;
-  font-family: 'Share Tech Mono', monospace;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: all 0.3s ease;
-  display: block;
-  width: 100%;
-  font-weight: bold;
-}
-
-.tooltip-btn-small:hover {
-  background: linear-gradient(135deg, #ff9900, #ffcc00);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.4);
-}
-
 /* Seta do tooltip dos blocos */
 .block-tooltip::after {
   content: '';
@@ -1734,17 +1710,18 @@
   left: 50%;
   transform: translateX(-50%);
   border: 8px solid transparent;
-  border-top-color: #ffcc00;
+  border-top-color: var(--cor-ciano);
 }
 
+.tooltip-btn-small { background: transparent; color: var(--cor-ciano); border: 2px solid var(--cor-ciano); padding: 6px 12px; border-radius: 8px; font-size: 10px; font-family: 'Share Tech Mono', monospace; cursor: pointer; margin-top: 10px; transition: all 0.2s ease; display: inline-block; }
+.tooltip-btn-small:hover { background: rgba(0,255,255,0.1); color: var(--cor-menta); box-shadow: 0 0 12px rgba(0,255,255,0.2); }
+
 .block-tooltip::before {
-  content: '';
-  position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-top-color: #1a1a2e;
+  border-top-color: rgba(4,9,38,0.95);
   z-index: 1001;
   margin-top: -1px;
 }

@@ -4,18 +4,18 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 18px;
-  background: rgba(0,0,0,0.85);
-  border: 4px solid #ffd700;
-  border-radius: 14px;
-  box-shadow: 0 4px #333, 0 0 16px #1e90ff44;
-  padding: 18px 10px;
-  margin: 36px auto 32px auto;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(4,9,38,0.85), rgba(10,25,47,0.45));
+  border: 2px solid var(--cor-ciano);
+  border-radius: 12px;
+  box-shadow: 0 0 16px rgba(0,255,255,0.12);
+  padding: 12px 10px;
+  margin: 24px auto 24px auto;
   max-width: 950px;
   position: sticky;
   top: 0;
   z-index: 20;
-  animation: menuFadeIn 1s;
+  animation: menuFadeIn 0.6s;
 }
 
 @keyframes menuFadeIn {
@@ -24,45 +24,17 @@
 }
 
 .mini-menu .li-btn {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.95em;
-  padding: 10px 18px;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #ffcc00 80%, #ffe066 100%);
-  border: 3px solid #333;
-  color: #222;
-  margin: 4px 0;
-  box-shadow: 0 2px 8px #2224;
-  transition: 
-    transform 0.18s,
-    background 0.18s,
-    color 0.18s,
-    box-shadow 0.18s;
-  cursor: pointer;
-  outline: none;
-  position: relative;
+  /* herda estilo base do .li-btn; apenas ajustes leves */
+  padding: 10px 14px;
 }
 
 .mini-menu .li-btn:hover,
 .mini-menu .li-btn.active {
-  background: linear-gradient(90deg, #ffee33 80%, #fffbe0 100%);
-  color: #333;
-  transform: scale(1.09) rotate(-2deg);
-  box-shadow: 0 4px 16px #ffcc00aa;
+  transform: translateY(-2px);
+  box-shadow: 0 0 16px rgba(0,255,255,0.25);
 }
 
-.mini-menu .li-btn.active::after {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 50%; bottom: -6px;
-  transform: translateX(-50%);
-  width: 60%;
-  height: 5px;
-  background: #ffcc00;
-  border-radius: 4px;
-  box-shadow: 0 0 8px #ffcc00bb;
-}
+.mini-menu .li-btn.active::after { display:none; }
 
 @media (max-width: 700px) {
   .mini-menu {
@@ -127,10 +99,10 @@
 }
 
 .other-logic-content {
-  background: rgba(0,0,0,0.5);
-  border: 4px solid #ffd700;
+  background: linear-gradient(135deg, rgba(4,9,38,0.8), rgba(10,25,47,0.3));
+  border: 2px solid var(--cor-ciano);
   border-radius: 12px;
-  box-shadow: 0 8px #333;
+  box-shadow: 0 0 18px rgba(0,255,255,0.15);
   padding: 20px 10px 24px 10px;
   display: flex;
   flex-direction: column;
@@ -151,12 +123,12 @@
   min-width: 180px;
   max-width: 320px;
   margin-bottom: 12px;
-  background: #fff;
-  color: #000;
-  border: 4px solid #333;
+  background: linear-gradient(135deg, #121212, #1f1f1f);
+  color: #b6f7ce;
+  border: 2px solid #00ffaa33;
   border-radius: 8px;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.7em;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75em;
   padding: 8px;
   resize: vertical;
 }
@@ -180,11 +152,8 @@
 }
 
 /* Body: manter apenas tipografia específica desta página */
-body {
-  font-family: 'Roboto', Arial, sans-serif; /* Option A: corpo com fonte legível */
-  font-size: 1.08em;
-  line-height: 1.7;
-}
+/* tipografia geral herdada de base.css; ajustes locais */
+body { font-size: 1.02em; line-height: 1.7; }
 
 /* Header/nav/botões movidos para base.css */
 
@@ -193,15 +162,7 @@ body {
     to { opacity: 1; transform: translateY(0);}
 }
 
-header h1 {
-    margin: 0;
-    font-size: 2.3em;
-    letter-spacing: 2px;
-    color: #fff;
-    text-shadow: 3px 3px 0 #333, 0 0 12px #1e90ff;
-    font-family: 'Press Start 2P', cursive;
-    animation: titlePop 0.7s;
-}
+header h1 { margin: 0; font-size: 2em; letter-spacing: 1px; color: var(--cor-titulo); text-shadow: 0 0 12px rgba(0,255,255,0.25); animation: titlePop 0.7s; }
 
 @keyframes titlePop {
     0% { transform: scale(0.8);}
@@ -217,39 +178,19 @@ nav ul {
     gap: 24px;
 }
 
-nav ul li a {
-    font-family: 'Press Start 2P', cursive;
-    background: linear-gradient(90deg, #ffcc00 70%, #ffe066 100%);
-    border: 4px solid #333;
-    padding: 12px 22px;
-    color: #000;
-    text-decoration: none;
-    margin: 8px;
-    border-radius: 12px;
-    font-size: 1em;
-    box-shadow: 0 2px 8px #2224;
-    transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
-    display: inline-block;
-}
+/* estilos antigos de navegação removidos: usar .site-nav do header novo definido em base.css */
 
-nav ul li a:hover,
-nav ul li a.active {
-    transform: scale(1.08) rotate(-2deg);
-    background: linear-gradient(90deg, #ffee33 70%, #fffbe0 100%);
-    color: #333;
-    box-shadow: 0 4px 16px #ffcc00aa;
-}
+/* remoção de hover antigo do tema amarelo; navegação usa .site-nav em base.css */
 
 .container {
-    max-width: 900px;
-    margin: 40px auto;
-  /* Levemente mais claro para conforto visual mantendo o tema */
-  background: rgba(0,0,0,0.75);
-    padding: 40px 24px;
-    border-radius: 20px;
-    box-shadow: 0 8px #333, 0 0 32px #1e90ff33;
-    border: 4px solid #ffd700;
-    animation: containerFadeIn 1.2s;
+  max-width: 1000px;
+  margin: 32px auto;
+  background: linear-gradient(135deg, rgba(4,9,38,0.8), rgba(10,25,47,0.3));
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 0 24px rgba(0,255,255,0.12);
+  border: 2px solid var(--cor-ciano);
+  animation: containerFadeIn 0.9s;
 }
 
 @keyframes containerFadeIn {
@@ -258,27 +199,21 @@ nav ul li a.active {
 }
 
 h2, h3 {
-    color: #ffcc00;
-    text-shadow: 2px 2px #333, 0 0 8px #ffcc00aa;
-    border-bottom: 2px solid #ffd700;
-    padding-bottom: 8px;
-    margin-top: 32px;
-    margin-bottom: 20px;
-    font-family: 'Press Start 2P', cursive;
-    font-weight: bold;
-    letter-spacing: 1px;
+  color: var(--cor-menta);
+  text-shadow: 0 0 8px rgba(100,255,218,0.2);
+  border-bottom: 2px solid var(--cor-ciano);
+  padding-bottom: 8px;
+  margin-top: 28px;
+  margin-bottom: 16px;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 1px;
 }
 
 h2 {
     font-size: 1.7em;
 }
 
-h3 {
-    font-size: 1.2em;
-    color: #4da6ff;
-    border-bottom: 2px solid #4da6ff;
-    text-shadow: 2px 2px #333, 0 0 8px #4da6ff99;
-}
+h3 { font-size: 1.15em; color: var(--cor-titulo); border-bottom-color: var(--cor-menta); }
 
 p, ul, ol, table, li {
   font-family: 'Roboto', Arial, sans-serif; /* Option A aplicado */
@@ -298,69 +233,28 @@ ul, ol {
     margin-left: 32px;
 }
 
-strong {
-    color: #ffd700;
-    text-shadow: 0 0 6px #ffcc00;
-}
+strong { color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.25); }
 
 .image-container, .video-container {
-    text-align: center;
-    margin: 30px 0;
-    background-color: rgba(255,255,255,0.10);
-    padding: 18px;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-    transition: box-shadow 0.3s;
+  text-align: center;
+  margin: 30px 0;
+  background-color: rgba(4,9,38,0.6);
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,255,255,0.12);
+  transition: box-shadow 0.3s;
 }
 
 .image-container:hover, .video-container:hover {
     box-shadow: 0 4px 24px #4da6ff55;
 }
 
-.image-container img, .video-container iframe {
-    max-width: 100%;
-    border: 4px solid #333;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 2px 12px #0003;
-}
+.image-container img, .video-container iframe { max-width: 100%; border: 2px solid var(--cor-ciano); border-radius: 10px; background: #000; box-shadow: 0 0 10px rgba(0,255,255,0.1); }
 
-.image-caption, .video-caption {
-    font-style: italic;
-    color: #ffd700;
-    margin-top: 10px;
-    font-size: 0.95em;
-    text-shadow: 0 0 6px #ffcc00;
-}
+.image-caption, .video-caption { font-style: italic; color: var(--cor-menta); margin-top: 10px; font-size: 0.95em; text-shadow: 0 0 6px rgba(100,255,218,0.2); }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 1em;
-    background: rgba(0,0,0,0.6);
-    box-shadow: 0 2px 12px #1e90ff33;
-}
-
-table th, table td {
-    border: 2px solid #ffd700;
-    padding: 12px 14px;
-    text-align: left;
-}
-
-table th {
-    background-color: #ffcc00;
-    color: #333;
-    font-weight: bold;
-    text-shadow: 0 1px 2px #fff8;
-}
-
-table tr:nth-child(even) {
-    background-color: rgba(255,255,255,0.10);
-}
-
-table tr:hover {
-    background-color: #ffee33;
-    color: #000;
-    transition: background 0.2s, color 0.2s;
-}
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 1em; background: rgba(4,9,38,0.6); box-shadow: 0 0 12px rgba(0,255,255,0.12); }
+table th, table td { border: 2px solid var(--cor-ciano); padding: 12px 14px; text-align: left; }
+table th { background-color: rgba(0,255,255,0.1); color: #e6f1ff; font-weight: bold; text-shadow: 0 0 6px rgba(0,255,255,0.15); }
+table tr:nth-child(even) { background-color: rgba(255,255,255,0.04); }
+table tr:hover { background-color: rgba(0,255,255,0.12); color: #fff; transition: background 0.2s, color 0.2s; }

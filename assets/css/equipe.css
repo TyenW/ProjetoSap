@@ -1,0 +1,70 @@
+/* Estilos específicos da página Equipe/Autor no tema BitLab (cyan/blueprint) */
+
+.autor-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.autor-foto {
+  width: 96px;
+  height: 96px;
+  border-radius: 12px;
+  border: 2px solid var(--cor-ciano);
+  box-shadow: 0 0 12px rgba(0,255,255,0.25);
+  background: rgba(4,9,38,0.7);
+  object-fit: cover;
+}
+
+.autor-bio {
+  max-width: 560px;
+}
+
+.social-links {
+  margin-top: 10px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--cor-ciano);
+  color: var(--cor-menta);
+  background: transparent;
+  border-radius: 8px;
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95em;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s, background 0.18s;
+}
+
+.social-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(0,255,255,0.25);
+  border-color: var(--cor-menta);
+  background: linear-gradient(135deg, rgba(4,9,38,0.6), rgba(10,25,47,0.25));
+}
+
+.social-link .badge {
+  background: rgba(0,255,255,0.12);
+  border: 1px solid var(--cor-ciano);
+  color: #e6f1ff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+
+.contato {
+  margin-top: 40px;
+}
+
+.contact-email {
+  color: var(--cor-menta);
+}

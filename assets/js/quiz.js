@@ -177,7 +177,7 @@ function renderQuestion() {
   const q = quizSet[currentQ];
   if (!q) {
     const msg = document.getElementById('message');
-    if (msg) { msg.textContent = 'Não há perguntas disponíveis no momento.'; msg.style.color = '#ffd700'; }
+    if (msg) { msg.textContent = 'Não há perguntas disponíveis no momento.'; msg.style.color = '#64ffda'; }
     return;
   }
 
@@ -393,13 +393,7 @@ function exportarEstatisticas() {
   link.click();
 }
 
-// Som e mute
-const music = document.getElementById("bg-music");
-const toggle = document.getElementById("muteToggle");
-toggle.onclick = () => {
-  music.muted = !music.muted;
-  toggle.textContent = music.muted ? "🔇" : "🔊";
-};
+// Som e mute: controlado globalmente pelo audio-menu.js
 
 // --- Funcionalidades: conquistas e export em múltiplos formatos (sem leaderboard) ---
 
