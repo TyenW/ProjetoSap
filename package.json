@@ -1,7 +1,0 @@
-{
-  "name": "projetosap",
-  "version": "1.2.1",
-  "private": true,
-  "description": "Projeto estático puro (sem Node, sem build)",
-  "type": "module"
-}

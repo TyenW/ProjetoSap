@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demonstração "BitLab" - Logos e Tema</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- [ TODOS OS DETALHES DO TEMA ] --- */
+        
+        :root {
+            /* A Paleta de Cores que definimos */
+            --bg-noite: #0a192f;
+            --bg-blueprint: #040926;
+            --ciano-neon: #00FFFF;
+            --verde-neon: #39FF14;
+            --amarelo-energia: #FFD700;
+            --cinza-nevoa: #8892B0;
+        }
+
+        /* 1. O BACKGROUND "MESA DE ENGENHARIA" */
+        body {
+            background-color: var(--bg-noite);
+            color: var(--cinza-nevoa);
+            
+            /* Grelha de pontos (dot-grid) sutil */
+            background-image: 
+                linear-gradient(rgba(136, 146, 176, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(136, 146, 176, 0.1) 1px, transparent 1px);
+            background-size: 16px 16px;
+            
+            /* Layout para a demo */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+            min-height: 100vh;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow: hidden; 
+        }
+
+        /* 2. AS FONTES "TECH" */
+        .container-demo {
+            font-family: 'Share Tech Mono', monospace;
+            border: 2px solid var(--ciano-neon);
+            background-color: var(--bg-blueprint);
+            padding: 30px 40px;
+            border-radius: 8px;
+            text-align: center;
+            
+            /* 3. A ANIMAÇÃO "NEON GLOW" */
+            box-shadow: 0 0 10px var(--ciano-neon), 0 0 20px var(--ciano-neon) inset;
+            animation: pulse-glow-container 3s ease-in-out infinite;
+        }
+
+        .container-demo h2 {
+            margin: 0 0 30px 0;
+            color: white;
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--cinza-nevoa);
+            padding-bottom: 10px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+        
+        /* --- [ ANIMAÇÕES GLOBAIS ] --- */
+
+        /* Animação de brilho suave para o container */
+        @keyframes pulse-glow-container {
+            0%, 100% {
+                box-shadow: 0 0 10px var(--ciano-neon), 0 0 15px var(--ciano-neon) inset;
+            }
+            50% {
+                box-shadow: 0 0 20px var(--ciano-neon), 0 0 25px var(--ciano-neon) inset;
+            }
+        }
+        
+        /* Animação de brilho mais forte para os logos */
+        @keyframes pulse-glow-logo {
+            0%, 100% {
+                filter: drop-shadow(0 0 5px var(--ciano-neon));
+            }
+            50% {
+                filter: drop-shadow(0 0 18px var(--ciano-neon));
+            }
+        }
+        
+        /* Animação de piscar (Frasco-Bot) */
+        @keyframes blink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.1); }
+        }
+
+        /* Animação de bolhas (Frasco-Bot) */
+        @keyframes bubble-up {
+            0%   { transform: translateY(0); opacity: 0; }
+            20%  { opacity: 1; }
+            80%  { opacity: 1; }
+            100% { transform: translateY(-40px); opacity: 0; }
+        }
+        
+        /* Animação de flutuar (Bónus PNG) */
+        @keyframes bobbing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* --- [ LOGO 1: "FRASCO-BOT" (CSS PURO) ] --- */
+
+        .logo-frasco {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: pulse-glow-logo 2.5s ease-in-out infinite;
+        }
+
+        .logo-frasco .logo-text {
+            font-family: 'VT323', monospace; /* Fonte Pixelada */
+            font-size: 3.5rem;
+            color: var(--ciano-neon);
+            line-height: 1;
+        }
+
+        .logo-frasco .logo-icon {
+            width: 40px;
+            height: 44px;
+            border: 4px solid var(--ciano-neon);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            position: relative;
+            background-color: transparent;
+        }
+
+        .logo-frasco .logo-icon::before { /* Boca do frasco */
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -8px;
+            width: 52px;
+            height: 8px;
+            border: 4px solid var(--ciano-neon);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .logo-frasco .logo-icon::after { /* "Olhos" / Líquido */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 16px;
+            background: var(--amarelo-energia); /* Amarelo-Energia */
+            border-radius: 0 0 4px 4px;
+            animation: blink 3s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--amarelo-energia);
+        }
+        
+        .logo-frasco .bolha {
+            position: absolute;
+            background-color: var(--verde-neon); /* Verde-Neon */
+            border-radius: 50%;
+            bottom: 10px;
+            opacity: 0;
+            animation: bubble-up 4s infinite;
+        }
+
+        .logo-frasco .bolha1 {
+            width: 4px; height: 4px; left: 10px;
+            animation-duration: 3s; animation-delay: 0.5s;
+        }
+        
+        .logo-frasco .bolha2 {
+            width: 6px; height: 6px; left: 25px;
+            animation-duration: 4s; animation-delay: 1s;
+        }
+
+        /* --- [ LOGO 2: " CIRCUITO INTEGRADO" (CSS PURO) ] --- */
+
+        .logo-circuito {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: pulse-glow-logo 2.5s ease-in-out infinite;
+        }
+
+        .logo-circuito .logo-text {
+            font-family: 'Share Tech Mono', monospace; /* Fonte Técnica */
+            font-size: 2.8rem;
+            color: var(--ciano-neon);
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .logo-circuito .logo-icon {
+            width: 36px;
+            height: 41.57px;
+            background-color: var(--ciano-neon);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        /* --- [ LOGO 3: BÓNUS (COM SUA IMAGEM PNG) ] --- */
+
+        .logo-png {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-png .logo-icon-png {
+            width: 50px;
+            height: 50px;
+            /* Animação de flutuar */
+            animation: bobbing 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px var(--amarelo-energia));
+        }
+
+        .logo-png .logo-text-png {
+            font-family: 'Share Tech Mono', monospace; /* Fonte Técnica */
+            font-size: 2.8rem;
+            color: var(--ciano-neon);
+            text-transform: uppercase;
+            line-height: 1;
+            /* Animação de brilho apenas no texto */
+            animation: pulse-glow-logo 2.5s ease-in-out infinite;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container-demo">
+        <h2>Conceito 1: "Frasco-Bot" (CSS Puro + Animação)</h2>
+        <a href="#" class="logo-frasco">
+            <div class="logo-icon">
+                <span class="bolha bolha1"></span>
+                <span class="bolha bolha2"></span>
+            </div>
+            <div class="logo-text">BitLab</div>
+        </a>
+    </div>
+
+    <div class="container-demo">
+        <h2>Conceito 2: "Circuito Integrado" (CSS Puro + Animação)</h2>
+        <a href="#" class="logo-container logo-circuito">
+            <div class="logo-icon"></div>
+            <div class="logo-text">BitLab</div>
+        </a>
+    </div>
+
+    <div class="container-demo">
+        <h2>Versão Bónus: Seu Mascote (PNG + CSS + Animação)</h2>
+        <a href="#" class="logo-container-png">
+            <img src="image-removebg-preview.png" alt="Bit-Bot Mascote" class="logo-icon-png">
+            <div class="logo-text-png">BitLab</div>
+        </a>
+    </div>
+
+</body>
+</html>

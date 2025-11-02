@@ -115,6 +115,23 @@ let respostasCorretas = []; // armazena true/false para acertos
 let answeredCount = 0;
 let maxStreak = 0;
 
+// SFX do Quiz (acerto/erro), sincronizados com o botão de mute da página
+const quizSfx = (()=>{
+  try {
+    const s = {
+      correct: new Audio('assets/audio/quiz_correct.ogg'),
+      wrong: new Audio('assets/audio/quiz_wrong.ogg'),
+      setMuted(m){ this.correct.muted = m; this.wrong.muted = m; },
+      init(){ this.correct.volume = 0.22; this.wrong.volume = 0.24; const music = document.getElementById('bg-music'); this.setMuted(music ? music.muted : true); }
+    };
+    s.init();
+    // sincroniza com o toggle global se existir
+    const toggle = document.getElementById('muteToggle');
+    if (toggle) toggle.addEventListener('click', ()=>{ const music = document.getElementById('bg-music'); s.setMuted(music ? music.muted : true); });
+    return s;
+  } catch(_) { return { correct:{play(){}}, wrong:{play(){}}, setMuted(){} }; }
+})();
+
 function getRandomQuestion(difficulty) {
   const pool = allQuestions.filter(q => q.difficulty === difficulty && !usedQuestions.includes(q));
   if (pool.length === 0) return null;
@@ -204,13 +221,15 @@ function checkAnswer(selected) {
     messageDiv.style.color = "green";
     respostasCorretas.push(true);
     if (clickedBtn) { clickedBtn.classList.add('correct'); }
+    try { quizSfx.correct.currentTime = 0; quizSfx.correct.play(); } catch(_) {}
   } else {
     lives--;
     acertosSeguidos = 0;
     messageDiv.textContent = "Errado!";
     messageDiv.style.color = "red";
     respostasCorretas.push(false);
-    if (clickedBtn) { clickedBtn.classList.add('wrong'); }
+  if (clickedBtn) { clickedBtn.classList.add('wrong'); }
+  try { quizSfx.wrong.currentTime = 0; quizSfx.wrong.play(); } catch(_) {}
     // anima hearts
     const hearts = document.getElementById('lives');
     hearts.classList.add('remove');

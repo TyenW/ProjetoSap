@@ -1,17 +1,17 @@
-footer {
-  background: linear-gradient(90deg, var(--azul-escuro-pacman) 60%, var(--azul-pacman) 100%);
+/* ===== Novo Footer (site-footer) ===== */
+.site-footer {
+  background: linear-gradient(90deg, var(--cor-fundo) 60%, #071426 100%);
   color: var(--branco-pacman);
-  border-top: 4px solid var(--amarelo-pacman);
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 -2px 20px #00ffff66, 0 0 32px #0008;
+  border-top: 2px solid var(--cor-ciano);
+  box-shadow: 0 -2px 20px rgba(0,255,255,0.25), 0 0 32px #0008;
   margin-top: 48px;
   padding: 0;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Roboto Mono', monospace;
   position: relative;
   overflow: hidden;
 }
 
-footer::before {
+.site-footer::before {
   content: "";
   display: block;
   position: absolute;
@@ -19,14 +19,14 @@ footer::before {
   height: 8px;
   background: repeating-linear-gradient(
     135deg,
-    var(--amarelo-pacman), var(--amarelo-pacman) 8px,
-    #fffbe0 8px, #fffbe0 16px
+    var(--cor-ciano), var(--cor-ciano) 8px,
+    rgba(0,255,255,0.4) 8px, rgba(0,255,255,0.4) 16px
   );
   opacity: 0.7;
   z-index: 1;
 }
 
-.footer-container {
+.footer-columns {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -38,65 +38,141 @@ footer::before {
   z-index: 2;
 }
 
-.footer-section {
+.site-footer .col {
   flex: 1 1 180px;
   margin: 12px 18px;
   min-width: 180px;
   text-align: left;
 }
-
-.footer-brand {
+.site-footer .brand {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
 }
+.site-footer .brand .logo-frasco { filter: drop-shadow(0 0 10px rgba(0,255,255,0.25)); }
+.site-footer .brand .logo-text { font-family: 'Share Tech Mono', monospace; font-size: 1.6rem; color: var(--cor-ciano); text-transform: uppercase; text-shadow: 0 0 10px rgba(0,255,255,0.25); }
+
+.site-footer .tagline { margin: 6px 0 0 0; color: #e6f1ff; opacity: 0.85; }
 
 .footer-title {
   font-size: 1.1em;
-  color: var(--amarelo-pacman);
-  text-shadow: 2px 2px #000, 0 0 8px var(--amarelo-pacman);
+  color: var(--cor-menta);
+  text-shadow: 0 0 10px rgba(0,255,255,0.25);
   letter-spacing: 1px;
 }
 
-.footer-section h4 {
-  color: var(--amarelo-pacman);
+.site-footer h4 {
+  color: var(--cor-menta);
   margin-bottom: 10px;
   font-size: 1em;
-  text-shadow: 1px 1px #000;
-  font-family: 'Press Start 2P', cursive;
+  text-shadow: 0 0 8px rgba(0,255,255,0.2);
+  font-family: 'Share Tech Mono', monospace;
 }
 
-.footer-section ul {
+.site-footer ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.footer-section ul li {
+.site-footer ul li {
   margin-bottom: 8px;
 }
 
-.footer-section ul li a {
-  color: #fffbe0;
+.site-footer ul li a {
+  color: #e6f1ff;
   text-decoration: none;
   font-size: 0.95em;
   transition: color 0.2s;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Roboto Mono', monospace;
 }
 
-.footer-section ul li a:hover {
-  color: var(--amarelo-pacman);
-  text-shadow: 0 0 6px var(--amarelo-pacman);
+.site-footer ul li a .icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  vertical-align: -3px;
+  filter: drop-shadow(0 0 4px rgba(0,255,255,0.25));
 }
 
-.footer-info p,
-.footer-info em {
+.site-footer ul li a:hover {
+  color: var(--cor-menta);
+  text-shadow: 0 0 6px var(--cor-ciano);
+}
+
+.site-footer .about p,
+.site-footer .about em {
   font-size: 0.95em;
   color: #eee;
   margin: 0;
   font-family: 'Roboto', Arial, sans-serif;
 }
+
+/* Embelezamento da seção "Sobre" do footer */
+.footer-section.footer-info {
+  background: linear-gradient(180deg, rgba(0, 20, 32, 0.55), rgba(0, 20, 32, 0.25));
+  border: 1px solid rgba(0,255,255,0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: inset 0 0 0 1px rgba(0,255,255,0.05), 0 8px 24px rgba(0,0,0,0.35);
+}
+
+.footer-section.footer-info h4 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.footer-section.footer-info h4::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  background: url("../../kenney_board-game-icons/Double (128px)/notepad.png") center/contain no-repeat;
+  filter: drop-shadow(0 0 6px rgba(0,255,255,0.35));
+}
+
+.footer-about p {
+  line-height: 1.7;
+}
+
+.footer-about a {
+  color: var(--cor-ciano);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(0,255,255,0.35);
+}
+.footer-about a:hover {
+  color: var(--cor-menta);
+  border-bottom-color: rgba(100,255,218,0.6);
+  text-shadow: 0 0 6px rgba(0,255,255,0.3);
+}
+
+/* Badge para links importantes (PDF, seção explicativa) */
+.footer-about a[download],
+.footer-about a[href*="oqueesap.html"] {
+  display: inline-block;
+  margin: 2px 0;
+  padding: 3px 8px;
+  border: 1px solid var(--cor-ciano);
+  border-radius: 8px;
+  background: rgba(0,255,255,0.08);
+  box-shadow: 0 0 8px rgba(0,255,255,0.12) inset;
+  border-bottom: none;
+}
+.footer-about a[download]:hover,
+.footer-about a[href*="oqueesap.html"]:hover {
+  background: rgba(0,255,255,0.15);
+  box-shadow: 0 0 12px rgba(0,255,255,0.18) inset;
+}
+
+/* Autor / Contato */
+.site-footer .contact p { margin: 0 0 10px 0; color: #e6f1ff; opacity: 0.9; }
+.site-footer .contact .social-links { display: inline-flex; gap: 10px; flex-wrap: wrap; }
+.site-footer .contact .social-link { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--cor-ciano); color: #e6f1ff; text-decoration: none; font-size: 0.9em; box-shadow: 0 0 10px rgba(0,255,255,0.15) inset, 0 0 8px rgba(0,255,255,0.15); background: linear-gradient(180deg, rgba(0, 20, 32, 0.6), rgba(0, 20, 32, 0.3)); transition: transform .15s ease, background .2s ease, box-shadow .2s ease; }
+.site-footer .contact .social-link:hover { transform: translateY(-1px); background: rgba(0, 60, 80, 0.35); box-shadow: 0 0 16px rgba(0,255,255,0.25) inset, 0 0 12px rgba(0,255,255,0.25); color: var(--cor-menta); text-shadow: 0 0 8px rgba(0,255,255,0.2); }
+.site-footer .contact .badge { font-family: 'Share Tech Mono', monospace; letter-spacing: .5px; }
 
 .footer-social a {
   display: inline-block;
@@ -109,32 +185,68 @@ footer::before {
   transform: scale(1.18) rotate(-6deg);
 }
 
-.footer-bottom {
+.site-footer .footer-bottom {
   background: rgba(0, 0, 0, 0.3);
-  border-top: 2px solid var(--amarelo-pacman);
+  border-top: 2px solid var(--cor-ciano);
   padding: 12px 0 6px 0;
   font-size: 0.85em;
-  color: #fffbe0;
+  color: #e6f1ff;
   letter-spacing: 1px;
-  text-shadow: 1px 1px #000;
-  font-family: 'Press Start 2P', cursive;
+  text-shadow: 0 0 6px rgba(0,255,255,0.2);
+  font-family: 'Share Tech Mono', monospace;
   border-radius: 0 0 16px 16px;
 }
 
 @media (max-width: 900px) {
-  .footer-container {
+  .footer-columns {
     flex-direction: column;
     align-items: center;
     padding: 18px 6px 6px 6px;
   }
 
-  .footer-section {
+  .site-footer .col {
     margin: 10px 0;
     min-width: 0;
     text-align: center;
   }
 
-  .footer-brand {
+  .site-footer .brand {
     justify-content: center;
   }
+}
+
+/* (Removido bloco duplicado do card "Sobre" para evitar conflitos) */
+
+/* ===== Créditos (inspirado no blueprint fornecido) ===== */
+.site-footer .footer-credits {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px 10px 24px;
+  text-align: center;
+  border-top: 1px dashed rgba(136,146,176,0.4);
+}
+.site-footer .credits {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #e6f1ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.site-footer .credits p { margin: 4px 0; }
+.site-footer .credits strong { color: #ffffff; font-weight: 600; }
+.site-footer .footer-links a {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--cor-ciano);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+.site-footer .footer-links a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+  filter: drop-shadow(0 0 8px var(--cor-ciano));
 }

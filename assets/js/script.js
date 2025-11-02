@@ -598,14 +598,28 @@ function importarCSVParaMemoria(csvText) {
 }
 
 // Exibe mensagens estilo Mario Bros
-function mostrarMensagemEstiloMario(texto) {
+function mostrarMensagemEstiloMario(texto, tipo = 'info') {
     const consoleDiv = document.getElementById('console-log');
-    consoleDiv.textContent = texto;
-    consoleDiv.style.display = 'block';
-
-    setTimeout(() => {
-        consoleDiv.style.display = 'none';
-    }, 5000);
+    if (!consoleDiv) return;
+    try {
+        const safe = safeText(texto);
+        if (tipo === 'error') {
+            consoleDiv.classList.add('is-error');
+            consoleDiv.innerHTML = `<img src="assets/img/bug.png" alt="" aria-hidden="true" class="icon-inline" /> ${safe}`;
+        } else {
+            consoleDiv.classList.remove('is-error');
+            consoleDiv.textContent = safe;
+        }
+        consoleDiv.style.display = 'block';
+        clearTimeout(consoleDiv._hideTimer);
+        consoleDiv._hideTimer = setTimeout(() => {
+            consoleDiv.style.display = 'none';
+        }, 5000);
+    } catch(_) {
+        consoleDiv.textContent = String(texto || '');
+        consoleDiv.style.display = 'block';
+        setTimeout(() => { consoleDiv.style.display = 'none'; }, 5000);
+    }
 }
 
 function inicializar() {
@@ -875,6 +889,7 @@ function executarPasso() {
             atualizarValorBloco('output-value', toSigned8(last));
             atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
             passos.push(`OUT: ${last}`);
+            try { sfx.out.currentTime = 0; sfx.out.play(); } catch(_) {}
         }
         if (opName === 'HLT') {
             passos.push('HLT: Parada');
@@ -884,6 +899,8 @@ function executarPasso() {
         if (result.fault) {
             passos.push(result.fault);
             running = false;
+            try { sfx.alert.currentTime = 0; sfx.alert.play(); } catch(_) {}
+            try { mostrarMensagemEstiloMario(result.fault, 'error'); } catch(_) {}
         }
 
         // Avança Estados T durante a execução (T4..T6)
@@ -1038,6 +1055,7 @@ function renderTickFromWorker(tick) {
             atualizarValorBloco('output-value', toSigned8(last));
             atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
             passos.push(`OUT: ${last}`);
+            try { sfx.out.currentTime = 0; sfx.out.play(); } catch(_) {}
         }
         if (opName === 'JMP') {
             passos.push(`JMP para ${argVal}`);
@@ -1051,6 +1069,8 @@ function renderTickFromWorker(tick) {
         if (tick.fault) {
             passos.push(tick.fault);
             running = false;
+            try { sfx.alert.currentTime = 0; sfx.alert.play(); } catch(_) {}
+            try { mostrarMensagemEstiloMario(tick.fault, 'error'); } catch(_) {}
         }
 
         // Avança T4..T6
@@ -1350,8 +1370,24 @@ if (toggleBtn && memoryDiv && otherLogicDiv) {
 
 // deixar mudo 
 document.addEventListener('DOMContentLoaded', () => {
-  const music = document.getElementById('bg-music');
-  const muteBtn = document.getElementById('muteToggle');
+    const music = document.getElementById('bg-music');
+    const muteBtn = document.getElementById('muteToggle');
+    // SFX: pré-carregar e gerenciar estado de mute em conjunto com a música
+    const sfx = {
+        click: new Audio('assets/audio/ui_click.ogg'),
+        hover: new Audio('assets/audio/ui_hover.ogg'),
+        toggle: new Audio('assets/audio/ui_toggle.ogg'),
+        alert: new Audio('assets/audio/ui_alert.ogg'),
+        out: new Audio('assets/audio/ui_out.ogg'),
+        setMuted(m) {
+            this.click.muted = m; this.hover.muted = m; this.toggle.muted = m; this.alert.muted = m; this.out.muted = m;
+        },
+        init() {
+            const v = 0.25; this.click.volume = v; this.hover.volume = 0.2; this.toggle.volume = 0.22; this.alert.volume = 0.28; this.out.volume = 0.18;
+            this.setMuted(music ? music.muted : true);
+        }
+    };
+    try { sfx.init(); } catch(_) {}
 
     // Ensure ARIA state
     const updateMuteAria = () => {
@@ -1364,5 +1400,17 @@ document.addEventListener('DOMContentLoaded', () => {
         music.muted = !music.muted;
         muteBtn.textContent = music.muted ? '🔇' : '🔊';
         updateMuteAria();
+        // manter SFX em sincronia com o estado
+        sfx.setMuted(music.muted);
+        try { if (!music.muted) { sfx.toggle.currentTime = 0; sfx.toggle.play(); } } catch(_) {}
     });
+
+    // Sons de UI: hover e click em botões principais
+    try {
+        const buttons = document.querySelectorAll('.li-btn, button, .btn, [role="button"]');
+        buttons.forEach(btn => {
+            btn.addEventListener('mouseenter', () => { try { sfx.hover.currentTime = 0; sfx.hover.play(); } catch(_) {} });
+            btn.addEventListener('click', () => { try { sfx.click.currentTime = 0; sfx.click.play(); } catch(_) {} });
+        });
+    } catch(_) {}
 });

@@ -1,19 +1,19 @@
 body {
-      background-color: #000;
-      color: #fff;
-      font-family: 'Press Start 2P', cursive;
-      text-align: center;
-      padding: 20px;
-    }
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: 'Roboto Mono', monospace;
+  text-align: center;
+  padding: 20px;
+}
 
     .quiz-container {
-      background: #111;
-      border: 4px solid #ffd700;
+      background: linear-gradient(135deg, rgba(4,9,38,0.85), rgba(10,25,47,0.5));
+      border: 2px solid var(--cor-ciano);
       border-radius: 16px;
       padding: 24px;
       max-width: 700px;
       margin: auto;
-      box-shadow: 0 0 12px #00ffff88;
+      box-shadow: 0 0 16px rgba(0,255,255,0.18);
     }
 
     .question {
@@ -23,20 +23,22 @@ body {
 
     .options button {
       display: block;
-      background-color: #ffcc00;
-      color: #000;
-      border: 4px solid #000;
+      background: transparent;
+      color: var(--cor-ciano);
+      border: 2px solid var(--cor-ciano);
       margin: 8px auto;
       padding: 12px;
       width: 80%;
       cursor: pointer;
-      font-family: 'Press Start 2P', cursive;
-      font-size: 0.7em;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9em;
       transition: 0.2s;
     }
 
     .options button:hover {
-      background-color: #ffee33;
+      background: rgba(0,255,255,0.1);
+      color: var(--cor-menta);
+      box-shadow: 0 0 10px rgba(0,255,255,0.2);
     }
 
     .status-bar {
@@ -62,26 +64,26 @@ body {
     }
 
     .restart-btn {
-      background: #00cc66;
-      border: 4px solid #000;
-      color: #fff;
+      background: transparent;
+      border: 2px solid var(--cor-ciano);
+      color: var(--cor-ciano);
       padding: 12px 20px;
       margin-top: 20px;
       cursor: pointer;
-      font-family: 'Press Start 2P', cursive;
+      font-family: 'Share Tech Mono', monospace;
     }
 
     .chart {
   margin-top: 32px;
-  background-color: #111;
-  border: 4px solid #ffd700;
+      background-color: rgba(4,9,38,0.8);
+      border: 2px solid var(--cor-ciano);
   padding: 20px;
   border-radius: 12px;
 }
 
 .chart h3 {
   font-size: 1em;
-  color: #00ffff;
+  color: var(--cor-menta);
   margin-bottom: 12px;
 }
 
@@ -102,11 +104,11 @@ body {
 .bar-inner {
   width: 100%;
   transition: height 0.3s;
-  border: 2px solid #fff;
+  border: 2px solid rgba(255,255,255,0.2);
 }
 
 .easy { background: #44ff44; }
-.medium { background: #ffcc00; }
+.medium { background: #64ffda; }
 .hard { background: #ff4444; }
 
 .bar-label {
@@ -120,12 +122,12 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #000;
-  border: 6px solid #ffd700;
+  background: #071426;
+  border: 2px solid var(--cor-ciano);
   border-radius: 12px;
   padding: 24px;
   z-index: 9999;
-  box-shadow: 0 0 24px #00ffff88;
+  box-shadow: 0 0 24px rgba(0,255,255,0.2);
   max-width: 360px;
   width: 90%;
 }
@@ -136,10 +138,10 @@ body {
   right: 12px;
   background: none;
   border: none;
-  color: #ffd700;
+  color: var(--cor-menta);
   font-size: 1.2em;
   cursor: pointer;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
 }
 
 .chart-modal .chart {

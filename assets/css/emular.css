@@ -9,11 +9,11 @@
   align-items: center;
   margin: 0;
   padding: 25px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(40, 40, 99, 0.3));
-  border: 4px solid #ffd700;
+  background: linear-gradient(135deg, rgba(4, 9, 38, 0.85), rgba(10, 25, 47, 0.6));
+  border: 2px solid var(--cor-ciano);
   
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 255, 0.15);
   backdrop-filter: blur(5px);
   width: 100%;
   max-width: 550px;
@@ -30,18 +30,18 @@
 /* Switch de modo de edição */
 .editor-mode-switch {
   display: inline-flex;
-  border: 2px solid #ffd700;
+  border: 2px solid var(--cor-ciano);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 14px;
-  background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(40,40,99,0.2));
+  background: linear-gradient(135deg, rgba(4,9,38,0.6), rgba(10,25,47,0.2));
 }
 .editor-mode-switch .segment {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   font-size: 0.6em;
   color: #fff;
   cursor: pointer;
@@ -51,10 +51,10 @@
 .editor-mode-switch input { display: none; }
 .editor-mode-switch input:checked + span {
   color: #000;
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  background: linear-gradient(45deg, var(--cor-ciano), var(--cor-menta));
   padding: 6px 10px;
   border-radius: 8px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
 }
 
 .ram-label {
@@ -71,7 +71,7 @@
   background: linear-gradient(135deg, #ffffff, #f0f0f0);
   color: #000;
   border: 3px solid #333;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   width: 90px;
   height: 45px;
   text-align: center;
@@ -110,33 +110,35 @@
 }
 
 .btn-wide {
-  min-width: 110px;
+  min-width: 120px;
   margin: 4px 2px;
   font-size: 0.7em;
   border-radius: 12px;
   padding: 10px 16px;
-  background-color: #00cc66;
-  color: #fff;
-  border: 4px solid #000;
+  background: transparent;
+  color: var(--cor-ciano);
+  border: 2px solid var(--cor-ciano);
   cursor: pointer;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
+  transition: all 0.2s ease;
 }
+.btn-wide:hover { background: rgba(0,255,255,0.1); box-shadow: 0 0 12px rgba(0,255,255,0.2); color: var(--cor-menta); }
 
 /* === Painel de status === */
 .status-panel {
   margin: 40px auto 0 auto;
   max-width: 400px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.3));
-  border: 3px solid #ffd700;
+  background: linear-gradient(135deg, rgba(4,9,38,0.8), rgba(10,25,47,0.3));
+  border: 2px solid var(--cor-ciano);
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 255, 0.15);
   padding: 25px 15px;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Roboto Mono', monospace;
   backdrop-filter: blur(5px);
 }
 
 .status-panel h3 {
-  color: #ffd700;
+  color: var(--cor-amarelo-energia);
   margin-top: 0;
   font-size: 1.2em;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
@@ -172,40 +174,19 @@
   border-radius: 12px;
   padding: 15px 25px;
   font-size: 0.8em;
-  background: linear-gradient(45deg, #28a745, #20c997);
-  color: #fff;
-  border: 3px solid #1e7e34;
+  background: transparent;
+  color: var(--cor-ciano);
+  border: 2px solid var(--cor-ciano);
   cursor: pointer;
-  font-family: 'Press Start 2P', cursive;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  font-family: 'Share Tech Mono', monospace;
+  transition: all 0.2s ease;
+  box-shadow: none;
 }
 
 .saida-btn:hover {
-  background: linear-gradient(45deg, #20c997, #17a2b8);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
-}
-
-/* === Console estilo Mario === */
-.mario-console {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #000;
-  color: #fff;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.6em;
-  border: 4px solid #ffcc00;
-  padding: 16px;
-  border-radius: 8px;
-  z-index: 1000;
-  box-shadow: 0 0 16px #ffcc00;
-  width: 90%;
-  max-width: 480px;
-  white-space: pre-wrap;
-  text-align: left;
+  background: rgba(0,255,255,0.1);
+  box-shadow: 0 0 12px rgba(0,255,255,0.2);
+  color: var(--cor-menta);
 }
 
 /* === Layout combinado === */
@@ -239,8 +220,8 @@
   grid-column: 1 / -1;
   margin: 50px auto 0;
   max-width: 600px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.3));
-  border: 3px solid #00ffff;
+  background: linear-gradient(135deg, rgba(4,9,38,0.8), rgba(10,25,47,0.3));
+  border: 2px solid var(--cor-ciano);
   border-radius: 15px;
   padding: 30px;
   text-align: center;
@@ -255,7 +236,7 @@
   margin-bottom: 15px;
   color: #00ffff;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
 }
 
 #codigoMaquina {
@@ -267,7 +248,7 @@
   border: 2px solid #00ffaa33;
   border-radius: 12px;
   padding: 14px;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   font-size: 0.62em;
   resize: vertical;
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.45);
@@ -287,7 +268,7 @@
   border-radius: 10px;
   padding: 12px 20px;
   font-size: 0.7em;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -325,7 +306,7 @@
 }
 
 .asm-errors {
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   font-size: 0.6em;
   color: #ff6b6b;
   background: rgba(255, 0, 0, 0.08);
@@ -402,15 +383,15 @@
   grid-template-columns: 1fr 140px 1fr;
   grid-template-rows: repeat(5, minmax(120px, auto)) auto;
   gap: 30px 50px;
-  background: linear-gradient(135deg, #111, #1a1a1a);
-  border: 4px solid var(--cor-secundaria);
+  background: var(--cor-blueprint);
+  border: 2px solid var(--cor-ciano);
   padding: 40px;
   margin: 30px auto;
   position: relative;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   max-width: 1300px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 255, 255, 0.12);
 }
 @media (max-width: 1100px) and (min-width: 769px) {
   .sap1-container {
@@ -432,17 +413,17 @@
   grid-row: 6;
   margin: 20px auto 0 auto;
   max-width: 500px;
-  background: rgba(0, 0, 0, 0.9);
-  border: 3px solid #ffd700;
+  background: rgba(4, 9, 38, 0.9);
+  border: 2px solid var(--cor-ciano);
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
   padding: 20px;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Roboto Mono', monospace;
   text-align: center;
 }
 
 .sap1-container .status-panel h3 {
-  color: #ffd700;
+  color: var(--cor-menta);
   margin-top: 0;
   font-size: 1.1em;
   text-shadow: 2px 2px #333;
@@ -463,14 +444,14 @@
 
 /* Blocos SAP-1 */
 .sap1-block {
-  background: linear-gradient(135deg, #000000, #1a1a1a);
-  border: 3px solid var(--cor-destaque);
+  background: linear-gradient(135deg, rgba(4,9,38,0.6), rgba(10,25,47,0.4));
+  border: 2px solid var(--cor-ciano);
   border-radius: 15px;
   padding: 25px 15px;
   text-align: center;
   font-size: 0.62em;
-  color: var(--cor-destaque);
-  box-shadow: 0 0 15px #00ffff33, inset 0 2px 10px rgba(0, 255, 255, 0.1);
+  color: var(--cor-ciano);
+  box-shadow: 0 0 12px rgba(0,255,255,0.2), inset 0 2px 10px rgba(0, 255, 255, 0.08);
   transition: all 0.4s ease;
   display: flex;
   flex-direction: column;
@@ -482,12 +463,13 @@
   line-height: 1.4;
   backdrop-filter: blur(5px);
   margin: 8px;
+  animation: circuit-pulse 3s ease-in-out infinite;
 }
 
 .sap1-block:hover {
   transform: scale(1.03);
-  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-  box-shadow: 0 0 25px #00ffff66, inset 0 2px 15px rgba(0, 255, 255, 0.2);
+  background: linear-gradient(135deg, rgba(10,25,47,0.7), rgba(4,9,38,0.6));
+  box-shadow: 0 0 22px rgba(0,255,255,0.35), inset 0 2px 15px rgba(0, 255, 255, 0.18);
 }
 
 /* Valores dentro dos blocos SAP-1 */
@@ -725,48 +707,24 @@
   margin: 20px auto;
   max-width: 900px;
   padding: 20px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 99, 0.3));
-  border: 3px solid #ffd700;
+  background: linear-gradient(135deg, rgba(4, 9, 38, 0.8), rgba(10, 25, 47, 0.3));
+  border: 2px solid var(--cor-ciano);
   border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 255, 0.15);
   backdrop-filter: blur(5px);
 }
 
-.animation-controls .btn-wide {
-  font-size: 0.7em;
-  padding: 14px 20px;
-  min-width: 140px;
-  background: linear-gradient(45deg, #00cc66, #00ff80);
-  border: 3px solid #003d1a;
-  border-radius: 10px;
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.animation-controls .btn-wide:hover {
-  background: linear-gradient(45deg, #00ff80, #66ffaa);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(0, 204, 102, 0.4);
-}
-
-.animation-controls .btn-wide:active {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 204, 102, 0.4);
-}
+.animation-controls .btn-wide { font-weight: 600; }
 
 /* === Estilos para Controle de Velocidade === */
 .speed-control {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(4, 9, 38, 0.7);
   padding: 12px 18px;
   border-radius: 10px;
-  border: 2px solid #ffd700;
+  border: 2px solid var(--cor-ciano);
   font-size: 0.7em;
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -777,7 +735,7 @@
 
 .speed-control label {
   font-weight: bold;
-  color: #ffd700;
+  color: var(--cor-menta);
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
@@ -794,7 +752,7 @@
   appearance: none;
   width: 18px;
   height: 18px;
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  background: linear-gradient(45deg, var(--cor-amarelo-energia), #ffed4e);
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid #333;
@@ -804,7 +762,7 @@
 .speed-control input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  background: linear-gradient(45deg, var(--cor-amarelo-energia), #ffed4e);
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid #333;
@@ -835,7 +793,7 @@
 }
 .tstate-text {
   color: #00ffaa;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
 }
 .tstate-steps {
   display: flex;
@@ -843,7 +801,7 @@
   margin-left: 8px;
 }
 .tstate-steps .tstep {
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   font-size: 0.68em;
   color: #66e8c0;
   padding: 4px 6px;
@@ -1012,7 +970,7 @@
 .assembly-code-container {
   display: block;
   margin-top: 16px;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   font-size: 0.7em;
   max-height: 320px;
   overflow-y: auto;
@@ -1378,7 +1336,7 @@
   width: 40px;
   height: 40px;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  filter: drop-shadow(0 0 15px #ffd700) brightness(1.1);
+  filter: drop-shadow(0 0 15px var(--cor-amarelo-energia)) brightness(1.1);
   animation: coinFloat 3s ease-in-out infinite;
   border-radius: 50%;
   box-shadow: 
@@ -1388,7 +1346,7 @@
 
 .help-coin:hover {
   transform: scale(1.15) rotate(360deg);
-  filter: drop-shadow(0 0 20px #ffd700) brightness(1.3);
+  filter: drop-shadow(0 0 20px var(--cor-amarelo-energia)) brightness(1.3);
   animation-play-state: paused;
 }
 
@@ -1420,7 +1378,7 @@
   top: 50px;
   right: 0;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-  border: 2px solid #ffd700;
+  border: 2px solid var(--cor-amarelo-energia);
   border-radius: 16px;
   padding: 20px;
   width: 380px;
@@ -1433,7 +1391,7 @@
   visibility: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 1000;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   transform: translateY(-10px) scale(0.9);
 }
 
@@ -1445,7 +1403,7 @@
 }
 
 .sap-tooltip h3 {
-  color: #ffd700;
+  color: var(--cor-amarelo-energia);
   margin: 0 0 18px 0;
   font-size: 0.85em;
   text-align: center;
@@ -1463,7 +1421,7 @@
   transform: translateX(-50%);
   width: 60px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  background: linear-gradient(90deg, transparent, var(--cor-amarelo-energia), transparent);
 }
 
 .sap-tooltip-content { display: block; }
@@ -1632,7 +1590,7 @@
   bottom: 100%;
   right: 20px;
   border: 10px solid transparent;
-  border-bottom-color: #ffd700;
+  border-bottom-color: var(--cor-amarelo-energia);
   filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.3));
 }
 
@@ -1753,7 +1711,7 @@
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 8px;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Share Tech Mono', monospace;
   cursor: pointer;
   margin-top: 10px;
   transition: all 0.3s ease;
@@ -1837,8 +1795,8 @@
 /* Overlay/modal para ajuda SAP-1 em telas pequenas */
 .sap-help-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 16px; }
 .sap-help-overlay.visible { display: flex; }
-.sap-help-card { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%); border: 2px solid #ffd700; border-radius: 16px; width: min(92vw, 520px); max-height: 80vh; overflow: auto; padding: 16px; position: relative; box-shadow: 0 10px 35px rgba(0,0,0,0.7); }
-.sap-help-close { position: absolute; top: 8px; right: 10px; background: transparent; border: none; color: #ffd700; font-size: 1.2em; cursor: pointer; }
+.sap-help-card { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%); border: 2px solid var(--cor-ciano); border-radius: 16px; width: min(92vw, 520px); max-height: 80vh; overflow: auto; padding: 16px; position: relative; box-shadow: 0 10px 35px rgba(0,0,0,0.7); }
+.sap-help-close { position: absolute; top: 8px; right: 10px; background: transparent; border: none; color: var(--cor-menta); font-size: 1.2em; cursor: pointer; }
 
 /* Evitar overflow dos tooltips dos blocos em telas menores */
 @media (max-width: 768px) {
