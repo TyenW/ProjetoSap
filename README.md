@@ -169,21 +169,30 @@ ProjetoSap/
 │
 ├── 📁 assets/                # Recursos estáticos
 │   ├── 📁 css/              # Folhas de estilo
+│   │   ├── base.css         # Variáveis e estilos globais
 │   │   ├── emular.css       # Estilos do emulador
-│   │   ├── style.css        # Estilos gerais + quiz moderno
-│   │   ├── quiz.css         # Estilos base do quiz
+│   │   ├── home.css         # Estilos da home
 │   │   ├── oqueesap.css     # Estilos do material didático
+│   │   ├── equipe.css       # Estilos da página da equipe/autor
+│   │   ├── quiz.css         # Estilos do quiz
 │   │   └── footer.css       # Estilos do rodapé
 │   │
 │   ├── 📁 js/               # Scripts JavaScript
+│   │   ├── audio-menu.js    # Controle global de áudio
+│   │   ├── bg-anim.js       # Fundo animado (partículas)
+│   │   ├── media-opt.js     # Otimizações de mídia/carregamento
+│   │   ├── nav.js           # Navegação e acessibilidade
+│   │   ├── oqesap.js        # Utilidades para páginas didáticas
 │   │   ├── script.js        # Lógica principal do emulador
-│   │   ├── quiz.js          # Sistema gamificado: quiz, conquistas, leaderboard
-│   │   ├── oqesap.js        # Navegação e interações
-│   │   └── carrosel.js      # Animação do barramento
+│   │   ├── carrosel.js      # Efeitos/Animações auxiliares
+│   │   ├── quiz.js          # Quiz (perguntas, conquistas, placar)
+│   │   ├── fig-10-2.js      # Fig. 10-2: contador em anel
+│   │   └── fig-10-16.js     # Fig. 10-16: controle microprogramado
 │   │
-│   ├── 📁 data/             # ⭐ NOVO: Dados externos configuráveis
-│   │   ├── questions.json   # Banco de perguntas do quiz (100+)
-│   │   └── achievements.json # Definição de conquistas
+│   ├── 📁 data/             # Dados externos do quiz
+│   │   ├── achievements.json # Definição de conquistas
+│   │   ├── leaderboard.json  # (Opcional) seed/local do placar
+│   │   └── questions.json    # Banco de perguntas do quiz
 │   │
 │   ├── 📁 img/              # Imagens e recursos visuais
 │   │   ├── logo.png         # Logo principal
@@ -198,7 +207,8 @@ ProjetoSap/
 │   │   └── pacman.mp3       # Música de fundo
 │   │
 │   └── 📁 docs/             # Documentação técnica
-│       └── Artigo_SAP1_Malvino.pdf
+│       ├── Artigo_SAP1_Malvino.pdf
+│       └── FILES.md         # Documentação detalhada de cada arquivo
 │
 └── 📁 rascunho/             # Exemplos de programas
     ├── entrada.csv          # Exemplo de programa em CSV
