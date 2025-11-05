@@ -423,11 +423,11 @@ ProjetoSap/
 
 #### Execução Automática
 ```
-1. Ajuste a velocidade com o controle deslizante (100-2000ms)
+1. Ajuste a velocidade com o controle deslizante
 2. Clique em "⏩ Executar Tudo"
 3. Observe a execução completa com animações
-4. Use "⏸️ Pausar" se necessário
-5. Acompanhe barramento W-Bus com efeito visual
+4. Use "⏸️ Parar" para interromper (Esc)
+5. Acompanhe barramento W‑Bus com efeito visual
 ```
 
 #### Voltando Passos
@@ -443,6 +443,15 @@ ProjetoSap/
 - **Display de Saída**: Exibe resultados das instruções OUT
 - **Console**: Log detalhado das operações
 - **Animações**: Fluxo visual de dados entre componentes
+
+### ⌨️ Atalhos de Teclado (Qualquer página do Emulador)
+
+- Space: Executar Passo
+- Ctrl+Enter: Executar Tudo
+- Esc: Parar execução
+- R: Resetar
+- S: Alternar modo (RAM ↔ ASM)
+- Ctrl+E: Carregar exemplo didático (Soma 5+3)
 
 ---
 

@@ -22,6 +22,14 @@ let workerRunning = false;
 let tickQueue = [];
 let animatingTick = false;
 let uiAnimating = false; // trava UI durante uma animação única (passo)
+// Exemplos didáticos
+const DEMOS = {
+    soma53: {
+        name: 'Soma 5+3',
+        asm: 'LDA A\nADD B\nOUT\nHLT\n\nA 5\nB 3',
+        hint: 'Exemplo: LDA A; ADD B; OUT; HLT com dados A=5, B=3'
+    }
+};
 
 // Tabela de conversão de hex para assembly
 const hexParaAssembly = {
@@ -786,6 +794,28 @@ function atualizarStatus(instrucaoAtual = '') {
     
     // Destaca a linha atual sendo executada
     destacarLinhaAtual(PC);
+    // Atualiza painel didático
+    try {
+        const modeEl = document.getElementById('status-mode');
+        const pcEl = document.getElementById('status-pc');
+        const accEl = document.getElementById('status-acc');
+        const instrEl = document.getElementById('status-instr');
+        const outsEl = document.getElementById('status-outs');
+        const spdEl = document.getElementById('status-speed');
+        if (modeEl) modeEl.textContent = (editMode === 'asm' ? 'Assembly' : 'RAM');
+        if (pcEl) pcEl.textContent = String(PC);
+        if (accEl) accEl.textContent = String(ACC);
+        if (instrEl) instrEl.textContent = (instrucaoAtual || (core ? core.peekCurrentInstrHex() : '--')) || '--';
+        if (outsEl) outsEl.textContent = String(saida.length || 0);
+        if (spdEl) {
+            const map = {
+                500: 'Rápido', 750: 'Rápido', 1000: 'Rápido',
+                1250: 'Normal', 1500: 'Normal', 1750: 'Normal',
+                2000: 'Lento', 2250: 'Lento', 2500: 'Muito Lento', 2750: 'Muito Lento', 3000: 'Muito Lento'
+            };
+            spdEl.textContent = map[animationSpeed] || 'Rápido';
+        }
+    } catch(_) {}
 }
 
 // Evento para conversão assembly em tempo real baseado na RAM
@@ -1329,6 +1359,20 @@ document.addEventListener('DOMContentLoaded', function () {
         executarTudo();
     });
 
+    // Parar execução
+    const pararBtn = document.getElementById('parar');
+    if (pararBtn) {
+        pararBtn.addEventListener('click', () => {
+            try {
+                if (emulatorWorker && workerRunning) {
+                    emulatorWorker.postMessage({ type: 'cancel' });
+                }
+            } catch(_) {}
+            workerRunning = false; animatingTick = false; uiAnimating = false; setControlsDisabled(false);
+            mostrarMensagemEstiloMario('Execução parada.');
+        });
+    }
+
     document.getElementById('passo-atras').addEventListener('click', passoAtras);
     document.getElementById('resetar').addEventListener('click', resetar);
 
@@ -1354,6 +1398,7 @@ document.addEventListener('DOMContentLoaded', function () {
             3000: 'Muito Lento'
         };
         document.getElementById('speedValue').textContent = speedLabels[animationSpeed] || 'Normal';
+        try { document.getElementById('status-speed').textContent = speedLabels[animationSpeed] || 'Normal'; } catch(_) {}
     });
 
     document.getElementById('csvInput').addEventListener('change', function (e) {
@@ -1482,6 +1527,59 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) {
             console.warn('Falha ao conectar switch de modo:', e);
         }
+
+        // Carregar exemplo didático
+        try {
+            const exBtn = document.getElementById('carregarExemplo');
+            if (exBtn) {
+                exBtn.addEventListener('click', () => {
+                    const ex = DEMOS.soma53;
+                    const ta = document.getElementById('codigoMaquina');
+                    const modeAsm = document.getElementById('modeAsm');
+                    const modeRam = document.getElementById('modeRam');
+                    if (modeAsm && modeRam) { modeAsm.checked = true; modeRam.checked = false; editMode = 'asm'; aplicarModoEdicaoUI(); }
+                    if (ta) {
+                        ta.value = ex.asm;
+                        asmTouched = true;
+                        montarAssemblyParaRAM();
+                        inicializar();
+                        atualizarStatus();
+                        mostrarMensagemEstiloMario(ex.hint);
+                    }
+                });
+            }
+        } catch(_) {}
+
+        // Atalhos de teclado
+        try {
+            document.addEventListener('keydown', (ev) => {
+                const tag = (ev.target && ev.target.tagName) ? ev.target.tagName.toLowerCase() : '';
+                const isTyping = tag === 'input' || tag === 'textarea' || (ev.target && ev.target.isContentEditable);
+                if (isTyping && !(ev.ctrlKey || ev.metaKey)) return;
+                // Space: passo
+                if (ev.code === 'Space') { ev.preventDefault(); document.getElementById('passo')?.click(); }
+                // Ctrl+Enter: executar tudo
+                if ((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter') { ev.preventDefault(); document.getElementById('emular')?.click(); }
+                // Esc: parar
+                if (ev.key === 'Escape') { ev.preventDefault(); document.getElementById('parar')?.click(); }
+                // R: reset
+                if (!ev.ctrlKey && !ev.metaKey && (ev.key === 'r' || ev.key === 'R')) { ev.preventDefault(); document.getElementById('resetar')?.click(); }
+                // Ctrl+E: exemplo
+                if ((ev.ctrlKey || ev.metaKey) && (ev.key === 'e' || ev.key === 'E')) { ev.preventDefault(); document.getElementById('carregarExemplo')?.click(); }
+                // S: alternar modo
+                if (!ev.ctrlKey && !ev.metaKey && (ev.key === 's' || ev.key === 'S')) {
+                    ev.preventDefault();
+                    const modeAsm = document.getElementById('modeAsm');
+                    const modeRam = document.getElementById('modeRam');
+                    if (modeAsm && modeRam) {
+                        if (editMode === 'asm') { modeRam.checked = true; modeAsm.checked = false; editMode = 'ram'; }
+                        else { modeAsm.checked = true; modeRam.checked = false; editMode = 'asm'; }
+                        aplicarModoEdicaoUI();
+                        atualizarStatus();
+                    }
+                }
+            });
+        } catch(_) {}
 });
 
 // Calcula dinamicamente o comprimento das "taps" (linhas) até o centro do barramento

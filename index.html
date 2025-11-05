@@ -74,10 +74,12 @@
   <div class="animation-controls">
     <button id="passo" class="btn-wide">⏯️ Executar Passo</button>
   <button id="emular" class="btn-wide">⏩ Executar Tudo</button>
+    <button id="parar" class="btn-wide" aria-label="Parar execução" title="Parar execução (Esc)">⏸️ Parar</button>
     <button id="passo-atras" class="btn-wide">⏪ Passo Atrás</button>
     <button id="resetar" class="btn-wide">🔄 Resetar</button>
     <input type="file" id="csvInput" accept=".csv,.txt" style="display: none;">
     <button id="loadCSV" class="btn-wide">📁 Carregar CSV</button>
+    <button id="carregarExemplo" class="btn-wide" aria-label="Carregar exemplo de programa" title="Carregar exemplo didático (Ctrl+E)">🧪 Exemplo</button>
     
     <!-- Controle de velocidade -->
     <div class="speed-control">
@@ -436,6 +438,16 @@
           <span class="led" data-bit="0" aria-hidden="true"></span>
         </div>
         <div class="block-value sr-only" id="display-value" aria-live="polite">00000000</div>
+      </div>
+
+      <!-- Painel de Status Didático -->
+      <div class="status-panel" id="statusPanel" aria-live="polite">
+        <h3>Status de Execução</h3>
+        <p><strong>Modo:</strong> <span id="status-mode">RAM</span></p>
+        <p><strong>PC:</strong> <span id="status-pc">0</span> · <strong>ACC:</strong> <span id="status-acc">0</span></p>
+        <p><strong>Instr:</strong> <span id="status-instr">--</span> · <strong>Saídas:</strong> <span id="status-outs">0</span></p>
+        <p><strong>Velocidade:</strong> <span id="status-speed">Rápido</span></p>
+        <p class="asm-help">Dica: Space = passo, Ctrl+Enter = executar tudo, Esc = parar, R = reset, Ctrl+E = exemplo</p>
       </div>
 
       <!-- Conexões extras -->
