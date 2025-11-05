@@ -154,6 +154,7 @@ function aplicarModoEdicaoUI() {
     const ramInputs = Array.from(document.querySelectorAll('.ran'));
     const memContainer = document.querySelector('.memoryran');
     const titleEl = document.getElementById('displayTitle');
+    const modeEl = document.getElementById('status-mode');
 
     ramInputs.forEach(inp => inp.disabled = isASM);
     if (textarea) textarea.disabled = !isASM;
@@ -166,6 +167,7 @@ function aplicarModoEdicaoUI() {
     if (titleEl) {
         titleEl.textContent = isASM ? 'Memória RAM em Tempo Real' : 'Assembly em Tempo Real';
     }
+    if (modeEl) modeEl.textContent = isASM ? 'Assembly' : 'RAM';
 }
 
 function popularTextareaComAssemblyAtual() {
@@ -312,10 +314,6 @@ function animateDataTransfer(fromElement, toElement) {
     if (!fromElement || !toElement) return;
     // Suporte ao novo barramento W (8 linhas). Usa .bus-track se existir; senão, usa o próprio #barramento quando ele é .w-bus
     const busTrack = document.querySelector('#barramento .bus-track') || document.querySelector('#barramento.w-bus') || document.getElementById('barramento');
-    const fromRect = fromElement.getBoundingClientRect();
-    const toRect = toElement.getBoundingClientRect();
-    const busRect = busTrack ? busTrack.getBoundingClientRect() : null;
-
     const fromBlock = fromElement.closest('.sap1-block');
     const toBlock = toElement.closest('.sap1-block');
     if (fromBlock) fromBlock.classList.add('writing');
@@ -323,57 +321,72 @@ function animateDataTransfer(fromElement, toElement) {
     const barramento = document.getElementById('barramento');
     if (barramento) barramento.classList.add('active');
 
-    // Posição inicial (centro da origem)
-    const startX = fromRect.left + fromRect.width / 2;
-    const startY = fromRect.top + fromRect.height / 2;
-    const endX = toRect.left + toRect.width / 2;
-    const endY = toRect.top + toRect.height / 2;
-    const busX = busRect ? (busRect.left + busRect.width / 2) : ((startX + endX) / 2);
-
+    // Criar pacote animado
     const packet = document.createElement('div');
     packet.className = 'data-transfer';
-    packet.style.position = 'fixed';
-    packet.style.left = `${startX}px`;
-    packet.style.top = `${startY}px`;
-    packet.style.transform = 'translate(0,0)';
+    packet.style.position = 'absolute';
     document.body.appendChild(packet);
 
-    // Durations (ajustadas pela distância vertical)
-    const vdist = Math.abs(endY - startY);
+    // Durations (ajustadas pela distância vertical) e timeline
+    const getCoords = () => {
+        const fr = fromElement.getBoundingClientRect();
+        const tr = toElement.getBoundingClientRect();
+        const br = busTrack ? busTrack.getBoundingClientRect() : null;
+        const scrollX = window.pageXOffset || document.documentElement.scrollLeft || 0;
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        const sx = fr.left + fr.width / 2 + scrollX;
+        const sy = fr.top + fr.height / 2 + scrollY;
+        const ex = tr.left + tr.width / 2 + scrollX;
+        const ey = tr.top + tr.height / 2 + scrollY;
+        const bx = br ? (br.left + br.width / 2 + scrollX) : ((sx + ex) / 2);
+        return { sx, sy, ex, ey, bx };
+    };
+
+    const start = performance.now();
+    const { sy: sy0, ey: ey0 } = getCoords();
+    const vdist0 = Math.abs(ey0 - sy0);
     const seg1 = 260;
-    const seg2 = Math.min(900, Math.max(300, vdist * 0.8));
+    const seg2 = Math.min(900, Math.max(300, vdist0 * 0.8));
     const seg3 = 260;
+    const total = seg1 + seg2 + seg3;
 
-    // Fase 1: até o barramento (horizontal)
-    setTimeout(() => {
-        const dx1 = busX - startX;
-        packet.style.transition = `transform ${seg1}ms ease-in-out`;
-        packet.style.transform = `translate(${dx1}px, 0px)`;
-    }, 10);
+    const lerp = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
 
-    // Fase 2: deslocamento vertical dentro do barramento
-    setTimeout(() => {
-        const dx1 = busX - startX;
-        const dy2 = endY - startY;
-        packet.style.transition = `transform ${seg2}ms linear`;
-        packet.style.transform = `translate(${dx1}px, ${dy2}px)`;
-    }, seg1 + 40);
+    const tick = (now) => {
+        const t = now - start;
+        const done = t >= total;
+        const { sx, sy, ex, ey, bx } = getCoords();
 
-    // Fase 3: do barramento ao destino (horizontal)
-    setTimeout(() => {
-        const dx3 = endX - startX;
-        const dy3 = endY - startY;
-        packet.style.transition = `transform ${seg3}ms ease-in-out`;
-        packet.style.transform = `translate(${dx3}px, ${dy3}px)`;
-    }, seg1 + seg2 + 80);
+        let cx = sx, cy = sy;
+        if (t <= seg1) {
+            const p = t / seg1;
+            cx = lerp(sx, bx, p);
+            cy = sy;
+        } else if (t <= seg1 + seg2) {
+            const p = (t - seg1) / seg2;
+            cx = bx;
+            cy = lerp(sy, ey, p);
+        } else if (t <= total) {
+            const p = (t - seg1 - seg2) / seg3;
+            cx = lerp(bx, ex, p);
+            cy = ey;
+        }
 
-    // Encerrar e limpar
-    setTimeout(() => {
-        if (packet.parentNode) packet.parentNode.removeChild(packet);
-        if (fromBlock) fromBlock.classList.remove('writing');
-        if (toBlock) toBlock.classList.remove('reading');
-        if (barramento) barramento.classList.remove('active');
-    }, seg1 + seg2 + seg3 + 160);
+        // Centraliza o pacote (16x10 aprox)
+        packet.style.left = `${cx - 8}px`;
+        packet.style.top = `${cy - 5}px`;
+
+        if (!done) {
+            requestAnimationFrame(tick);
+        } else {
+            if (packet.parentNode) packet.parentNode.removeChild(packet);
+            if (fromBlock) fromBlock.classList.remove('writing');
+            if (toBlock) toBlock.classList.remove('reading');
+            if (barramento) barramento.classList.remove('active');
+        }
+    };
+
+    requestAnimationFrame(tick);
 }
 
 // Atualiza os LEDs binários do display (8 bits, MSB à esquerda)
@@ -1316,6 +1329,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Adiciona eventos de input nos campos da RAM
     adicionarEventosRAM();
     atualizarRamPreview();
+    // Preenche o painel de status inicialmente
+    try { atualizarStatus(); } catch(_) {}
 
     // Clique nas linhas do assembly: foca RAM correspondente e troca para modo RAM
     try {
@@ -1520,6 +1535,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         atualizarRamPreview();
                     }
                     atualizarAssemblyDaRAM();
+                    atualizarStatus();
                 };
                 modeRam.addEventListener('change', onChange);
                 modeAsm.addEventListener('change', onChange);

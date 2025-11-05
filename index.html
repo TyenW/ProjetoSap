@@ -266,6 +266,44 @@
           </div>
         </div>
       </div>
+
+      <!-- Painel de Status Didático (movido para baixo dos quadros de tempo real) -->
+      <div class="status-panel" id="statusPanel" role="region" aria-live="polite" aria-labelledby="statusTitle">
+        <h3 id="statusTitle">Status de Execução</h3>
+        <div class="status-grid">
+          <div class="status-row row-3">
+            <div class="status-item">
+              <span class="status-k">Modo</span>
+              <span class="status-v status-badge status-badge--mode" id="status-mode">RAM</span>
+            </div>
+            <div class="status-item">
+              <span class="status-k">PC</span>
+              <span class="status-v" id="status-pc">0</span>
+            </div>
+            <div class="status-item">
+              <span class="status-k">ACC</span>
+              <span class="status-v" id="status-acc">0</span>
+            </div>
+          </div>
+          <div class="status-row row-2">
+            <div class="status-item">
+              <span class="status-k">Instr</span>
+              <span class="status-v mono" id="status-instr">--</span>
+            </div>
+            <div class="status-item">
+              <span class="status-k">Saídas</span>
+              <span class="status-v" id="status-outs">0</span>
+            </div>
+          </div>
+          <div class="status-row row-1">
+            <div class="status-item">
+              <span class="status-k">Velocidade</span>
+              <span class="status-v" id="status-speed">Rápido</span>
+            </div>
+          </div>
+        </div>
+        <p class="asm-help">Dica: Space = passo, Ctrl+Enter = executar tudo, Esc = parar, R = reset, Ctrl+E = exemplo</p>
+      </div>
     </div>
 
     <!-- Arquitetura SAP-1 -->
@@ -438,16 +476,6 @@
           <span class="led" data-bit="0" aria-hidden="true"></span>
         </div>
         <div class="block-value sr-only" id="display-value" aria-live="polite">00000000</div>
-      </div>
-
-      <!-- Painel de Status Didático -->
-      <div class="status-panel" id="statusPanel" aria-live="polite">
-        <h3>Status de Execução</h3>
-        <p><strong>Modo:</strong> <span id="status-mode">RAM</span></p>
-        <p><strong>PC:</strong> <span id="status-pc">0</span> · <strong>ACC:</strong> <span id="status-acc">0</span></p>
-        <p><strong>Instr:</strong> <span id="status-instr">--</span> · <strong>Saídas:</strong> <span id="status-outs">0</span></p>
-        <p><strong>Velocidade:</strong> <span id="status-speed">Rápido</span></p>
-        <p class="asm-help">Dica: Space = passo, Ctrl+Enter = executar tudo, Esc = parar, R = reset, Ctrl+E = exemplo</p>
       </div>
 
       <!-- Conexões extras -->
