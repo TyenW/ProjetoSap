@@ -10,7 +10,8 @@
   function normalizePartialHex2(v) {
     if (v == null) return '';
     const s = String(v).toUpperCase().replace(/[^0-9A-F]/g, '').slice(0, 2);
-    return s; // pode ser '' | 'F' | '0F' | 'FF'
+    // Sempre retorna 2 caracteres com padding à esquerda, ou '' se vazio
+    return s.length === 0 ? '' : s.padStart(2, '0');
   }
 
   class MemoryStore {
@@ -19,7 +20,7 @@
       if (Array.isArray(initial) && initial.length === 16) {
         for (let i = 0; i < 16; i++) {
           const x = normalizePartialHex2(initial[i]);
-          this._mem[i] = x.length === 0 ? '00' : (x.length === 1 ? x : x);
+          this._mem[i] = x.length === 0 ? '00' : x;
         }
       }
       this._listeners = new Set();
@@ -45,8 +46,9 @@
       if (i < 0 || i > 15) return false;
       const prev = this._mem.slice();
       const v = normalizePartialHex2(value);
-      if (prev[i] === v) return false;
-      this._mem[i] = v;
+      const newV = v.length === 0 ? '00' : v;
+      if (prev[i] === newV) return false;
+      this._mem[i] = newV;
       this._emit({ type: 'setByte', source, index: i, prev, next: this._mem.slice() });
       return true;
     }
@@ -55,7 +57,10 @@
       if (!Array.isArray(arr) || arr.length !== 16) return false;
       const prev = this._mem.slice();
       const next = new Array(16);
-      for (let i = 0; i < 16; i++) next[i] = normalizePartialHex2(arr[i]);
+      for (let i = 0; i < 16; i++) {
+        const v = normalizePartialHex2(arr[i]);
+        next[i] = v.length === 0 ? '00' : v;
+      }
       // Verifica se houve mudança
       let changed = false;
       for (let i = 0; i < 16; i++) if (prev[i] !== next[i]) { changed = true; break; }

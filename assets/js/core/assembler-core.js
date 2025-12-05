@@ -144,8 +144,9 @@
         if (nib === null) { errors.push(`Linha ${idx}: Operando inválido (0–F ou 0–15).`); return; }
         argNib = nib;
       } else if (m[2] && m[2].trim()) {
-        // Op não usa argumento — apenas aviso brando
-        // (não acumulamos como erro bloqueante)
+        // Op não usa argumento — reportar como erro de sintaxe
+        errors.push(`Linha ${idx}: Operando inesperado para o mnemônico ${op} (não aceita argumentos).`);
+        return;
       }
       const slot = nextFree();
       if (slot === -1) { errors.push(`Sem espaço na memória para instruções adicionais (limite 16).`); return; }
