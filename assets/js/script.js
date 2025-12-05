@@ -852,14 +852,7 @@ function adicionarEventosRAM() {
 
 // Monta o Assembly digitado e aplica automaticamente na RAM
 // REMOVIDO: definição duplicada de montarAssemblyParaRAM substituída por versão superior no topo do arquivo
-
-function atualizarRamPreview() {
-    for (let i = 0; i < 16; i++) {
-        const val = (document.getElementById('order' + (i + 1))?.value || '--').toUpperCase();
-        const cell = document.getElementById('preview' + (i + 1));
-        if (cell) cell.textContent = val && val.length ? val : '--';
-    }
-}
+// REMOVIDO: definição duplicada de atualizarRamPreview() que lia inputs obsoletos em vez do store
 
 // Evento para aplicar o código na memória
 const converterMaquinaBtn = document.getElementById('converterMaquina');
