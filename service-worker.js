@@ -2,11 +2,11 @@
  * Service Worker
  * Offline-first caching strategy for BitLab
  * - SHELL strategy: Cache HTML/CSS/JS on first install
- * - NETWORK_FIRST: For data (questions.json, achievements.json)
+ * - STALE_WHILE_REVALIDATE: For data (questions.json, achievements.json)
  * - CACHE_FIRST: For assets (images, audio)
  */
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 
 // Resources to cache on install (app shell)
 const SHELL_ASSETS = [
@@ -57,11 +57,47 @@ const SHELL_ASSETS = [
   '/assets/js/workers/assembler.worker.js'
 ];
 
-// Network-first: Try network first, fallback to cache
-const NETWORK_FIRST_RESOURCES = [
+// Data resources: stale-while-revalidate
+const DATA_RESOURCES = [
   '/assets/data/questions.json',
   '/assets/data/achievements.json'
 ];
+
+function getOfflineDataResponse(pathname) {
+  if (pathname.includes('questions.json')) {
+    return new Response(JSON.stringify({ questions: [] }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  if (pathname.includes('achievements.json')) {
+    return new Response(JSON.stringify({ achievements: [] }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  return new Response(JSON.stringify({}), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+function staleWhileRevalidate(request, pathname) {
+  return caches.match(request).then((cached) => {
+    const networkFetch = fetch(request)
+      .then((response) => {
+        if (response.ok) {
+          const clonedResponse = response.clone();
+          caches.open(CACHE_VERSION).then((cache) => {
+            cache.put(request, clonedResponse);
+          });
+        }
+        return response;
+      })
+      .catch(() => cached || getOfflineDataResponse(pathname));
+
+    return cached || networkFetch;
+  });
+}
 
 // Install event: cache shell assets
 self.addEventListener('install', (event) => {
@@ -111,39 +147,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-first for data files
-  if (NETWORK_FIRST_RESOURCES.some(asset => url.pathname.includes(asset))) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Cache successful responses
-          if (response.ok) {
-            const clonedResponse = response.clone();
-            caches.open(CACHE_VERSION).then((cache) => {
-              cache.put(request, clonedResponse);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          // Fallback to cache if network fails
-          return caches.match(request).then((cached) => {
-            if (cached) return cached;
-            // Return empty offline data if no cache
-            if (url.pathname.includes('questions.json')) {
-              return new Response(JSON.stringify({ questions: [] }), {
-                headers: { 'Content-Type': 'application/json' }
-              });
-            }
-            if (url.pathname.includes('achievements.json')) {
-              return new Response(JSON.stringify({ achievements: [] }), {
-                headers: { 'Content-Type': 'application/json' }
-              });
-            }
-            throw new Error('Network error');
-          });
-        })
-    );
+  // Stale-while-revalidate for data files
+  if (DATA_RESOURCES.some(asset => url.pathname.includes(asset))) {
+    event.respondWith(staleWhileRevalidate(request, url.pathname));
     return;
   }
 

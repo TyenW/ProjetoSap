@@ -211,9 +211,7 @@ function indicateChallengeSuccess() {
     coin.classList.add('challenge-success');
     setTimeout(() => coin.classList.remove('challenge-success'), 620);
     try {
-        const sfx = new Audio('assets/audio/quiz_correct.ogg');
-        sfx.volume = 0.24;
-        sfx.play().catch(() => {});
+        window.assetLoader?.playAudio('assets/audio/quiz_correct.ogg', { volume: 0.24 });
     } catch (_) {
         // ignore audio failures
     }
@@ -1267,7 +1265,7 @@ function executarPasso() {
                 atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
                 updateBinaryLEDs(last >>> 0);
                 passos.push(`OUT: ${last}`);
-                try { sfx.out.currentTime = 0; sfx.out.play().catch(() => {}); } catch(_) {}
+                try { sfx.play('out'); } catch(_) {}
             }
             if (opName === 'HLT') {
                 passos.push('HLT: Parada');
@@ -1277,7 +1275,7 @@ function executarPasso() {
             if (result.fault) {
                 passos.push(result.fault);
                 running = false;
-                try { sfx.alert.currentTime = 0; sfx.alert.play().catch(() => {}); } catch(_) {}
+                try { sfx.play('alert'); } catch(_) {}
                 try { mostrarMensagemEstiloMario(result.fault, 'error'); } catch(_) {}
             }
 
@@ -1520,7 +1518,7 @@ function renderTickFromWorker(tick) {
             atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
             updateBinaryLEDs(last >>> 0);
             passos.push(`OUT: ${last}`);
-            try { sfx.out.currentTime = 0; sfx.out.play().catch(() => {}); } catch(_) {}
+            try { sfx.play('out'); } catch(_) {}
         }
         if (opName === 'JMP') {
             passos.push(`JMP para ${argVal}`);
@@ -1534,7 +1532,7 @@ function renderTickFromWorker(tick) {
         if (tick.fault) {
             passos.push(tick.fault);
             running = false;
-            try { sfx.alert.currentTime = 0; sfx.alert.play(); } catch(_) {}
+            try { sfx.play('alert'); } catch(_) {}
             try { mostrarMensagemEstiloMario(tick.fault, 'error'); } catch(_) {}
         }
 
@@ -2026,17 +2024,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const muteBtn = document.getElementById('muteToggle');
     // SFX: pré-carregar e gerenciar estado de mute em conjunto com a música
     const sfx = {
-        click: new Audio('assets/audio/ui_click.ogg'),
-        hover: new Audio('assets/audio/ui_hover.ogg'),
-        toggle: new Audio('assets/audio/ui_toggle.ogg'),
-        alert: new Audio('assets/audio/ui_alert.ogg'),
-        out: new Audio('assets/audio/ui_out.ogg'),
+        click: { path: 'assets/audio/ui_click.ogg', volume: 0.25 },
+        hover: { path: 'assets/audio/ui_hover.ogg', volume: 0.2 },
+        toggle: { path: 'assets/audio/ui_toggle.ogg', volume: 0.22 },
+        alert: { path: 'assets/audio/ui_alert.ogg', volume: 0.28 },
+        out: { path: 'assets/audio/ui_out.ogg', volume: 0.18 },
+        muted: true,
         setMuted(m) {
-            this.click.muted = m; this.hover.muted = m; this.toggle.muted = m; this.alert.muted = m; this.out.muted = m;
+            this.muted = !!m;
+        },
+        play(name) {
+            const entry = this[name];
+            if (!entry || !entry.path || this.muted) return;
+            if (window.assetLoader?.playAudio) {
+                window.assetLoader.playAudio(entry.path, { volume: entry.volume, muted: this.muted });
+                return;
+            }
+            try {
+                const audio = new Audio(entry.path);
+                audio.volume = entry.volume;
+                audio.muted = this.muted;
+                audio.play().catch(() => {});
+            } catch (_) {}
         },
         init() {
-            const v = 0.25; this.click.volume = v; this.hover.volume = 0.2; this.toggle.volume = 0.22; this.alert.volume = 0.28; this.out.volume = 0.18;
             this.setMuted(music ? music.muted : true);
+            try {
+                window.assetLoader?.preload([
+                    this.click.path,
+                    this.hover.path,
+                    this.toggle.path,
+                    this.alert.path,
+                    this.out.path
+                ], 'audio');
+            } catch (_) {}
         }
     };
     try { sfx.init(); } catch(_) {}
@@ -2055,7 +2076,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateMuteAria();
             // manter SFX em sincronia com o estado
             sfx.setMuted(music.muted);
-            try { if (!music.muted) { sfx.toggle.currentTime = 0; sfx.toggle.play().catch(() => {}); } } catch(_) {}
+            try { if (!music.muted) { sfx.play('toggle'); } } catch(_) {}
         });
     }
 
@@ -2063,8 +2084,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         const buttons = document.querySelectorAll('.li-btn, button, .btn, [role="button"]');
         buttons.forEach(btn => {
-            btn.addEventListener('mouseenter', () => { try { sfx.hover.currentTime = 0; sfx.hover.play().catch(() => {}); } catch(_) {} });
-            btn.addEventListener('click', () => { try { sfx.click.currentTime = 0; sfx.click.play().catch(() => {}); } catch(_) {} });
+            btn.addEventListener('mouseenter', () => { try { sfx.play('hover'); } catch(_) {} });
+            btn.addEventListener('click', () => { try { sfx.play('click'); } catch(_) {} });
         });
     } catch(_) {}
 });

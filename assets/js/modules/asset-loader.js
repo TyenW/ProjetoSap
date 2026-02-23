@@ -9,6 +9,13 @@ class AssetLoader {
     this.loadedAssets = new Set();
     this.observer = null;
     this.audioCache = new Map(); // { fileName: AudioBuffer }
+    this.audioUnlocked = false;
+    this.unlockListenersAttached = false;
+    this.pendingAudioQueue = [];
+    this.audioContext = null;
+    this._boundUnlockHandler = () => {
+      this._unlockAudio();
+    };
   }
 
   /**
@@ -20,6 +27,59 @@ class AssetLoader {
         (entries) => this._handleIntersection(entries),
         { rootMargin: '200px' }
       );
+    }
+
+    this._setupAudioUnlock();
+  }
+
+  _setupAudioUnlock() {
+    if (this.unlockListenersAttached || this.audioUnlocked) return;
+
+    ['pointerdown', 'touchstart', 'keydown'].forEach((eventName) => {
+      window.addEventListener(eventName, this._boundUnlockHandler, {
+        once: true,
+        passive: true
+      });
+    });
+
+    this.unlockListenersAttached = true;
+  }
+
+  async _unlockAudio() {
+    if (this.audioUnlocked) return;
+
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      try {
+        if (!this.audioContext) {
+          this.audioContext = new AudioContextClass();
+        }
+        if (this.audioContext.state === 'suspended') {
+          await this.audioContext.resume();
+        }
+      } catch (error) {
+        console.warn('Falha ao desbloquear AudioContext:', error);
+      }
+    }
+
+    this.audioUnlocked = true;
+
+    ['pointerdown', 'touchstart', 'keydown'].forEach((eventName) => {
+      window.removeEventListener(eventName, this._boundUnlockHandler);
+    });
+
+    if (this.pendingAudioQueue.length > 0) {
+      const pending = [...this.pendingAudioQueue];
+      this.pendingAudioQueue = [];
+      pending.forEach((item) => {
+        this.playAudio(item.path, item.options);
+      });
+    }
+  }
+
+  _queuePendingAudio(path, options = {}) {
+    if (!this.pendingAudioQueue.some((item) => item.path === path)) {
+      this.pendingAudioQueue.push({ path, options });
     }
   }
 
@@ -136,7 +196,13 @@ class AssetLoader {
    * @param {string} path
    * @returns {Promise<void>}
    */
-  async playAudio(path) {
+  async playAudio(path, options = {}) {
+    if (!this.audioUnlocked) {
+      this._setupAudioUnlock();
+      this._queuePendingAudio(path, options);
+      return;
+    }
+
     if (!this.audioCache.has(path)) {
       await new Promise((resolve) => {
         const audio = new Audio();
@@ -150,8 +216,22 @@ class AssetLoader {
 
     const audio = this.audioCache.get(path);
     if (audio) {
+      if (typeof options.volume === 'number') {
+        audio.volume = Math.max(0, Math.min(1, options.volume));
+      }
+      if (typeof options.muted === 'boolean') {
+        audio.muted = options.muted;
+      }
       audio.currentTime = 0;
-      return audio.play().catch(e => console.warn('Falha ao tocar áudio:', e));
+      return audio.play().catch((error) => {
+        if (error?.name === 'NotAllowedError') {
+          this.audioUnlocked = false;
+          this._setupAudioUnlock();
+          this._queuePendingAudio(path, options);
+          return;
+        }
+        console.warn('Falha ao tocar áudio:', error);
+      });
     }
   }
 
@@ -182,6 +262,7 @@ class AssetLoader {
   clear() {
     this.audioCache.clear();
     this.loadedAssets.clear();
+    this.pendingAudioQueue = [];
   }
 
   /**
