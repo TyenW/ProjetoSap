@@ -35,6 +35,22 @@
     return (b & 0xFF).toString(16).toUpperCase().padStart(2, '0');
   }
 
+  function getChallengeTargetFromInstrByte(instrByte) {
+    const opcode = (instrByte >> 4) & 0x0F;
+    switch (opcode) {
+      case 0x0: return 'acc';      // LDA
+      case 0x1: return 'alu';      // ADD
+      case 0x2: return 'alu';      // SUB
+      case 0x3: return 'acc';      // INC
+      case 0x4: return 'acc';      // DEC
+      case 0x5: return 'alu';      // MUL
+      case 0x6: return 'pc';       // JMP
+      case 0xE: return 'saida';    // OUT
+      case 0xF: return 'controlador'; // HLT
+      default: return 'controlador';
+    }
+  }
+
   class Emulator {
     constructor(initialMemoryHex) {
       this.memory = new Uint8Array(16);
@@ -196,4 +212,5 @@
   }
 
   global.EmulatorCore = { Emulator };
+  global.EmulatorCore.getChallengeTargetFromInstrByte = getChallengeTargetFromInstrByte;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -544,6 +544,7 @@
   backdrop-filter: blur(5px);
   margin: 8px;
   animation: circuit-pulse 3s ease-in-out infinite;
+  will-change: filter, transform;
 }
 
 .sap1-block:hover {
@@ -649,6 +650,70 @@
   align-items: stretch;
   justify-items: center;
   pointer-events: none;
+  will-change: filter, transform;
+}
+
+body.challenge-mode .sap1-block {
+  color: transparent;
+  text-shadow: none;
+}
+
+body.challenge-mode .sap1-block .block-value,
+body.challenge-mode .sap1-block .block-tooltip,
+body.challenge-mode .sap1-block::before {
+  color: initial;
+}
+
+body.challenge-mode .sap1-block:not(.challenge-target) .block-value {
+  filter: blur(2px);
+  opacity: 0.5;
+}
+
+#hardware-diagram.challenge-active .block-tooltip,
+#hardware-diagram.challenge-active .sap-tooltip,
+body.challenge-mode .block-tooltip,
+body.challenge-mode .sap-tooltip {
+  pointer-events: none !important;
+}
+
+#hardware-diagram.challenge-active .sap1-block:hover .block-tooltip,
+#hardware-diagram.challenge-active .sap-help-icon:hover .sap-tooltip,
+body.challenge-mode .sap1-block:hover .block-tooltip,
+body.challenge-mode .sap-help-icon:hover .sap-tooltip {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: none !important;
+}
+
+.sap1-block.challenge-target,
+#barramento.challenge-target {
+  z-index: 1200;
+}
+
+.ui-focus-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.58);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  z-index: 1100;
+}
+
+.ui-focus-overlay.active {
+  opacity: 1;
+}
+
+.sap1-block.focus-target,
+#barramento.focus-target {
+  z-index: 1200;
+}
+
+.sap1-block.pulse,
+#barramento.pulse,
+.sap1-block.active-bus {
+  --glow-color: var(--cor-amarelo-energia);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--glow-color) 70%, transparent), 0 0 50px color-mix(in srgb, var(--glow-color) 40%, transparent);
 }
 
 .w-bus .bus-line {
@@ -1530,6 +1595,7 @@
   box-shadow: 
     0 0 20px rgba(255, 215, 0, 0.6),
     0 0 40px rgba(255, 215, 0, 0.3);
+  will-change: transform, opacity;
 }
 
 .help-coin:hover {
@@ -1981,4 +2047,52 @@
 @media (max-width: 768px) {
   .block-tooltip { top: 100%; left: 50%; transform: translate(-50%, 8px); width: min(92vw, 360px); min-width: auto; }
   .block-tooltip::after, .block-tooltip::before { display: none; }
+}
+
+.help-coin.challenge-error {
+  animation: coinErrorShake 380ms ease;
+  filter: drop-shadow(0 0 18px rgba(255, 68, 68, 0.9)) brightness(1.2);
+}
+
+.help-coin.challenge-success {
+  animation: coinSuccessPulse 620ms ease;
+  filter: drop-shadow(0 0 24px rgba(0, 255, 170, 0.85)) brightness(1.25);
+}
+
+@keyframes coinErrorShake {
+  0%, 100% { transform: translateX(0) scale(1); }
+  20% { transform: translateX(-4px) scale(1.04); }
+  40% { transform: translateX(4px) scale(1.04); }
+  60% { transform: translateX(-3px) scale(1.02); }
+  80% { transform: translateX(3px) scale(1.02); }
+}
+
+.achievement-toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2600;
+  max-width: min(420px, 88vw);
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid var(--cor-amarelo-energia);
+  background: linear-gradient(135deg, rgba(4,9,38,0.95), rgba(10,25,47,0.85));
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.45), 0 0 18px rgba(255,215,0,0.35);
+  transform: translateY(12px);
+  opacity: 0;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.achievement-toast.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@keyframes coinSuccessPulse {
+  0% { transform: scale(1) rotate(0deg); }
+  40% { transform: scale(1.18) rotate(8deg); }
+  80% { transform: scale(1.05) rotate(-4deg); }
+  100% { transform: scale(1) rotate(0deg); }
 }

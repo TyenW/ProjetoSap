@@ -23,6 +23,10 @@ const DEFAULT_QUESTIONS = [
   { text: 'Qual é a função do sinal Ep?', options: ['Incrementar o PC', 'Colocar o conteúdo do PC no barramento', 'Carregar valor no PC', 'Zerar o PC'], answer: 1, difficulty: 'médio' }
 ];
 
+// Inicialização rápida com fallback local (não bloqueia a UI)
+allQuestions = [...DEFAULT_QUESTIONS];
+masterAchievements = [...DEFAULT_ACHIEVEMENTS];
+
 // Configurações dinâmicas
 // Modo infinito: perguntas aleatórias até o jogador perder 3 vidas
 let TRI_MODE = 'infinite';
@@ -65,44 +69,37 @@ function showDataAlert(text, tone = 'warn') {
 }
 
 async function loadExternalData() {
-  try {
-    const qResp = await fetch('assets/data/questions.json', { cache: 'no-store' });
-    if (qResp.ok) {
-      const qj = await qResp.json();
-      if (Array.isArray(qj.questions)) allQuestions = qj.questions;
-      else console.warn('questions.json não possui "questions" como array.');
-    } else {
-      console.warn('Falha HTTP ao buscar questions.json:', qResp.status, qResp.statusText);
-      showDataAlert(`Não foi possível carregar perguntas (HTTP ${qResp.status}). Usando perguntas padrão.`, 'warn');
+  const withTimeout = async (url, timeoutMs = 1800) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const resp = await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      return await resp.json();
+    } finally {
+      clearTimeout(timer);
     }
-  } catch (e) {
-    console.warn('Falha ao carregar questions.json, usando fallback interno se existir', e);
-    showDataAlert('Erro ao carregar questions.json (CORS/offline/JSON inválido). Usando perguntas padrão.', 'warn');
-  }
-  if (!allQuestions || allQuestions.length === 0) {
-    console.warn('Usando perguntas padrão (fallback), verifique se assets/data/questions.json está acessível via HTTP e com JSON válido.');
-    allQuestions = DEFAULT_QUESTIONS;
+  };
+
+  const [qRes, aRes] = await Promise.allSettled([
+    withTimeout('assets/data/questions.json'),
+    withTimeout('assets/data/achievements.json')
+  ]);
+
+  if (qRes.status === 'fulfilled' && Array.isArray(qRes.value?.questions) && qRes.value.questions.length) {
+    allQuestions = qRes.value.questions;
+  } else if (qRes.status === 'rejected') {
+    console.warn('Falha ao carregar questions.json, usando fallback.', qRes.reason);
   }
 
-  try {
-    const aResp = await fetch('assets/data/achievements.json', { cache: 'no-store' });
-    if (aResp.ok) {
-      const aj = await aResp.json();
-      if (Array.isArray(aj.achievements)) masterAchievements = aj.achievements;
-      else console.warn('achievements.json não possui "achievements" como array, usando fallback.');
-    } else {
-      console.warn('Falha HTTP ao buscar achievements.json:', aResp.status, aResp.statusText);
-      showDataAlert(`Não foi possível carregar conquistas (HTTP ${aResp.status}). Usando padrão.`, 'warn');
-    }
-  } catch (e) {
-    console.warn('Falha ao carregar achievements.json', e);
-    showDataAlert('Erro ao carregar achievements.json (CORS/offline/JSON inválido). Usando conquistas padrão.', 'warn');
+  if (aRes.status === 'fulfilled' && Array.isArray(aRes.value?.achievements) && aRes.value.achievements.length) {
+    masterAchievements = aRes.value.achievements;
+  } else if (aRes.status === 'rejected') {
+    console.warn('Falha ao carregar achievements.json, usando fallback.', aRes.reason);
   }
 
-  if (!masterAchievements || masterAchievements.length === 0) {
-    console.warn('Usando conquistas padrão (fallback), verifique se assets/data/achievements.json está acessível via HTTP e com JSON válido.');
-    masterAchievements = DEFAULT_ACHIEVEMENTS;
-  }
+  if (!allQuestions || allQuestions.length === 0) allQuestions = [...DEFAULT_QUESTIONS];
+  if (!masterAchievements || masterAchievements.length === 0) masterAchievements = [...DEFAULT_ACHIEVEMENTS];
 }
 
 let lives = 3;
@@ -114,6 +111,19 @@ let quizSet = [];
 let respostasCorretas = []; // armazena true/false para acertos
 let answeredCount = 0;
 let maxStreak = 0;
+let questionStartTime = 0; // timestamp when question was rendered
+
+function updateStatsUI() {
+  const answeredEl = document.getElementById('answered-count');
+  if (answeredEl) answeredEl.textContent = String(answeredCount);
+  const scoreEl = document.getElementById('score-count');
+  if (scoreEl) scoreEl.textContent = String(score);
+  const accuracyEl = document.getElementById('accuracy-count');
+  if (accuracyEl) {
+    const accuracy = answeredCount > 0 ? Math.round((score / answeredCount) * 100) : 0;
+    accuracyEl.textContent = `${accuracy}%`;
+  }
+}
 
 // SFX do Quiz (acerto/erro) agora via <audio> no HTML controlado por audio-menu.js
 
@@ -159,6 +169,9 @@ function selectByDifficulty(nextDifficulty) {
 function renderQuestion() {
   if (lives === 0) return endQuiz();
 
+  // Track time spent on this question
+  questionStartTime = Date.now();
+
   const q = quizSet[currentQ];
   if (!q) {
     const msg = document.getElementById('message');
@@ -172,6 +185,7 @@ function renderQuestion() {
   if (currEl) currEl.innerText = currentQ + 1;
   const livesEl = document.getElementById("lives");
   if (livesEl) livesEl.innerText = "❤️".repeat(lives);
+  updateStatsUI();
 
   const optionsDiv = document.getElementById("options");
   optionsDiv.innerHTML = "";
@@ -195,6 +209,8 @@ function checkAnswer(selected) {
   const optionsDiv = document.getElementById('options');
   const buttons = Array.from(optionsDiv.querySelectorAll('button'));
   const clickedBtn = buttons[selected];
+  const timeMs = Date.now() - questionStartTime; // time spent on this question
+  
   // desabilita todos os botões ao responder
   buttons.forEach(b => b.disabled = true);
 
@@ -206,25 +222,33 @@ function checkAnswer(selected) {
     messageDiv.style.color = "green";
     respostasCorretas.push(true);
     if (clickedBtn) { clickedBtn.classList.add('correct'); }
-  try { const sfx = document.getElementById('sfx-correct'); if (sfx) { sfx.currentTime = 0; sfx.play(); } } catch(_) {}
+  try { const sfx = document.getElementById('sfx-correct'); if (sfx) { sfx.currentTime = 0; sfx.play().catch(() => {}); } } catch(_) {}
   } else {
     lives--;
     acertosSeguidos = 0;
     messageDiv.textContent = "Errado!";
     messageDiv.style.color = "red";
     respostasCorretas.push(false);
+    // Registra erro na heatmap
+    if (window.quizAnalytics) {
+      window.quizAnalytics.recordError(q.text, currentQ);
+    }
   if (clickedBtn) { clickedBtn.classList.add('wrong'); }
-  try { const sfxw = document.getElementById('sfx-wrong'); if (sfxw) { sfxw.currentTime = 0; sfxw.play(); } } catch(_) {}
+  try { const sfxw = document.getElementById('sfx-wrong'); if (sfxw) { sfxw.currentTime = 0; sfxw.play().catch(() => {}); } } catch(_) {}
     // anima hearts
     const hearts = document.getElementById('lives');
     hearts.classList.add('remove');
     setTimeout(()=> hearts.classList.remove('remove'), 350);
   }
 
+  // Registra resposta no perfil do usuário
+  if (window.userProfile) {
+    window.userProfile.recordAnswer(q.text, q.difficulty, correct, timeMs);
+  }
+
   document.getElementById("lives").innerText = "❤️".repeat(lives);
   answeredCount++;
-  const ansEl = document.getElementById('answered-count');
-  if (ansEl) ansEl.textContent = answeredCount;
+  updateStatsUI();
   // atualizar progresso de conquistas em tempo real
   renderAchievementsList();
 
@@ -261,6 +285,27 @@ function endQuiz() {
     document.getElementById("message").innerHTML = `<div class="win-message">Você completou o quiz! Pontuação: ${score} pts</div>`;
   }
 
+  // Finaliza analytics e renderiza relatório
+  if (window.quizAnalytics) {
+    const report = window.quizAnalytics.finishSession(answeredCount, score);
+    const reportContainer = document.getElementById('analytics-report');
+    if (reportContainer) {
+      window.quizAnalytics.renderReport(report, reportContainer);
+    }
+    // Log recomendações de estudo
+    const studySuggestions = window.quizAnalytics.generateStudyRecommendations(report.weakTopics);
+    console.log('Sugestões de estudo:', studySuggestions);
+  }
+
+  // Finaliza sessão no perfil do usuário
+  if (window.userProfile) {
+    window.userProfile.endSession(score);
+    const profileContainer = document.getElementById('profile-card');
+    if (profileContainer) {
+      window.userProfile.renderProfile(profileContainer);
+    }
+  }
+
   renderChart();
   // gravar cookies com resumo rápido
   try { setCookie('sap_last_score', score, 7); setCookie('sap_last_date', new Date().toISOString(), 7); } catch(e){}
@@ -278,6 +323,11 @@ function startQuiz() {
   answeredCount = 0;
   maxStreak = 0;
 
+  // Reset analytics para nova sessão
+  if (window.quizAnalytics) {
+    window.quizAnalytics.reset();
+  }
+
   document.getElementById("message").innerHTML = "";
   document.getElementById("restartBtn").style.display = "none";
 
@@ -290,11 +340,14 @@ function startQuiz() {
   }
 
   renderQuestion();
+  updateStatsUI();
 }
 
 function renderChart() {
   const modal = document.getElementById("chartModal");
   modal.style.display = "block";
+  modal.setAttribute("aria-hidden", "false");
+  modal.removeAttribute("inert");
 
   const ctx = document.getElementById("performanceChartModal").getContext("2d");
 
@@ -343,7 +396,40 @@ function renderChart() {
 }
 
 function closeChart() {
-  document.getElementById("chartModal").style.display = "none";
+  const modal = document.getElementById("chartModal");
+  modal.style.display = "none";
+  modal.setAttribute("aria-hidden", "true");
+  modal.setAttribute("inert", "");
+}
+
+function exportResults(format = 'txt') {
+  const stats = { fácil: { total: 0, acertos: 0 }, médio: { total: 0, acertos: 0 }, difícil: { total: 0, acertos: 0 } };
+  quizSet.forEach((q, i) => {
+    stats[q.difficulty].total++;
+    if (respostasCorretas[i]) stats[q.difficulty].acertos++;
+  });
+
+  if (format === 'json') {
+    const payload = {
+      data: new Date().toISOString(),
+      score,
+      answered: answeredCount,
+      accuracy: answeredCount > 0 ? Math.round((score / answeredCount) * 100) : 0,
+      byDifficulty: stats
+    };
+    return downloadBlob(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' }), 'estatisticas_sap1.json');
+  }
+
+  if (format === 'csv') {
+    const rows = [
+      'nivel,acertos,total,precisao',
+      ...Object.entries(stats).map(([nivel, s]) => `${nivel},${s.acertos},${s.total},${((s.acertos / (s.total || 1)) * 100).toFixed(1)}%`),
+      `total,${score},${answeredCount},${answeredCount > 0 ? Math.round((score / answeredCount) * 100) : 0}%`
+    ];
+    return downloadBlob(new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8' }), 'estatisticas_sap1.csv');
+  }
+
+  return exportarEstatisticas();
 }
 
 function exportarEstatisticas() {
@@ -584,17 +670,16 @@ endQuiz = function() {
   handleEndQuizSave();
 };
 
-// Inicialização adicional
-// Carrega dados externos primeiro, depois inicializa o quiz
-loadExternalData().then(()=>{
-  attachTouchHandlers();
+// Inicialização adicional (first paint rápido)
+attachTouchHandlers();
+renderAchievementsList();
+startQuiz();
+
+// Hidratação de dados externos em segundo plano
+loadExternalData().then(() => {
   renderAchievementsList();
-  startQuiz();
-}).catch(err=>{
-  console.warn('Erro na inicialização dos dados externos', err);
-  attachTouchHandlers();
-  renderAchievementsList();
-  startQuiz();
+}).catch(err => {
+  console.warn('Erro na hidratação de dados externos', err);
 });
 
 // UI do placar removida (sem modal)

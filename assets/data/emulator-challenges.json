@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "title": "Desafios do Emulador SAP-1",
+    "version": "1.0.0"
+  },
+  "challenges": [
+    {
+      "id": "soma_simples",
+      "target_reg": "OUT",
+      "expected_value": 5,
+      "msg": "Desafio: calcule 2+3 e deixe o resultado em OUT.",
+      "achievementId": "soma_simples"
+    },
+    {
+      "id": "acc_15",
+      "target_reg": "ACC",
+      "expected_value": 15,
+      "msg": "Desafio: execute um programa que finalize com ACC=15.",
+      "achievementId": "sap_acc_15"
+    },
+    {
+      "id": "acc_42",
+      "target_reg": "ACC",
+      "expected_value": 42,
+      "msg": "Desafio: execute um programa que finalize com ACC=42.",
+      "achievementId": "sap_acc_42"
+    }
+  ]
+}

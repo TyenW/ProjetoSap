@@ -173,7 +173,206 @@
 }
 .achievement-toast.visible { transform: translateY(0); opacity: 1; }
 
-/* Layout responsivo (já 1 coluna) */
+/* ===== Analytics Report Card ===== */
+.quiz-report-card {
+  background: linear-gradient(135deg, rgba(20,60,100,0.6), rgba(10,35,70,0.5));
+  border: 2px solid var(--cor-menta);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  color: #fff;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.quiz-report-card h3 {
+  color: var(--cor-menta);
+  margin-bottom: 16px;
+  font-size: 1.2em;
+  text-shadow: 0 0 8px rgba(100,255,218,0.3);
+}
+
+.report-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.stat {
+  background: rgba(0,60,100,0.4);
+  border-left: 3px solid var(--cor-ciano);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.stat .label {
+  display: block;
+  font-size: 0.85em;
+  color: #b0d0ff;
+  margin-bottom: 4px;
+}
+
+.stat .value {
+  display: block;
+  font-size: 1.3em;
+  color: var(--cor-menta);
+  font-weight: bold;
+}
+
+.weak-topics, .strong-topics {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(80,20,20,0.2);
+  border-radius: 8px;
+}
+
+.weak-topics h4, .strong-topics h4 {
+  color: #ff9999;
+  margin-bottom: 8px;
+  font-size: 0.95em;
+}
+
+.strong-topics h4 { color: var(--cor-menta); }
+.strong-topics { background: rgba(20,80,50,0.2); }
+
+.weak-topics ul, .strong-topics ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.weak-topics li:before { content: "⚠️ "; margin-right: 6px; }
+.strong-topics li:before { content: "✨ "; margin-right: 6px; }
+
+.weak-topics li, .strong-topics li {
+  padding: 4px 0;
+  color: #ddd;
+  font-size: 0.9em;
+}
+
+/* ===== User Profile Card ===== */
+.user-profile-card {
+  background: linear-gradient(135deg, rgba(20,50,100,0.6), rgba(15,40,80,0.5));
+  border: 2px solid var(--cor-ciano);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  color: #fff;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.level-badge {
+  background: var(--cor-ciano);
+  color: #000;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.profile-header h3 {
+  margin: 0;
+  color: var(--cor-menta);
+  text-shadow: 0 0 8px rgba(100,255,218,0.3);
+}
+
+.profile-progress {
+  margin-bottom: 16px;
+}
+
+.progress-bar {
+  background: rgba(0,20,50,0.5);
+  border: 1px solid var(--cor-ciano);
+  height: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, var(--cor-ciano), var(--cor-menta));
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  display: block;
+  font-size: 0.8em;
+  color: #b0d0ff;
+  text-align: center;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.profile-stat {
+  background: rgba(0,60,100,0.4);
+  border-left: 3px solid var(--cor-menta);
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.profile-stat .stat-label {
+  display: block;
+  font-size: 0.8em;
+  color: #b0d0ff;
+  margin-bottom: 4px;
+}
+
+.profile-stat .stat-value {
+  display: block;
+  font-size: 1.2em;
+  color: var(--cor-menta);
+  font-weight: bold;
+}
+
+.difficulty-breakdown {
+  background: rgba(40,40,60,0.4);
+  border-left: 3px solid var(--cor-ciano);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.difficulty-breakdown h4 {
+  color: var(--cor-ciano);
+  margin: 0 0 10px 0;
+  font-size: 0.95em;
+}
+
+.difficulty-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.85em;
+  border-bottom: 1px solid rgba(0,255,255,0.1);
+}
+
+.difficulty-row:last-child { border-bottom: none; }
+
+.difficulty-label {
+  color: #b0d0ff;
+  font-weight: 600;
+}
+
+.difficulty-stats {
+  color: var(--cor-menta);
+}
+
+/* Layout responsivo */
 @media (max-width: 900px) {
   .quiz-container { padding: 18px; }
+  .report-stats { grid-template-columns: 1fr; }
+  .profile-grid { grid-template-columns: repeat(2, 1fr); }
 }

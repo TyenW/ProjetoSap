@@ -22,6 +22,43 @@ let workerRunning = false;
 let tickQueue = [];
 let animatingTick = false;
 let uiAnimating = false; // trava UI durante uma animação única (passo)
+let isChallengeMode = false;
+let awaitingChallengeClick = false;
+let pendingChallengeTargetId = null;
+let pendingManualChallengeResolver = null;
+let challengeRunDebounce = null;
+let currentValidationChallenge = null;
+let challengeOracle = [];
+const EMULATOR_ACHIEVEMENTS_KEY = 'sap_emulator_achievements';
+const achievementCatalog = new Map();
+const CHALLENGE_TARGETS = Object.freeze({
+    LDA: 'acc',
+    ADD: 'alu',
+    SUB: 'alu',
+    INC: 'acc',
+    DEC: 'acc',
+    MUL: 'alu',
+    JMP: 'pc',
+    OUT: 'saida',
+    HLT: 'controlador'
+});
+const CHALLENGE_LIBRARY = [
+    { id: 'sap_acc_8', target: 'ACC', value: 8, msg: 'Desafio: produzir ACC=8 ao terminar.', achievementId: 'sap_acc_8' },
+    { id: 'sap_acc_15', target: 'ACC', value: 15, msg: 'Desafio: produzir ACC=15 ao terminar.', achievementId: 'sap_acc_15' },
+    { id: 'sap_acc_42', target: 'ACC', value: 42, msg: 'Desafio: produzir ACC=42 ao terminar.', achievementId: 'sap_acc_42' },
+    { id: 'soma_simples', target: 'OUT', value: 5, msg: 'Desafio: calcule 2+3 e entregue OUT=5.', achievementId: 'soma_simples' }
+];
+const MOEDA_KEYWORD_MAP = Object.freeze([
+    { regex: /\b(acc|acumulador)\b/i, componentId: 'acc' },
+    { regex: /\b(ram|mem[oó]ria)\b/i, componentId: 'ram' },
+    { regex: /\b(ula|alu|somador|subtrator)\b/i, componentId: 'alu' },
+    { regex: /\b(registrador\s*b|reg\s*b)\b/i, componentId: 'regb' },
+    { regex: /\b(sa[ií]da|out|display)\b/i, componentId: 'saida' },
+    { regex: /\b(pc|contador de programa)\b/i, componentId: 'pc' },
+    { regex: /\b(ri|instru[cç][aã]o)\b/i, componentId: 'ri' },
+    { regex: /\b(controlador|sequencializador)\b/i, componentId: 'controlador' },
+    { regex: /\b(barramento|bus)\b/i, componentId: 'barramento' }
+]);
 // Exemplos didáticos
 const DEMOS = {
     soma53: {
@@ -30,6 +67,215 @@ const DEMOS = {
         hint: 'Exemplo: LDA A; ADD B; OUT; HLT com dados A=5, B=3'
     }
 };
+
+function normalizeAchievementList(value) {
+    if (!Array.isArray(value)) return [];
+    return value.filter(item => item && typeof item.id === 'string');
+}
+
+function loadEmulatorAchievements() {
+    try {
+        return normalizeAchievementList(JSON.parse(localStorage.getItem(EMULATOR_ACHIEVEMENTS_KEY) || '[]'));
+    } catch (_) {
+        return [];
+    }
+}
+
+function saveEmulatorAchievements(list) {
+    try {
+        localStorage.setItem(EMULATOR_ACHIEVEMENTS_KEY, JSON.stringify(normalizeAchievementList(list)));
+    } catch (_) {
+        // ignore storage failures
+    }
+}
+
+function showAchievementToast(title) {
+    const toast = document.createElement('div');
+    toast.className = 'achievement-toast';
+    toast.textContent = `🏆 Conquista desbloqueada: ${title}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('visible'), 40);
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 250);
+    }, 3200);
+}
+
+function resolveAchievementTitle(id, fallbackTitle) {
+    const item = achievementCatalog.get(id);
+    if (item && item.title) return item.title;
+    return fallbackTitle || id;
+}
+
+function unlockAchievement(id, fallbackTitle = 'Conquista do Simulador') {
+    if (!id) return false;
+    const unlocked = loadEmulatorAchievements();
+    if (unlocked.some(a => a.id === id)) return false;
+    const title = resolveAchievementTitle(id, fallbackTitle);
+    unlocked.push({ id, title, date: new Date().toISOString() });
+    saveEmulatorAchievements(unlocked);
+    showAchievementToast(title);
+    return true;
+}
+
+async function preloadAchievementsCatalog() {
+    try {
+        const resp = await fetch('assets/data/achievements.json', { cache: 'no-store' });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const list = Array.isArray(data?.achievements) ? data.achievements : [];
+        list.forEach(item => {
+            if (item && item.id) achievementCatalog.set(item.id, item);
+        });
+    } catch (_) {
+        // ignore fetch/cors/offline failures
+    }
+}
+
+function normalizeChallenge(def) {
+    if (!def || typeof def !== 'object') return null;
+    const target = String(def.target || def.target_reg || '').toUpperCase();
+    const value = (def.value != null) ? def.value : def.expected_value;
+    if (!target || value == null) return null;
+    return {
+        id: def.id || `challenge_${Date.now()}`,
+        target,
+        value,
+        msg: def.msg || def.message || `Desafio: atingir ${target}=${value}.`,
+        achievementId: def.achievementId || def.id || ''
+    };
+}
+
+async function preloadChallengeOracle() {
+    try {
+        const resp = await fetch('assets/data/emulator-challenges.json', { cache: 'no-store' });
+        if (!resp.ok) {
+            challengeOracle = CHALLENGE_LIBRARY.map(c => ({ ...c }));
+            return;
+        }
+        const data = await resp.json();
+        const entries = Array.isArray(data?.challenges) ? data.challenges : [];
+        challengeOracle = entries.map(normalizeChallenge).filter(Boolean);
+        if (!challengeOracle.length) {
+            challengeOracle = CHALLENGE_LIBRARY.map(c => ({ ...c }));
+        }
+    } catch (_) {
+        challengeOracle = CHALLENGE_LIBRARY.map(c => ({ ...c }));
+    }
+}
+
+function pickChallengeDefinition() {
+    const source = challengeOracle.length ? challengeOracle : CHALLENGE_LIBRARY;
+    const index = Math.floor(Math.random() * source.length);
+    const picked = source[index] || source[0];
+    return { ...picked };
+}
+
+function setChallengeMode(enabled) {
+    isChallengeMode = !!enabled;
+    document.body.classList.toggle('challenge-mode', isChallengeMode);
+    const diagram = document.getElementById('hardware-diagram');
+    if (diagram) diagram.classList.toggle('challenge-active', isChallengeMode);
+    const btn = document.getElementById('toggleChallengeMode');
+    if (btn) {
+        btn.setAttribute('aria-pressed', String(isChallengeMode));
+        btn.textContent = `🎯 Modo Desafio: ${isChallengeMode ? 'ON' : 'OFF'}`;
+    }
+    if (!isChallengeMode) {
+        awaitingChallengeClick = false;
+        pendingChallengeTargetId = null;
+        if (pendingManualChallengeResolver) {
+            const resolver = pendingManualChallengeResolver;
+            pendingManualChallengeResolver = null;
+            resolver(false);
+        }
+        try { window.UIEffects?.clear(); } catch (_) {}
+        document.querySelectorAll('.challenge-target').forEach(el => el.classList.remove('challenge-target'));
+    }
+}
+
+function indicateChallengeError() {
+    const coin = document.querySelector('.help-coin');
+    if (!coin) return;
+    coin.classList.remove('challenge-error');
+    void coin.offsetWidth;
+    coin.classList.add('challenge-error');
+    setTimeout(() => coin.classList.remove('challenge-error'), 420);
+}
+
+function indicateChallengeSuccess() {
+    const coin = document.querySelector('.help-coin');
+    if (!coin) return;
+    coin.classList.remove('challenge-success');
+    void coin.offsetWidth;
+    coin.classList.add('challenge-success');
+    setTimeout(() => coin.classList.remove('challenge-success'), 620);
+    try {
+        const sfx = new Audio('assets/audio/quiz_correct.ogg');
+        sfx.volume = 0.24;
+        sfx.play().catch(() => {});
+    } catch (_) {
+        // ignore audio failures
+    }
+}
+
+function highlightFromMoedaMessage(text) {
+    const normalized = String(text || '');
+    if (!normalized) return;
+    const entry = MOEDA_KEYWORD_MAP.find(item => item.regex.test(normalized));
+    if (!entry) return;
+    try {
+        window.UIEffects?.highlight(entry.componentId, 'pulse', { clearMs: 950, glowColor: '#ffd700', focus: false });
+    } catch (_) {
+        // ignore UI effects failures
+    }
+}
+
+function startChallengePrompt(targetId) {
+    if (!targetId) return;
+    awaitingChallengeClick = true;
+    pendingChallengeTargetId = targetId;
+    document.querySelectorAll('.challenge-target').forEach(el => el.classList.remove('challenge-target'));
+    const targetEl = document.getElementById(targetId);
+    if (targetEl) targetEl.classList.add('challenge-target');
+    try {
+        window.UIEffects?.clear();
+        window.UIEffects?.highlight(targetId, 'pulse', { focus: true, clearMs: 0, glowColor: '#ffd700' });
+    } catch (_) {}
+    const stepBtn = document.getElementById('passo');
+    if (stepBtn) stepBtn.disabled = true;
+    mostrarMensagemEstiloMario('Modo desafio: clique no componente correto para continuar.');
+}
+
+function answerChallengePrompt(correct) {
+    if (!awaitingChallengeClick) return;
+    if (workerRunning && emulatorWorker) {
+        emulatorWorker.postMessage({ type: 'challenge-response', correct: !!correct });
+    }
+    if (correct) {
+        awaitingChallengeClick = false;
+        const targetEl = pendingChallengeTargetId ? document.getElementById(pendingChallengeTargetId) : null;
+        if (targetEl) targetEl.classList.remove('challenge-target');
+        pendingChallengeTargetId = null;
+        try { window.UIEffects?.clear(); } catch (_) {}
+        const stepBtn = document.getElementById('passo');
+        if (stepBtn && !workerRunning && !uiAnimating) stepBtn.disabled = false;
+        if (pendingManualChallengeResolver) {
+            const resolver = pendingManualChallengeResolver;
+            pendingManualChallengeResolver = null;
+            resolver(true);
+        }
+    } else {
+        indicateChallengeError();
+    }
+}
+
+function waitForManualChallengeTarget(targetId) {
+    return new Promise((resolve) => {
+        pendingManualChallengeResolver = resolve;
+        startChallengePrompt(targetId);
+    });
+}
 
 // Tabela de conversão de hex para assembly
 const hexParaAssembly = {
@@ -596,6 +842,13 @@ function resetar() {
     ACC = 0;
     saida = [];
     running = false;
+    awaitingChallengeClick = false;
+    pendingChallengeTargetId = null;
+    if (pendingManualChallengeResolver) {
+        const resolver = pendingManualChallengeResolver;
+        pendingManualChallengeResolver = null;
+        resolver(false);
+    }
     
     // Limpar memória
     memoria.clear();
@@ -628,6 +881,8 @@ function resetar() {
     
     // Resetar animações e destaques
     resetAnimations();
+    document.querySelectorAll('.challenge-target').forEach(el => el.classList.remove('challenge-target'));
+    try { window.UIEffects?.clear(); } catch (_) {}
     removerDestaqueExecucao();
     
     // Atualizar status
@@ -704,6 +959,9 @@ function mostrarMensagemEstiloMario(texto, tipo = 'info') {
         consoleDiv._hideTimer = setTimeout(() => {
             consoleDiv.style.display = 'none';
         }, 5000);
+        if (tipo !== 'error') {
+            highlightFromMoedaMessage(safe);
+        }
     } catch(_) {
         consoleDiv.textContent = String(texto || '');
         consoleDiv.style.display = 'block';
@@ -936,120 +1194,137 @@ function executarPasso() {
         const map = {0:'LDA',1:'ADD',2:'SUB',3:'INC',4:'DEC',5:'MUL',6:'JMP',14:'OUT',15:'HLT'};
         return { op: map.hasOwnProperty(opcode)? map[opcode]:'???', arg: isNaN(arg)?0:arg };
     })(instr);
-    const op = decoded.op; const arg = decoded.arg;
+    const op = decoded.op;
+    const challengeTargetId = isChallengeMode ? (CHALLENGE_TARGETS[op] || null) : null;
 
-    // Define duração base para micro-passos T1..T6 em função da velocidade
-    const stepDur = Math.max(120, Math.floor(animationSpeed / 6));
+    const executeAnimatedStep = () => {
+        // Define duração base para micro-passos T1..T6 em função da velocidade
+        const stepDur = Math.max(120, Math.floor(animationSpeed / 6));
 
-    // Inicia animação de busca de instrução
-    animateInstructionFetch();
-    // Avança Estados T durante a busca
-    resetTState();
-    setTState(1);
-    setTimeout(() => setTState(2), stepDur);
-    setTimeout(() => setTState(3), stepDur * 2);
+        // Inicia animação de busca de instrução
+        animateInstructionFetch();
+        // Avança Estados T durante a busca
+        resetTState();
+        setTState(1);
+        setTimeout(() => setTState(2), stepDur);
+        setTimeout(() => setTState(3), stepDur * 2);
 
-    // Calcula um atraso mínimo para garantir que a busca termine antes do step
-    const FETCH_TOTAL_MS = 1300; // último marco da busca é ~1200ms, margem +100ms
-    const stepDelay = Math.max(animationSpeed, FETCH_TOTAL_MS);
+        // Calcula um atraso mínimo para garantir que a busca termine antes do step
+        const FETCH_TOTAL_MS = 1300; // último marco da busca é ~1200ms, margem +100ms
+        const stepDelay = Math.max(animationSpeed, FETCH_TOTAL_MS);
 
-    // Aguarda a animação de busca terminar (ou o delay configurado), então executa
-    setTimeout(() => {
-        // Executa 1 passo no núcleo determinístico
-        const result = core.step();
-        const opName = result.decode.opName;
-        const argVal = result.decode.arg;
-        const hasMem = ['LDA','ADD','SUB','MUL'].includes(opName);
-
-        passos.push(`PC=${result.before.PC} | Instr: ${instr} | ACC=${result.before.ACC}`);
-
-        if (opName === 'JMP') {
-            passos.push(`JMP para ${argVal}`);
-            atualizarValorBloco('controller-value', `JMP→${argVal}`);
-        }
-
-        // Anima execução conforme tipo
-        if (opName === 'OUT') {
-            animateOutput();
-        } else if (opName && opName !== 'HLT' && opName !== '???') {
-            animateInstructionExecute(opName, hasMem, hasMem ? argVal : null);
-        }
-
-        // Atualiza valores de UI (ACC/PC/REGs) segundo resultado
-        ACC = result.after.ACC;
-        PC = result.after.PC;
-
-        // Valores auxiliares para UI (REG B, ALU, MAR, RAM value)
-        if (hasMem) {
-            atualizarValorBloco('mar-value', argVal);
-            const memHexVal = core.getInstrHexAt(argVal);
-            atualizarValorBloco('ram-value', memHexVal || '--');
-            if (opName !== 'LDA') {
-                const rb = result.readVal ?? parseInt(memHexVal || '00', 16);
-                atualizarValorBloco('regb-value', rb);
-                const preview = (opName === 'ADD') ? (result.before.ACC + rb)
-                               : (opName === 'SUB') ? (result.before.ACC - rb)
-                               : (opName === 'MUL') ? (result.before.ACC * rb)
-                               : result.after.ACC;
-                mostrarOperacaoALU(opName, result.before.ACC, rb, preview);
-            }
-        } else if (opName === 'INC' || opName === 'DEC') {
-            const delta = (opName === 'INC') ? 1 : -1;
-            mostrarOperacaoALU(opName, result.before.ACC, Math.abs(delta), result.before.ACC + delta);
-        }
-
-        if (opName === 'OUT') {
-            // OUT usa ACC antes da operação como saída (no core outputs foi empurrada)
-            const last = core.outputs.length ? core.outputs[core.outputs.length - 1] : result.before.ACC;
-            saida.push(last);
-            // Mostrar como valor com sinal
-            atualizarValorBloco('output-value', toSigned8(last));
-            atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
-            updateBinaryLEDs(last >>> 0);
-            passos.push(`OUT: ${last}`);
-            try { sfx.out.currentTime = 0; sfx.out.play(); } catch(_) {}
-        }
-        if (opName === 'HLT') {
-            passos.push('HLT: Parada');
-            atualizarValorBloco('controller-value', 'HALT');
-            running = false;
-        }
-        if (result.fault) {
-            passos.push(result.fault);
-            running = false;
-            try { sfx.alert.currentTime = 0; sfx.alert.play(); } catch(_) {}
-            try { mostrarMensagemEstiloMario(result.fault, 'error'); } catch(_) {}
-        }
-
-        // Avança Estados T durante a execução (T4..T6)
-        setTState(4);
-        setTimeout(() => setTState(5), stepDur);
-        setTimeout(() => setTState(6), stepDur * 2);
-
-        mostrarMensagemEstiloMario(passos[passos.length - 1]);
-        
-        // Atualiza status após um pequeno intervalo
+        // Aguarda a animação de busca terminar (ou o delay configurado), então executa
         setTimeout(() => {
-            atualizarStatus(instr);
-        }, 500);
+            // Executa 1 passo no núcleo determinístico
+            const result = core.step();
+            const opName = result.decode.opName;
+            const argVal = result.decode.arg;
+            const hasMem = ['LDA','ADD','SUB','MUL'].includes(opName);
 
-        // Janela total de animações após o step (dependendo da operação)
-        let execTotal = 0;
-        if (opName === 'OUT') {
-            execTotal = 900; // animateOutput: ~900ms
-        } else if (hasMem) {
-            execTotal = (opName === 'LDA') ? 1000 : 1600; // LDA ~1s | ADD/SUB/MUL ~1.6s
-        } else if (opName === 'INC' || opName === 'DEC') {
-            execTotal = 600; // simples
-        } else {
-            execTotal = 400; // default curto
-        }
+            passos.push(`PC=${result.before.PC} | Instr: ${instr} | ACC=${result.before.ACC}`);
 
-        // Libera UI após terminar busca (já considerada em stepDelay) + execução
-        const SAFETY = 250; // margem extra
-        setTimeout(() => { uiAnimating = false; setControlsDisabled(false); }, execTotal + SAFETY);
-        
-    }, stepDelay);
+            if (opName === 'JMP') {
+                passos.push(`JMP para ${argVal}`);
+                atualizarValorBloco('controller-value', `JMP→${argVal}`);
+            }
+
+            // Anima execução conforme tipo
+            if (opName === 'OUT') {
+                animateOutput();
+            } else if (opName && opName !== 'HLT' && opName !== '???') {
+                animateInstructionExecute(opName, hasMem, hasMem ? argVal : null);
+            }
+
+            // Atualiza valores de UI (ACC/PC/REGs) segundo resultado
+            ACC = result.after.ACC;
+            PC = result.after.PC;
+
+            // Valores auxiliares para UI (REG B, ALU, MAR, RAM value)
+            if (hasMem) {
+                atualizarValorBloco('mar-value', argVal);
+                const memHexVal = core.getInstrHexAt(argVal);
+                atualizarValorBloco('ram-value', memHexVal || '--');
+                if (opName !== 'LDA') {
+                    const rb = result.readVal ?? parseInt(memHexVal || '00', 16);
+                    atualizarValorBloco('regb-value', rb);
+                    const preview = (opName === 'ADD') ? (result.before.ACC + rb)
+                                   : (opName === 'SUB') ? (result.before.ACC - rb)
+                                   : (opName === 'MUL') ? (result.before.ACC * rb)
+                                   : result.after.ACC;
+                    mostrarOperacaoALU(opName, result.before.ACC, rb, preview);
+                }
+            } else if (opName === 'INC' || opName === 'DEC') {
+                const delta = (opName === 'INC') ? 1 : -1;
+                mostrarOperacaoALU(opName, result.before.ACC, Math.abs(delta), result.before.ACC + delta);
+            }
+
+            if (opName === 'OUT') {
+                // OUT usa ACC antes da operação como saída (no core outputs foi empurrada)
+                const last = core.outputs.length ? core.outputs[core.outputs.length - 1] : result.before.ACC;
+                saida.push(last);
+                // Mostrar como valor com sinal
+                atualizarValorBloco('output-value', toSigned8(last));
+                atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
+                updateBinaryLEDs(last >>> 0);
+                passos.push(`OUT: ${last}`);
+                try { sfx.out.currentTime = 0; sfx.out.play().catch(() => {}); } catch(_) {}
+            }
+            if (opName === 'HLT') {
+                passos.push('HLT: Parada');
+                atualizarValorBloco('controller-value', 'HALT');
+                running = false;
+            }
+            if (result.fault) {
+                passos.push(result.fault);
+                running = false;
+                try { sfx.alert.currentTime = 0; sfx.alert.play().catch(() => {}); } catch(_) {}
+                try { mostrarMensagemEstiloMario(result.fault, 'error'); } catch(_) {}
+            }
+
+            // Avança Estados T durante a execução (T4..T6)
+            setTState(4);
+            setTimeout(() => setTState(5), stepDur);
+            setTimeout(() => setTState(6), stepDur * 2);
+
+            mostrarMensagemEstiloMario(passos[passos.length - 1]);
+            
+            // Atualiza status após um pequeno intervalo
+            setTimeout(() => {
+                atualizarStatus(instr);
+            }, 500);
+
+            // Janela total de animações após o step (dependendo da operação)
+            let execTotal = 0;
+            if (opName === 'OUT') {
+                execTotal = 900; // animateOutput: ~900ms
+            } else if (hasMem) {
+                execTotal = (opName === 'LDA') ? 1000 : 1600; // LDA ~1s | ADD/SUB/MUL ~1.6s
+            } else if (opName === 'INC' || opName === 'DEC') {
+                execTotal = 600; // simples
+            } else {
+                execTotal = 400; // default curto
+            }
+
+            // Libera UI após terminar busca (já considerada em stepDelay) + execução
+            const SAFETY = 250; // margem extra
+            setTimeout(() => { uiAnimating = false; setControlsDisabled(false); }, execTotal + SAFETY);
+            
+        }, stepDelay);
+    };
+
+    if (challengeTargetId) {
+        waitForManualChallengeTarget(challengeTargetId).then((ok) => {
+            if (!ok) {
+                uiAnimating = false;
+                setControlsDisabled(false);
+                return;
+            }
+            executeAnimatedStep();
+        });
+        return;
+    }
+
+    executeAnimatedStep();
 }
 
 // Executa tudo com animações
@@ -1061,11 +1336,19 @@ function executarTudo() {
     // Executa via Web Worker para não travar a UI
     // Sempre reinicializa para garantir ACC=0, PC=0 e limpeza de estado entre execuções
     try {
-        if (emulatorWorker && workerRunning) {
-            emulatorWorker.postMessage({ type: 'cancel' });
-            workerRunning = false;
-            tickQueue = [];
-            animatingTick = false;
+        if (emulatorWorker) {
+            emulatorWorker.terminate();
+            emulatorWorker = null;
+        }
+        workerRunning = false;
+        tickQueue = [];
+        animatingTick = false;
+        awaitingChallengeClick = false;
+        pendingChallengeTargetId = null;
+        if (pendingManualChallengeResolver) {
+            const resolver = pendingManualChallengeResolver;
+            pendingManualChallengeResolver = null;
+            resolver(false);
         }
     } catch (_) {}
     inicializar();
@@ -1107,6 +1390,20 @@ function executarTudo() {
             if (data.type === 'tick') {
                 tickQueue.push(data);
                 processTickQueue();
+            } else if (data.type === 'challenge') {
+                startChallengePrompt(data.targetId);
+            } else if (data.type === 'challenge-feedback' && data.ok === false) {
+                indicateChallengeError();
+            } else if (data.type === 'HALT') {
+                const validation = data.validation;
+                if (validation && validation.isCorrect) {
+                    const achievementId = validation.achievementId || (currentValidationChallenge && currentValidationChallenge.achievementId) || 'sap_emulator_goal';
+                    unlockAchievement(achievementId, 'Desafio concluído');
+                    indicateChallengeSuccess();
+                    mostrarMensagemEstiloMario(validation.msg || '✅ Desafio concluído com sucesso!');
+                } else if (validation && !validation.isCorrect) {
+                    mostrarMensagemEstiloMario('❌ Desafio não concluído. Ajuste o programa e tente novamente.');
+                }
             } else if (data.type === 'done') {
                 workerRunning = false;
                 const reason = data.reason || 'DONE';
@@ -1117,12 +1414,23 @@ function executarTudo() {
                     resetAnimations();
                     setControlsDisabled(false);
                 }, 300);
+                awaitingChallengeClick = false;
+                pendingChallengeTargetId = null;
+                document.querySelectorAll('.challenge-target').forEach(el => el.classList.remove('challenge-target'));
+                try { window.UIEffects?.clear(); } catch (_) {}
                 emulatorWorker.removeEventListener('message', onMsg);
             }
         };
         emulatorWorker.addEventListener('message', onMsg);
         const stepMs = Math.max(0, parseInt(animationSpeed, 10) || 0);
-        emulatorWorker.postMessage({ type: 'run', memory: memHex, maxSteps: 256, speed: stepMs });
+        emulatorWorker.postMessage({
+            type: 'run',
+            memory: memHex,
+            maxSteps: 256,
+            speed: stepMs,
+            challengeMode: isChallengeMode,
+            validation: currentValidationChallenge
+        });
     } catch (e) {
         workerRunning = false;
     }
@@ -1161,6 +1469,7 @@ function renderTickFromWorker(tick) {
     const opName = tick && tick.decode ? tick.decode.opName : '???';
     const argVal = tick && tick.decode ? tick.decode.arg : 0;
     const hasMem = ['LDA','ADD','SUB','MUL'].includes(opName);
+    const focusId = CHALLENGE_TARGETS[opName] || null;
 
     // Usa mesmas animações básicas do executarPasso(), mas sem chamar core.step()
     animateInstructionFetch();
@@ -1171,6 +1480,9 @@ function renderTickFromWorker(tick) {
     setTimeout(() => setTState(3), stepDur * 2);
 
     setTimeout(() => {
+        if (focusId) {
+            try { window.UIEffects?.highlight(focusId, 'pulse', { clearMs: animationSpeed, glowColor: '#ffd700', focus: false }); } catch (_) {}
+        }
         if (opName === 'OUT') {
             animateOutput();
         } else if (opName && opName !== 'HLT' && opName !== '???') {
@@ -1208,7 +1520,7 @@ function renderTickFromWorker(tick) {
             atualizarValorBloco('display-value', (last >>> 0).toString(2).padStart(8, '0'));
             updateBinaryLEDs(last >>> 0);
             passos.push(`OUT: ${last}`);
-            try { sfx.out.currentTime = 0; sfx.out.play(); } catch(_) {}
+            try { sfx.out.currentTime = 0; sfx.out.play().catch(() => {}); } catch(_) {}
         }
         if (opName === 'JMP') {
             passos.push(`JMP para ${argVal}`);
@@ -1250,6 +1562,15 @@ function ensureWorkers() {
     }
 }
 
+function executarTudoDebounced() {
+    if (challengeRunDebounce) clearTimeout(challengeRunDebounce);
+    challengeRunDebounce = setTimeout(() => {
+        if (editMode === 'asm') montarAssemblyParaRAM();
+        inicializar();
+        executarTudo();
+    }, 160);
+}
+
 // Versão interna sem mostrar mensagem
 function executarPassoInterno() {
     if (!running || !core || core.halted || PC >= 16) return;
@@ -1273,6 +1594,8 @@ function escreverNaLabel(mensagem) {
 
 // Botões e eventos
 document.addEventListener('DOMContentLoaded', function () {
+    preloadAchievementsCatalog();
+    preloadChallengeOracle();
     // Sincroniza label de velocidade com valor inicial do slider
     try {
         const range = document.getElementById('speedRange');
@@ -1318,6 +1641,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Inicializa o display de assembly baseado na RAM
     atualizarAssemblyDaRAM();
     aplicarModoEdicaoUI();
+    setChallengeMode(false);
     
     // Adiciona eventos de input nos campos da RAM
     adicionarEventosRAM();
@@ -1362,10 +1686,40 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('emular').addEventListener('click', function () {
-        if (editMode === 'asm') montarAssemblyParaRAM();
-        inicializar();
-        executarTudo();
+        executarTudoDebounced();
     });
+
+    const challengeToggleBtn = document.getElementById('toggleChallengeMode');
+    if (challengeToggleBtn) {
+        challengeToggleBtn.addEventListener('click', () => {
+            setChallengeMode(!isChallengeMode);
+            if (isChallengeMode) {
+                currentValidationChallenge = pickChallengeDefinition();
+                mostrarMensagemEstiloMario(currentValidationChallenge.msg);
+            }
+        });
+    }
+
+    const helpCoin = document.querySelector('.help-coin');
+    if (helpCoin) {
+        helpCoin.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            if (!isChallengeMode) setChallengeMode(true);
+            currentValidationChallenge = pickChallengeDefinition();
+            mostrarMensagemEstiloMario((currentValidationChallenge.msg || 'Desafio carregado!') + ' Clique em Executar Tudo.');
+        });
+    }
+
+    const hardwareContainer = document.querySelector('.sap1-container');
+    if (hardwareContainer) {
+        hardwareContainer.addEventListener('click', (ev) => {
+            if (!awaitingChallengeClick || !isChallengeMode) return;
+            const target = ev.target.closest('.sap1-block, #barramento');
+            if (!target || !target.id) return;
+            const isCorrect = target.id === pendingChallengeTargetId;
+            answerChallengePrompt(isCorrect);
+        });
+    }
 
     // Parar execução
     const pararBtn = document.getElementById('parar');
@@ -1377,6 +1731,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } catch(_) {}
             workerRunning = false; animatingTick = false; uiAnimating = false; setControlsDisabled(false);
+            awaitingChallengeClick = false;
+            pendingChallengeTargetId = null;
+            if (pendingManualChallengeResolver) {
+                const resolver = pendingManualChallengeResolver;
+                pendingManualChallengeResolver = null;
+                resolver(false);
+            }
+            document.querySelectorAll('.challenge-target').forEach(el => el.classList.remove('challenge-target'));
+            try { window.UIEffects?.clear(); } catch (_) {}
             mostrarMensagemEstiloMario('Execução parada.');
         });
     }
@@ -1678,28 +2041,30 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     try { sfx.init(); } catch(_) {}
 
-    // Ensure ARIA state
-    const updateMuteAria = () => {
-        muteBtn.setAttribute('aria-pressed', String(!music.muted));
-        muteBtn.setAttribute('aria-label', music.muted ? 'Ativar som' : 'Desativar som');
-    };
-    updateMuteAria();
-
-    muteBtn.addEventListener('click', () => {
-        music.muted = !music.muted;
-        muteBtn.textContent = music.muted ? '🔇' : '🔊';
+    // Ensure ARIA state (only if muteBtn exists)
+    if (muteBtn) {
+        const updateMuteAria = () => {
+            muteBtn.setAttribute('aria-pressed', String(!music.muted));
+            muteBtn.setAttribute('aria-label', music.muted ? 'Ativar som' : 'Desativar som');
+        };
         updateMuteAria();
-        // manter SFX em sincronia com o estado
-        sfx.setMuted(music.muted);
-        try { if (!music.muted) { sfx.toggle.currentTime = 0; sfx.toggle.play(); } } catch(_) {}
-    });
+
+        muteBtn.addEventListener('click', () => {
+            music.muted = !music.muted;
+            muteBtn.textContent = music.muted ? '🔇' : '🔊';
+            updateMuteAria();
+            // manter SFX em sincronia com o estado
+            sfx.setMuted(music.muted);
+            try { if (!music.muted) { sfx.toggle.currentTime = 0; sfx.toggle.play().catch(() => {}); } } catch(_) {}
+        });
+    }
 
     // Sons de UI: hover e click em botões principais
     try {
         const buttons = document.querySelectorAll('.li-btn, button, .btn, [role="button"]');
         buttons.forEach(btn => {
-            btn.addEventListener('mouseenter', () => { try { sfx.hover.currentTime = 0; sfx.hover.play(); } catch(_) {} });
-            btn.addEventListener('click', () => { try { sfx.click.currentTime = 0; sfx.click.play(); } catch(_) {} });
+            btn.addEventListener('mouseenter', () => { try { sfx.hover.currentTime = 0; sfx.hover.play().catch(() => {}); } catch(_) {} });
+            btn.addEventListener('click', () => { try { sfx.click.currentTime = 0; sfx.click.play().catch(() => {}); } catch(_) {} });
         });
     } catch(_) {}
 });

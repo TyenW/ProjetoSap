@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <title>BitLab</title>
   <link rel="icon" href="assets/img/logoBitLab.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#00ffdc">
+  <meta name="description" content="BitLab - Aprenda sobre SAP-1 com emulador interativo e quiz educativo">
   
   <link rel="stylesheet" href="assets/css/base.css" />
   
@@ -38,7 +41,7 @@
         <li><a class="nav-link" href="home.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/flask_full.png" alt="" aria-hidden="true"><span>Home</span></a></li>
         <li><a class="nav-link" href="oqueesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true"><span>O que é SAP</span></a></li>
         <li><a class="nav-link" href="quiz.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/token.png" alt="" aria-hidden="true"><span>Quiz</span></a></li>
-        <li><a class="nav-link" href="#emulacao"><img class="icon" src="kenney_board-game-icons/Double (128px)/hexagon.png" alt="" aria-hidden="true"><span>Emulação</span></a></li>
+        <li><a class="nav-link" href="#hardware-diagram"><img class="icon" src="kenney_board-game-icons/Double (128px)/hexagon.png" alt="" aria-hidden="true"><span>Emulação</span></a></li>
         <li><a class="nav-link" href="equipesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/pawn.png" alt="" aria-hidden="true"><span>Equipe</span></a></li>
       </ul>
       <div class="audio-menu">
@@ -80,6 +83,7 @@
     <input type="file" id="csvInput" accept=".csv,.txt" style="display: none;">
     <button id="loadCSV" class="btn-wide">📁 Carregar CSV</button>
     <button id="carregarExemplo" class="btn-wide" aria-label="Carregar exemplo de programa" title="Carregar exemplo didático (Ctrl+E)">🧪 Exemplo</button>
+    <button id="toggleChallengeMode" class="btn-wide" aria-pressed="false" title="Ativar modo de identificação espacial">🎯 Modo Desafio: OFF</button>
     
     <!-- Controle de velocidade -->
     <div class="speed-control">
@@ -307,7 +311,7 @@
     </div>
 
     <!-- Arquitetura SAP-1 -->
-    <section class="sap1-container" id="emulacao">
+    <section class="sap1-container" id="hardware-diagram">
 
       <!-- Blocos da esquerda -->
       <div class="sap1-block block-pc" id="pc" title="Contador de Programa: Armazena o endereço da próxima instrução a ser executada">
@@ -518,7 +522,7 @@
           <li><a href="oqueesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true">O que é SAP</a></li>
           <li><a href="quiz.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/token.png" alt="" aria-hidden="true">Quiz</a></li>
           <li><a href="equipesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/pawn.png" alt="" aria-hidden="true">Equipe</a></li>
-          <li><a href="#emulacao"><img class="icon" src="kenney_board-game-icons/Double (128px)/hexagon.png" alt="" aria-hidden="true">Emulação</a></li>
+          <li><a href="#hardware-diagram"><img class="icon" src="kenney_board-game-icons/Double (128px)/hexagon.png" alt="" aria-hidden="true">Emulação</a></li>
         </ul>
       </div>
       <div class="col about">
@@ -548,8 +552,17 @@
   <script src="assets/js/core/memory-store.js" defer></script>
   <script src="assets/js/core/assembler-core.js" defer></script>
   <script src="assets/js/core/emulator-core.js" defer></script>
+  <script src="assets/js/ui-effects.js" defer></script>
+  <!-- Modules -->
+  <script src="assets/js/modules/asset-loader.js" defer></script>
+  <script src="assets/js/modules/challenge-scaffolding.js" defer></script>
+  <script src="assets/js/modules/telemetry.js" defer></script>
+  <script src="assets/js/modules/accessibility.js" defer></script>
   <script src="assets/js/script.js" defer></script>
   <script src="assets/js/oqesap.js" defer></script>
   <script src="assets/js/carrosel.js" defer></script>
+  <!-- PWA Service Worker -->
+  <script src="assets/js/sw-register.js" defer></script>
+  <script src="assets/js/sw-update.js" defer></script>
 </body>
 </html>

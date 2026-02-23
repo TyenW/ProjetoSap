@@ -9,7 +9,10 @@ const busImages = [
 let currentIndex = 0;
 const busImg = document.getElementById('bus-img');
 
-setInterval(() => {
-  currentIndex = (currentIndex + 1) % busImages.length;
-  busImg.src = busImages[currentIndex];
-}, 1000);
+// Only start carousel if bus-img element exists
+if (busImg) {
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % busImages.length;
+    busImg.src = busImages[currentIndex];
+  }, 1000);
+}

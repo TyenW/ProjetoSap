@@ -1,0 +1,61 @@
+{
+  "name": "BitLab - SAP-1 Emulator & Quiz",
+  "short_name": "BitLab",
+  "description": "Aprenda sobre arquitetura de computadores com o SAP-1 emulator interativo e quiz educativo",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#020618",
+  "theme_color": "#00ffdc",
+  "icons": [
+    {
+      "src": "assets/img/logoBitLab.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/img/logoBitLab.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/img/logoBitLab.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Quiz SAP-1",
+      "short_name": "Quiz",
+      "description": "Abrir Quiz de SAP-1",
+      "url": "quiz.html",
+      "icons": [
+        {
+          "src": "assets/img/logoBitLab.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Emulador",
+      "short_name": "Emular",
+      "description": "Abrir Emulador SAP-1",
+      "url": "index.html#hardware-diagram",
+      "icons": [
+        {
+          "src": "assets/img/logoBitLab.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
