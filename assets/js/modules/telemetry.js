@@ -52,6 +52,8 @@ class LocalTelemetry {
     this.lastSendTime = 0;
     this.sendCooldown = 100; // Rate limiting: min 100ms entre envios
     this.maxRetries = 3;
+    this.remoteBlockedUntil = 0; // pausa envio remoto em caso de auth/config inválida
+    this.hasWarnedRemoteAuth = false;
     this.isOnline = navigator.onLine;
     this.userJourney = []; // Tracking de páginas visitadas
     
@@ -141,6 +143,12 @@ class LocalTelemetry {
       return;
     }
 
+    // Evita flood quando endpoint está com auth/configuração inválida
+    if (Date.now() < this.remoteBlockedUntil) {
+      if (!data.isExit) this.offlineQueue.push(data);
+      return;
+    }
+
     const payload = {
       ...data,
       userAgent: navigator.userAgent.substring(0, 100),
@@ -185,8 +193,25 @@ class LocalTelemetry {
       
       clearTimeout(timeoutId);
       this.lastSendTime = Date.now();
+      this.hasWarnedRemoteAuth = false;
       
     } catch (e) {
+      const message = String(e?.message || '');
+      const unauthorized = /401|unauthorized/i.test(message);
+
+      if (unauthorized) {
+        // Pausa por 10 minutos para evitar repetição infinita de erro no console
+        this.remoteBlockedUntil = Date.now() + (10 * 60 * 1000);
+        if (!this.hasWarnedRemoteAuth) {
+          console.warn('[Telemetria] Google Apps Script retornou 401. Verifique implantação pública (Anyone) e URL /exec. Envio remoto pausado por 10 minutos.');
+          this.hasWarnedRemoteAuth = true;
+        }
+        if (!data.isExit) {
+          this.offlineQueue.push(payload);
+        }
+        return;
+      }
+
       // RETRY MECHANISM para produção
       if (retryCount < this.maxRetries && !data.isExit) {
         const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Backoff exponencial

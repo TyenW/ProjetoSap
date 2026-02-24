@@ -6,7 +6,14 @@
  * - CACHE_FIRST: For assets (images, audio)
  */
 
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
+
+function isCacheableResponse(response) {
+  if (!response) return false;
+  // Cache API não aceita respostas parciais (206)
+  if (response.status === 206) return false;
+  return response.ok;
+}
 
 // Resources to cache on install (app shell)
 const SHELL_ASSETS = [
@@ -85,7 +92,7 @@ function staleWhileRevalidate(request, pathname) {
   return caches.match(request).then((cached) => {
     const networkFetch = fetch(request)
       .then((response) => {
-        if (response.ok) {
+        if (isCacheableResponse(response)) {
           const clonedResponse = response.clone();
           caches.open(CACHE_VERSION).then((cache) => {
             cache.put(request, clonedResponse);
@@ -159,7 +166,7 @@ self.addEventListener('fetch', (event) => {
       caches.match(request).then((cached) => {
         return cached || fetch(request).then((response) => {
           // Cache new assets
-          if (response.ok) {
+          if (isCacheableResponse(response)) {
             const clonedResponse = response.clone();
             caches.open(CACHE_VERSION).then((cache) => {
               cache.put(request, clonedResponse);
@@ -177,7 +184,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(request).then((cached) => {
         const fetchPromise = fetch(request).then((response) => {
-          if (response.ok) {
+          if (isCacheableResponse(response)) {
             const clonedResponse = response.clone();
             caches.open(CACHE_VERSION).then((cache) => {
               cache.put(request, clonedResponse);
@@ -195,7 +202,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(request).then((cached) => {
       return cached || fetch(request).then((response) => {
-        if (response.ok && request.method === 'GET') {
+        if (request.method === 'GET' && isCacheableResponse(response)) {
           const clonedResponse = response.clone();
           caches.open(CACHE_VERSION).then((cache) => {
             cache.put(request, clonedResponse);
