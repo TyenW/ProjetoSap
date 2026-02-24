@@ -835,6 +835,19 @@ function passoAtras() {
 
 // Resetar
 function resetar() {
+    // HOOK AUTOMÁTICO: Captura reset do simulador
+    if (window.telemetry) {
+        window.telemetry.logEvent('EMULATOR_RESET', {
+            topic: 'EMULATION',
+            value: 'MANUAL_RESET',
+            previousState: {
+                PC: PC,
+                ACC: ACC,
+                outputValues: saida.slice()
+            }
+        });
+    }
+    
     // Resetar variáveis globais
     PC = 0;
     ACC = 0;
@@ -1331,6 +1344,18 @@ function executarTudo() {
         try { mostrarMensagemEstiloMario('Execução em andamento.'); } catch(_) {}
         return;
     }
+    
+    // HOOK AUTOMÁTICO: Captura início de execução
+    if (window.telemetry) {
+        const programInputs = document.querySelectorAll('[id^="order"]:not([value=""])').length;
+        window.telemetry.logEvent('EXECUTION_STARTED', {
+            topic: 'EMULATION',
+            value: 'RUN_ALL',
+            programLength: programInputs,
+            timestamp: Date.now()
+        });
+    }
+    
     // Executa via Web Worker para não travar a UI
     // Sempre reinicializa para garantir ACC=0, PC=0 e limpeza de estado entre execuções
     try {
@@ -1393,6 +1418,21 @@ function executarTudo() {
             } else if (data.type === 'challenge-feedback' && data.ok === false) {
                 indicateChallengeError();
             } else if (data.type === 'HALT') {
+                // HOOK AUTOMÁTICO: Captura execução finalizada (HLT)
+                if (window.telemetry) {
+                    window.telemetry.logEvent('EXECUTION_COMPLETE', {
+                        topic: 'EMULATION',
+                        value: 'SUCCESS',
+                        finalState: {
+                            PC: PC,
+                            ACC: ACC,
+                            output: saida.slice(),
+                            steps: passos?.length || 0
+                        },
+                        programSuccess: data.validation?.isCorrect || false
+                    });
+                }
+                
                 const validation = data.validation;
                 if (validation && validation.isCorrect) {
                     const achievementId = validation.achievementId || (currentValidationChallenge && currentValidationChallenge.achievementId) || 'sap_emulator_goal';

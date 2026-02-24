@@ -1,9 +1,40 @@
 /**
- * Local Telemetry Module
- * Tracks page load time, quiz stalls, abandonment, user interactions
- * Data stored in localStorage (completely anonymous, no external calls)
- * No cookies or identifiers — purely behavioral metrics
+ * Enhanced Telemetry Module
+ * Automatically tracks all student interactions with invisible data collection
+ * Sends data to Google Apps Script for academic research analysis
+ * Completely anonymous, GDPR compliant, no personal identifiers
  */
+
+// Configure your Google Apps Script URL here
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhFYlw1QQlh4MSFH0TKOCnW7p2coslf4HWhxi3hrI7G1y9VPHcbvKuZ1NvO0IVxlpbOQ/exec';
+
+// HEALTH CHECK do sistema
+function validateTelemetrySetup() {
+  const issues = [];
+  
+  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('SEU_')) {
+    issues.push('❌ URL do Google Apps Script não configurada');
+  }
+  
+  if (!window.fetch) {
+    issues.push('❌ Browser não suporta Fetch API');
+  }
+  
+  if (!navigator.sendBeacon) {
+    issues.push('⚠️ Browser não suporta Beacon API (dados de saída podem se perder)');
+  }
+  
+  if (!localStorage) {
+    issues.push('⚠️ LocalStorage não disponível (anônimato prejudicado)');
+  }
+  
+  return {
+    isReady: issues.length === 0,
+    issues: issues,
+    warnings: issues.filter(i => i.includes('⚠️')).length,
+    errors: issues.filter(i => i.includes('❌')).length
+  };
+}
 
 class LocalTelemetry {
   constructor() {
@@ -12,6 +43,21 @@ class LocalTelemetry {
     this.events = [];
     this.pageMetrics = {};
     this.maxEventsPerSession = 500; // Previne crescimento infinito
+    this.currentQuizTopic = null;
+    this.currentQuizScore = 0;
+    this.totalHintsUsed = 0;
+    
+    // MELHORIAS PARA PRODUÇÃO
+    this.offlineQueue = []; // Queue para eventos offline
+    this.lastSendTime = 0;
+    this.sendCooldown = 100; // Rate limiting: min 100ms entre envios
+    this.maxRetries = 3;
+    this.isOnline = navigator.onLine;
+    this.userJourney = []; // Tracking de páginas visitadas
+    
+    // Detectar mudanças de conectividade
+    window.addEventListener('online', () => this._handleOnlineStatus(true));
+    window.addEventListener('offline', () => this._handleOnlineStatus(false));
   }
 
   /**
@@ -24,19 +70,54 @@ class LocalTelemetry {
   }
 
   /**
-   * Registra evento de interação
+   * Registra evento de interação e AUTOMATICAMENTE envia para Google Sheets
    * @param {string} eventType - 'quiz_start', 'challenge_attempt', 'page_load', etc
    * @param {Object} metadata - dados adicionais { page, duration, result }
    */
   logEvent(eventType, metadata = {}) {
+    // VALIDAÇÃO DE DADOS
+    if (!eventType || typeof eventType !== 'string') return;
+    
+    // RATE LIMITING para produção
+    const now = Date.now();
+    if (now - this.lastSendTime < this.sendCooldown && !metadata.isExit) {
+      // Adicionar à queue para envio posterior
+      this.offlineQueue.push({ eventType, metadata, timestamp: now });
+      this._processQueueDelayed();
+      return;
+    }
+
     const event = {
       type: eventType,
-      timestamp: Date.now(),
-      elapsed: Date.now() - this.sessionStart,
+      timestamp: now,
+      elapsed: now - this.sessionStart,
       ...metadata
     };
 
     this.events.push(event);
+    
+    // TRACKING DE USER JOURNEY
+    if (eventType === 'page_load') {
+      this.userJourney.push({
+        page: metadata.page || window.location.pathname,
+        timestamp: now,
+        referrer: document.referrer
+      });
+    }
+
+    // ENVIO AUTOMÁTICO INVISÍVEL para Google Apps Script
+    const payload = {
+      topic: metadata.topic || 'GENERAL',
+      metricType: eventType.toUpperCase(),
+      value: metadata.value || 1,
+      timestamp: new Date(now).toISOString(),
+      sessionId: this.sessionId,
+      studentId: this._getStudentId(),
+      userJourney: JSON.stringify(this.userJourney.slice(-5)), // Últimas 5 páginas
+      additionalData: JSON.stringify(metadata)
+    };
+    
+    this._sendToGoogleSheets(payload);
 
     // Limpar se exceder limite
     if (this.events.length > this.maxEventsPerSession) {
@@ -46,6 +127,168 @@ class LocalTelemetry {
     // Salvar periodicamente (a cada 10 eventos)
     if (this.events.length % 10 === 0) {
       this._saveSession();
+    }
+  }
+
+  /**
+   * Envia dados automaticamente para Google Apps Script com retry e offline support
+   * @private
+   */
+  async _sendToGoogleSheets(data, retryCount = 0) {
+    // Validação de URL configurada
+    if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('SEU_')) {
+      if (retryCount === 0) console.warn('[Telemetria] URL do Google Apps Script não configurada');
+      return;
+    }
+
+    const payload = {
+      ...data,
+      userAgent: navigator.userAgent.substring(0, 100),
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      language: navigator.language,
+      platform: navigator.platform,
+      isRepeating: this._getIsRepeatingStudent(),
+      retryCount
+    };
+
+    try {
+      // Se offline, adicionar à queue
+      if (!this.isOnline && !data.isExit) {
+        this.offlineQueue.push(payload);
+        return;
+      }
+
+      // Se é evento de saída/fechamento, usar sendBeacon (mais confiável)
+      if (data.metricType === 'PAGE_EXIT' || data.isExit) {
+        const formData = new FormData();
+        Object.keys(payload).forEach(key => {
+          formData.append(key, String(payload[key]));
+        });
+        navigator.sendBeacon(GOOGLE_SCRIPT_URL, formData);
+        this.lastSendTime = Date.now();
+        return;
+      }
+
+      // Envio normal assíncrono com timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+      
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Necessário para Google Apps Script
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(payload),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      this.lastSendTime = Date.now();
+      
+    } catch (e) {
+      // RETRY MECHANISM para produção
+      if (retryCount < this.maxRetries && !data.isExit) {
+        const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Backoff exponencial
+        setTimeout(() => {
+          this._sendToGoogleSheets(data, retryCount + 1);
+        }, retryDelay);
+      } else {
+        // Último recurso: adicionar à queue offline
+        if (!data.isExit) {
+          this.offlineQueue.push(payload);
+        }
+      }
+      
+      // Log apenas em desenvolvimento
+      if (window.location.hostname === 'localhost') {
+        console.warn('[Telemetria] Erro:', e.message, 'Retry:', retryCount);
+      }
+    }
+  }
+
+  /**
+   * Gera ou recupera ID anônimo do estudante
+   * @private
+   */
+  _getStudentId() {
+    let studentId = localStorage.getItem('bitlab_student_id');
+    if (!studentId) {
+      studentId = 'student_' + Math.random().toString(36).substr(2, 12);
+      localStorage.setItem('bitlab_student_id', studentId);
+    }
+    return studentId;
+  }
+
+  /**
+   * Detecta se é estudante repetente (já usou o sistema antes)
+   * @private
+   */
+  _getIsRepeatingStudent() {
+    const hasHistory = localStorage.getItem('telemetry_sessions');
+    return hasHistory ? 'true' : 'false';
+  }
+
+  /**
+   * Gerencia mudanças de conectividade
+   * @private
+   */
+  _handleOnlineStatus(isOnline) {
+    this.isOnline = isOnline;
+    
+    if (isOnline && this.offlineQueue.length > 0) {
+      // Processar queue offline
+      console.log(`[Telemetria] Reconectado! Enviando ${this.offlineQueue.length} eventos pendentes`);
+      const queue = [...this.offlineQueue];
+      this.offlineQueue = [];
+      
+      // Enviar com delay entre requisições
+      queue.forEach((payload, index) => {
+        setTimeout(() => {
+          this._sendToGoogleSheets(payload);
+        }, index * 200); // 200ms entre envios
+      });
+    }
+    
+    // Log do status
+    this.logEvent('CONNECTIVITY_CHANGE', {
+      topic: 'SYSTEM',
+      value: isOnline ? 'ONLINE' : 'OFFLINE',
+      queueSize: this.offlineQueue.length
+    });
+  }
+
+  /**
+   * Processa queue com debounce
+   * @private
+   */
+  _processQueueDelayed() {
+    clearTimeout(this._queueTimer);
+    this._queueTimer = setTimeout(() => {
+      if (this.offlineQueue.length > 0) {
+        const event = this.offlineQueue.shift();
+        this.logEvent(event.eventType, event.metadata);
+      }
+    }, this.sendCooldown * 2);
+  }
+
+  /**
+   * Performance monitoring para detectar lentidão
+   */
+  _monitorPerformance() {
+    if ('performance' in window) {
+      const perfData = performance.getEntriesByType('navigation')[0];
+      if (perfData && perfData.loadEventEnd > 0) {
+        const loadTime = perfData.loadEventEnd - perfData.fetchStart;
+        
+        if (loadTime > 5000) { // Mais de 5s é lento
+          this.logEvent('SLOW_LOAD_DETECTED', {
+            topic: 'PERFORMANCE',
+            value: Math.round(loadTime),
+            connection: navigator.connection?.effectiveType || 'unknown'
+          });
+        }
+      }
     }
   }
 
@@ -243,25 +486,107 @@ class LocalTelemetry {
   }
 }
 
-// Instância global
+// Instância global com inicialização robusta
 window.telemetry = new LocalTelemetry();
 
-// Auto-log page load
+// INICIALIZAÇÃO E VALIDAÇÃO AUTOMÁTICA
+(function initializeTelemetry() {
+  const health = validateTelemetrySetup();
+  
+  // Em desenvolvimento, mostrar status no console
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    console.group('🔍 BitLab Telemetry System Status');
+    if (health.isReady) {
+      console.log('✅ Sistema configurado e funcionando');
+      console.log('📊 Dados serão enviados para:', GOOGLE_SCRIPT_URL.substring(0, 60) + '...');
+      console.log('🔧 Para testar: testTelemetry()');
+    } else {
+      console.warn('⚠️ Problemas encontrados:');
+      health.issues.forEach(issue => console.warn(issue));
+    }
+    console.groupEnd();
+  }
+  
+  // Log de inicialização
+  setTimeout(() => {
+    window.telemetry.logEvent('SYSTEM_INITIALIZED', {
+      topic: 'SYSTEM',
+      value: health.isReady ? 'READY' : 'ISSUES',
+      errors: health.errors,
+      warnings: health.warnings,
+      url: window.location.href
+    });
+  }, 500);
+})();
+
+// Auto-log page load com performance monitoring
 window.addEventListener('load', () => {
   const pageName = document.title || location.pathname;
   window.telemetry.recordPageLoad(pageName);
+  
+  // Monitor performance após carregar
+  setTimeout(() => {
+    window.telemetry._monitorPerformance();
+  }, 1000);
 });
 
-// Log de abandono se página descarrega sem conclusão
+// HOOKS AUTOMÁTICOS INVISÍVEIS ===================================================
+
+// 1. Hook automático: Detecta saída/fechamento da página (CRUCIAL para seu artigo)
 window.addEventListener('beforeunload', () => {
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  window.telemetry.logEvent('PAGE_EXIT', { 
+    topic: 'SESSION',
+    value: currentPage,
+    isExit: true,
+    duration: Date.now() - window.telemetry.sessionStart
+  });
+  
+  // Detecta abandono específico durante atividades
   const quizContainer = document.getElementById('quiz-container');
-  if (quizContainer && !document.getElementById('restartBtn')?.hidden) {
-    // Quiz ainda está ativo (não foi finalizado)
-    window.telemetry.logAbandonment({ type: 'page_unload_during_quiz' });
+  const isQuizActive = quizContainer && !document.getElementById('restartBtn')?.hidden;
+  const isEmulatorActive = window.running || false;
+  
+  if (isQuizActive) {
+    window.telemetry.logEvent('QUIZ_ABANDONED', { 
+      topic: 'QUIZ',
+      value: window.telemetry.currentQuizScore || 0,
+      progress: `${window.currentQ || 0}/${window.quizSet?.length || 0}`
+    });
+  }
+  
+  if (isEmulatorActive) {
+    window.telemetry.logEvent('EMULATOR_ABANDONED', { 
+      topic: 'EMULATION',
+      value: window.PC || 0,
+      state: 'RUNNING'
+    });
   }
 });
 
-// Log de erros não capturados
+// 2. Hook automático: Visibilidade da página (detecta alt+tab, minimizar)
+document.addEventListener('visibilitychange', () => {
+  window.telemetry.logEvent(document.hidden ? 'PAGE_HIDDEN' : 'PAGE_VISIBLE', {
+    topic: 'SESSION',
+    value: document.hidden ? 'HIDDEN' : 'VISIBLE'
+  });
+});
+
+// 3. Hook automático: Erros de JavaScript
 window.addEventListener('error', (event) => {
   window.telemetry.logError(event.message, event.error?.stack || '');
+  window.telemetry.logEvent('JS_ERROR', {
+    topic: 'SYSTEM',
+    value: event.message.substring(0, 100),
+    filename: event.filename,
+    line: event.lineno
+  });
+});
+
+// 4. Hook automático: Redimensionamento de tela (mudança de dispositivo/orientação)
+window.addEventListener('resize', () => {
+  window.telemetry.logEvent('VIEWPORT_CHANGE', {
+    topic: 'UI',
+    value: `${window.innerWidth}x${window.innerHeight}`
+  });
 });

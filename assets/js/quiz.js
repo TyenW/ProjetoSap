@@ -277,6 +277,25 @@ function endQuiz() {
   document.getElementById("options").innerHTML = "";
   document.getElementById("restartBtn").style.display = "block";
 
+  // HOOK AUTOMÁTICO: Envio silencioso de dados do quiz finalizado
+  const quizResult = {
+    finalScore: score,
+    questionsAnswered: answeredCount,
+    accuracy: answeredCount > 0 ? Math.round((score / answeredCount) * 100) : 0,
+    maxStreak: maxStreak,
+    hintsUsed: window.telemetry?.totalHintsUsed || 0,
+    gameOverReason: lives === 0 ? 'NO_LIVES' : 'COMPLETED',
+    duration: Date.now() - (window.quizStartTime || Date.now())
+  };
+
+  if (window.telemetry) {
+    window.telemetry.logEvent('QUIZ_FINISHED', {
+      topic: 'QUIZ',
+      value: score,
+      ...quizResult
+    });
+  }
+
   if (lives === 0) {
     document.getElementById("question").innerText = "☠️ GAME OVER!";
     document.getElementById("message").innerHTML = `<div class="game-over">Você perdeu todas as vidas! Acertou ${score} perguntas.</div>`;
@@ -318,6 +337,21 @@ function startQuiz() {
   score = 0;
   acertosSeguidos = 0;
   usedQuestions = [];
+  
+  // HOOK AUTOMÁTICO: Captura início do quiz
+  window.quizStartTime = Date.now();
+  if (window.telemetry) {
+    window.telemetry.currentQuizTopic = document.title || 'SAP-1 Quiz';
+    window.telemetry.currentQuizScore = 0;
+    window.telemetry.totalHintsUsed = 0;
+    
+    window.telemetry.logEvent('QUIZ_STARTED', {
+      topic: 'QUIZ',
+      value: 'START',
+      difficulty: TRI_MODE || 'unknown',
+      questionsAvailable: allQuestions?.length || 0
+    });
+  }
   quizSet = [];
   respostasCorretas = [];
   answeredCount = 0;
