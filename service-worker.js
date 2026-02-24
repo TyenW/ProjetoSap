@@ -6,7 +6,7 @@
  * - CACHE_FIRST: For assets (images, audio)
  */
 
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 
 function isCacheableResponse(response) {
   if (!response) return false;
@@ -181,6 +181,25 @@ self.addEventListener('fetch', (event) => {
 
   // Stale-while-revalidate for HTML
   if (request.headers.get('Accept')?.includes('text/html')) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        const fetchPromise = fetch(request).then((response) => {
+          if (isCacheableResponse(response)) {
+            const clonedResponse = response.clone();
+            caches.open(CACHE_VERSION).then((cache) => {
+              cache.put(request, clonedResponse);
+            });
+          }
+          return response;
+        });
+        return cached || fetchPromise;
+      })
+    );
+    return;
+  }
+
+  // Stale-while-revalidate for JS/CSS para evitar ficar preso em versão antiga
+  if (request.url.match(/\.(js|css)$/)) {
     event.respondWith(
       caches.match(request).then((cached) => {
         const fetchPromise = fetch(request).then((response) => {
