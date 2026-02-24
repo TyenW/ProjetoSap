@@ -131,7 +131,7 @@ function testTelemetrySystem() {
     }
 
     console.log('\n=== TESTE 9: Verificando URL de Produção ===');
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyhFYlw1QQlh4MSFH0TKOCnW7p2coslf4HWhxi3hrI7G1y9VPHcbvKuZ1NvO0IVxlpbOQ/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxwTLy1F6IE5tOtcKgHtkGyz44JebINPkWIHf1fz2aBKp741lYazuhjvZJXIm2AzHgHWQ/exec';
     
     if (window.GOOGLE_SCRIPT_URL) {
         console.log('📡 URL configurada:', window.GOOGLE_SCRIPT_URL);

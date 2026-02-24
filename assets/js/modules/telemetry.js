@@ -6,7 +6,7 @@
  */
 
 // Configure your Google Apps Script URL here
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhFYlw1QQlh4MSFH0TKOCnW7p2coslf4HWhxi3hrI7G1y9VPHcbvKuZ1NvO0IVxlpbOQ/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwTLy1F6IE5tOtcKgHtkGyz44JebINPkWIHf1fz2aBKp741lYazuhjvZJXIm2AzHgHWQ/exec';
 
 // HEALTH CHECK do sistema
 function validateTelemetrySetup() {
