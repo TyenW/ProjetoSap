@@ -30,6 +30,7 @@ masterAchievements = [...DEFAULT_ACHIEVEMENTS];
 // Configurações dinâmicas
 // Modo infinito: perguntas aleatórias até o jogador perder 3 vidas
 let TRI_MODE = 'infinite';
+let lastFocusedBeforeChartModal = null;
 
 // Carrega dados externos (questions.json e achievements.json)
 function showDataAlert(text, tone = 'warn') {
@@ -379,9 +380,14 @@ function startQuiz() {
 
 function renderChart() {
   const modal = document.getElementById("chartModal");
+  lastFocusedBeforeChartModal = (document.activeElement instanceof HTMLElement)
+    ? document.activeElement
+    : null;
   modal.style.display = "block";
   modal.setAttribute("aria-hidden", "false");
   modal.removeAttribute("inert");
+  const closeBtn = modal.querySelector('.close-btn');
+  if (closeBtn) closeBtn.focus();
 
   const ctx = document.getElementById("performanceChartModal").getContext("2d");
 
@@ -431,9 +437,19 @@ function renderChart() {
 
 function closeChart() {
   const modal = document.getElementById("chartModal");
+
+  // Evita aria-hidden em ancestral com foco ativo
+  if (modal.contains(document.activeElement) && document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+
   modal.style.display = "none";
   modal.setAttribute("aria-hidden", "true");
   modal.setAttribute("inert", "");
+
+  if (lastFocusedBeforeChartModal && document.contains(lastFocusedBeforeChartModal)) {
+    lastFocusedBeforeChartModal.focus();
+  }
 }
 
 function exportResults(format = 'txt') {
