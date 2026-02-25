@@ -496,6 +496,11 @@ function montarAssemblyParaRAM() {
             }
         }
         atualizarAssemblyDaRAM();
+        
+        // TELEMETRIA: Analisa código Assembly quando montado com sucesso
+        if (!Array.isArray(errors) || errors.length === 0) {
+            try { analyzeAssemblyCode(); } catch (_) {}
+        }
     };
 
     // Tenta via worker
@@ -531,6 +536,34 @@ function montarAssemblyParaRAM() {
             errosBox.style.display = 'block';
         }
     }
+}
+
+// TELEMETRIA: Análisa complexidade de código Assembly
+function analyzeAssemblyCode() {
+    if (!window.telemetry) return;
+    
+    const textarea = document.getElementById('codigoMaquina');
+    if (!textarea) return;
+    
+    const code = textarea.value || '';
+    const lines = code.split('\n').filter(line => line.trim() && !line.trim().startsWith('#'));
+    const instructions = lines.filter(line => /^(LDA|ADD|SUB|INC|DEC|MUL|JMP|OUT|HLT)\s/.test(line.trim()));
+    
+    const complexityMetrics = {
+        totalLines: lines.length,
+        instructionCount: instructions.length,
+        dataDefinitions: lines.length - instructions.length,
+        jumpInstructions: instructions.filter(line => line.trim().startsWith('JMP')).length,
+        mathOperations: instructions.filter(line => /^(ADD|SUB|MUL|INC|DEC)/.test(line.trim())).length,
+        complexity: lines.length > 10 ? 'HIGH' : lines.length > 5 ? 'MEDIUM' : 'LOW'
+    };
+    
+    window.telemetry.logEvent('ASSEMBLY_CODE_ANALYSIS', {
+        topic: 'LOGIC_PRECISION',
+        value: complexityMetrics.complexity,
+        metrics: JSON.stringify(complexityMetrics),
+        codeHash: btoa(code).substring(0, 16)
+    });
 }
 
 function atualizarRamPreview() {
@@ -1413,6 +1446,18 @@ function executarTudo() {
             if (data.type === 'tick') {
                 tickQueue.push(data);
                 processTickQueue();
+            } else if (data.type === 'emulator-step-telemetry') {
+                // TELEMETRIA: Process step-by-step data from worker
+                if (window.telemetry) {
+                    window.telemetry.logEvent('EMULATOR_STEP', {
+                        topic: 'EMULATION_GRANULAR',
+                        value: data.step,
+                        instruction: data.instruction,
+                        registers: JSON.stringify(data.registers),
+                        memory: data.memory ? JSON.stringify(data.memory) : null,
+                        fault: data.fault || null
+                    });
+                }
             } else if (data.type === 'challenge') {
                 startChallengePrompt(data.targetId);
             } else if (data.type === 'challenge-feedback' && data.ok === false) {
@@ -1445,6 +1490,38 @@ function executarTudo() {
             } else if (data.type === 'done') {
                 workerRunning = false;
                 const reason = data.reason || 'DONE';
+                
+                // TELEMETRIA: State dump em caso de erro/falha
+                if (reason === 'ERROR' && window.telemetry && data.state) {
+                    window.telemetry.logEvent('EXECUTION_FAILED', {
+                        topic: 'LOGIC_PRECISION',
+                        value: 'STATE_DUMP_ERROR',
+                        errorReason: data.error || 'Unknown error',
+                        finalState: {
+                            PC: data.state.PC || 0,
+                            ACC: data.state.ACC || 0,
+                            memory: data.state.memory ? data.state.memory.slice(0, 16) : [],
+                            outputs: data.state.outputs || [],
+                            halted: data.state.halted || false
+                        },
+                        steps: data.steps || 0,
+                        programCode: (store && store.getAll) ? store.getAll().slice(0, 16) : []
+                    });
+                } else if (reason === 'MAX_STEPS' && window.telemetry && data.state) {
+                    window.telemetry.logEvent('EXECUTION_TIMEOUT', {
+                        topic: 'LOGIC_PRECISION', 
+                        value: 'STATE_DUMP_TIMEOUT',
+                        finalState: {
+                            PC: data.state.PC || 0,
+                            ACC: data.state.ACC || 0,
+                            memory: data.state.memory ? data.state.memory.slice(0, 16) : [],
+                            outputs: data.state.outputs || [],
+                            halted: data.state.halted || false
+                        },
+                        steps: data.steps || 0
+                    });
+                }
+                
                 const base = passos.join('\n') + (saida.length ? "\nSaída: " + saida.join(', ') : '');
                 const aviso = (reason === 'MAX_STEPS') ? `\nExecução interrompida: limite de 256 passos.` : (reason === 'CANCELED' ? '\nExecução cancelada.' : '');
                 setTimeout(() => {
@@ -1755,6 +1832,23 @@ document.addEventListener('DOMContentLoaded', function () {
             const target = ev.target.closest('.sap1-block, #barramento');
             if (!target || !target.id) return;
             const isCorrect = target.id === pendingChallengeTargetId;
+            
+            // TELEMETRIA: Log de TTA (Time To Action)
+            if (window.UIEffects?.logComponentClick) {
+                window.UIEffects.logComponentClick(target.id);
+            }
+            
+            // TELEMETRIA: Log de clique incorreto para heatmap de erros
+            if (!isCorrect && window.telemetry) {
+                window.telemetry.logEvent('CLICK_ERROR', {
+                    topic: 'SPATIAL_MAPPING',
+                    value: `${target.id}_instead_of_${pendingChallengeTargetId}`,
+                    expectedTarget: pendingChallengeTargetId,
+                    actualTarget: target.id,
+                    instructionContext: passos?.length ? passos[passos.length - 1] : null
+                });
+            }
+            
             answerChallengePrompt(isCorrect);
         });
     }
@@ -2038,6 +2132,45 @@ function updateBusTaps() {
     } catch(_) {}
 }
 
+// TELEMETRIA: Função de inicialização de hover tracking
+function initializeHoverTracking() {
+    if (!window.telemetry) return;
+    
+    const componentsToTrack = [
+        '#acc', '#regb', '#alu', '#pc', '#ram', '#ri', 
+        '#controlador', '#saida', '#visual', '#barramento'
+    ];
+    
+    componentsToTrack.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (!element) return;
+        
+        let hoverStartTime = null;
+        
+        element.addEventListener('mouseenter', () => {
+            hoverStartTime = performance.now();
+            window.telemetry.logEvent('COMPONENT_HOVER_START', {
+                topic: 'SPATIAL_MAPPING',
+                value: selector.replace('#', ''),
+                timestamp: Date.now()
+            });
+        });
+        
+        element.addEventListener('mouseleave', () => {
+            if (hoverStartTime) {
+                const durationMs = performance.now() - hoverStartTime;
+                window.telemetry.logEvent('COMPONENT_HOVER_END', {
+                    topic: 'SPATIAL_MAPPING',
+                    value: selector.replace('#', ''),
+                    duration: Math.round(durationMs),
+                    timestamp: Date.now()
+                });
+                hoverStartTime = null;
+            }
+        });
+    });
+}
+
 // Atualiza taps em resize e após layout
 window.addEventListener('resize', () => { try { updateBusTaps(); } catch(_) {} });
 document.addEventListener('DOMContentLoaded', () => { try { updateBusTaps(); } catch(_) {} });
@@ -2127,5 +2260,10 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('mouseenter', () => { try { sfx.play('hover'); } catch(_) {} });
             btn.addEventListener('click', () => { try { sfx.play('click'); } catch(_) {} });
         });
+    } catch(_) {}
+
+    // TELEMETRIA: Inicializar hover tracking
+    try { 
+        initializeHoverTracking(); 
     } catch(_) {}
 });

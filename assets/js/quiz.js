@@ -174,6 +174,19 @@ function renderQuestion() {
   questionStartTime = Date.now();
 
   const q = quizSet[currentQ];
+  
+  // TELEMETRIA: Question-level granular tracking
+  if (window.telemetry && q) {
+    window.telemetry.logEvent('QUESTION_STARTED', {
+      topic: 'QUIZ_GRANULAR',
+      value: currentQ,
+      questionText: q.text.substring(0, 100),
+      difficulty: q.difficulty || 'unknown',
+      optionCount: q.options ? q.options.length : 0,
+      currentStreak: acertosSeguidos,
+      livesRemaining: lives
+    });
+  }
   if (!q) {
     const msg = document.getElementById('message');
     if (msg) { msg.textContent = 'Não há perguntas disponíveis no momento.'; msg.style.color = '#64ffda'; }
@@ -240,6 +253,38 @@ function checkAnswer(selected) {
     const hearts = document.getElementById('lives');
     hearts.classList.add('remove');
     setTimeout(()=> hearts.classList.remove('remove'), 350);
+  }
+
+  // TELEMETRIA: Question answered event
+  if (window.telemetry) {
+    window.telemetry.logEvent('QUESTION_ANSWERED', {
+      topic: 'QUIZ_GRANULAR',
+      value: correct ? 'CORRECT' : 'INCORRECT',
+      responseTime: timeMs,
+      selectedAnswer: selected,
+      correctAnswer: q.answer,
+      questionId: currentQ,
+      difficulty: q.difficulty || 'unknown',
+      livesAfter: lives,
+      streakAfter: acertosSeguidos
+    });
+  }
+  
+  // TELEMETRIA: Post-hint effectiveness check
+  if (window.hintGivenAt && window.hintQuestionId === currentQ && window.telemetry) {
+    window.telemetry.logEvent('HINT_EFFECTIVENESS', {
+      topic: 'SCAFFOLDING_ANALYSIS',
+      value: correct ? 'SUCCESS_AFTER_HINT' : 'FAILED_AFTER_HINT',
+      hintLevel: window.hintLevel || 0,
+      timeAfterHint: Date.now() - window.hintGivenAt,
+      questionId: currentQ,
+      hintTopic: window.hintTopic || 'unknown'
+    });
+    // Reset hint tracking
+    window.hintGivenAt = null;
+    window.hintQuestionId = null;
+    window.hintLevel = null;
+    window.hintTopic = null;
   }
 
   // Registra resposta no perfil do usuário

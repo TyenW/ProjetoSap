@@ -138,6 +138,22 @@ self.onmessage = async (ev) => {
 
         const tick = emu.step();
         steps++;
+        
+        // TELEMETRIA: Step-by-step execution tracking
+        if (self.postMessage && steps % 5 === 0) { // Every 5th step to avoid flooding
+          self.postMessage({
+            type: 'emulator-step-telemetry',
+            step: steps,
+            instruction: tick.decode ? `${tick.decode.opName} ${tick.decode.arg}` : 'UNKNOWN',
+            registers: {
+              PC: tick.after.PC,
+              ACC: tick.after.ACC
+            },
+            memory: tick.readVal !== null ? { address: tick.decode.arg, value: tick.readVal } : null,
+            fault: tick.fault
+          });
+        }
+        
         postMessage({
           type: 'tick',
           step: steps,
@@ -170,7 +186,17 @@ self.onmessage = async (ev) => {
       }
       postMessage({ type: 'done', reason, steps, outputs: emu.outputs, state: finalState, registers, validation: validationResult });
     } catch (err) {
-      postMessage({ type: 'done', reason: 'ERROR', error: String(err && err.message ? err.message : err) });
+      // TELEMETRIA: Captura estado do emulador em caso de exceção
+      const errorState = emu ? emu.snapshot() : {
+        PC: 0, ACC: 0, memory: new Array(16).fill(0), outputs: [], halted: false
+      };
+      postMessage({ 
+        type: 'done', 
+        reason: 'ERROR', 
+        error: String(err && err.message ? err.message : err),
+        state: errorState,
+        steps: steps || 0
+      });
     } finally {
       running = false;
       canceled = false;

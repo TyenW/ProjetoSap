@@ -4,6 +4,10 @@
   const DEFAULT_CLEAR_MS = 900;
   let focusOverlay = null;
   let activeFocusedEl = null;
+  
+  // TTA (Time to Action) tracking
+  let highlightStartTime = null;
+  let lastHighlightedComponent = null;
 
   function ensureOverlay() {
     if (focusOverlay && document.body.contains(focusOverlay)) return focusOverlay;
@@ -44,6 +48,12 @@
     const glowColor = options.glowColor || '';
     const focus = !!options.focus;
 
+    // TELEMETRIA: Marca início do TTA (Time To Action)
+    if (focus || className === 'pulse') {
+      highlightStartTime = Date.now();
+      lastHighlightedComponent = componentId;
+    }
+
     el.classList.add(className);
     if (glowColor) el.style.setProperty('--glow-color', glowColor);
 
@@ -63,8 +73,26 @@
     return true;
   }
 
+  // TELEMETRIA: Função para capturar TTA quando componente é clicado
+  function logComponentClick(componentId) {
+    if (highlightStartTime && lastHighlightedComponent && window.telemetry) {
+      const tta = Date.now() - highlightStartTime;
+      window.telemetry.logEvent('TIME_TO_ACTION', {
+        topic: 'ATTENTION_FLOW',
+        value: tta,
+        component: componentId,
+        expectedComponent: lastHighlightedComponent,
+        wasCorrectTarget: componentId === lastHighlightedComponent
+      });
+      // Reset tracking
+      highlightStartTime = null;
+      lastHighlightedComponent = null;
+    }
+  }
+
   global.UIEffects = {
     highlight,
-    clear
+    clear,
+    logComponentClick
   };
 })(typeof window !== 'undefined' ? window : globalThis);

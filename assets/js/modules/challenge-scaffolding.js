@@ -100,6 +100,25 @@ class ChallengeScaffolding {
 
     const currentLevel = this.sessionHints[questionId];
     const hint = hints[Math.min(currentLevel, hints.length - 1)];
+    
+    // TELEMETRIA: Gatilho de ativação do scaffolding
+    if (window.telemetry) {
+      window.telemetry.logEvent('SCAFFOLDING_TRIGGERED', {
+        topic: 'ADAPTIVE_LEARNING',
+        value: `level_${currentLevel}`,
+        questionId: questionId,
+        hintLevel: currentLevel,
+        topicCategory: topic,
+        maxLevel: hints.length - 1,
+        questionText: questionText
+      });
+    }
+    
+    // TELEMETRIA: Track hint effectiveness setup
+    window.hintGivenAt = Date.now();
+    window.hintQuestionId = questionId;
+    window.hintLevel = currentLevel;
+    window.hintTopic = topic;
 
     this.sessionHints[questionId]++;
 

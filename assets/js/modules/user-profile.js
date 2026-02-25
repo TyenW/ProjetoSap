@@ -46,7 +46,7 @@ class UserProfile {
   }
 
   /**
-   * Registra resposta do usuário
+   * Registra resposta do usuário e envia para telemetria
    * @param {string} questionText
    * @param {string} difficulty - 'fácil'|'médio'|'difícil'
    * @param {boolean} isCorrect
@@ -71,6 +71,19 @@ class UserProfile {
     this.profile.updatedAt = new Date().toISOString();
     this._updateLevel();
     this._save();
+    
+    // TELEMETRIA: User profile integration
+    if (window.telemetry) {
+      window.telemetry.logEvent('USER_ANSWER_RECORDED', {
+        topic: 'USER_PROFILE',
+        value: isCorrect ? 'CORRECT' : 'INCORRECT',
+        difficulty: difficulty,
+        responseTime: timeMs,
+        totalAnswered: this.profile.totalAnswered,
+        accuracy: this.getStats().accuracy,
+        level: this.profile.level
+      });
+    }
   }
 
   /**
@@ -78,6 +91,7 @@ class UserProfile {
    * @private
    */
   _updateLevel() {
+    const oldLevel = this.profile.level;
     const accuracy = this.profile.totalAnswered > 0
       ? this.profile.totalCorrect / this.profile.totalAnswered
       : 0;
@@ -88,6 +102,17 @@ class UserProfile {
 
     this.profile.level = Math.floor((totalWeight + accuracyWeight) / 30) + 1;
     this.profile.level = Math.min(this.profile.level, 10); // cap em level 10
+    
+    // TELEMETRIA: Level up detection
+    if (this.profile.level > oldLevel && window.telemetry) {
+      window.telemetry.logEvent('USER_LEVEL_UP', {
+        topic: 'USER_PROFILE',
+        value: this.profile.level,
+        previousLevel: oldLevel,
+        totalAnswered: this.profile.totalAnswered,
+        accuracy: accuracy * 100
+      });
+    }
   }
 
   /**
@@ -99,6 +124,17 @@ class UserProfile {
     if (!this.profile.achievements.includes(achievementId)) {
       this.profile.achievements.push(achievementId);
       this._save();
+      
+      // TELEMETRIA: Achievement unlocked
+      if (window.telemetry) {
+        window.telemetry.logEvent('ACHIEVEMENT_UNLOCKED', {
+          topic: 'USER_PROFILE',
+          value: achievementId,
+          achievementTitle: title,
+          totalAchievements: this.profile.achievements.length,
+          userLevel: this.profile.level
+        });
+      }
     }
   }
 
