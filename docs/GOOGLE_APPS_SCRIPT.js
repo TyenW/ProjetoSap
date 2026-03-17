@@ -285,7 +285,8 @@ function buildStructuredRow_(normalized) {
 
 function importEvents_(e) {
   const payload = parseRequestPayload_(e);
-  const records = Array.isArray(payload.records) ? payload.records : [];
+  const parsedRecords = parseJsonSafe_(payload.records, payload.records);
+  const records = Array.isArray(parsedRecords) ? parsedRecords : [];
 
   if (records.length === 0) {
     return jsonResponse_({ status: 'error', message: 'records vazio no import.' });
