@@ -5,6 +5,14 @@ function toSearchParams(input) {
   if (!input) return params;
 
   if (typeof input === 'string') {
+    const trimmed = input.trim();
+    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      try {
+        return toSearchParams(JSON.parse(trimmed));
+      } catch (_err) {
+        return new URLSearchParams(input);
+      }
+    }
     return new URLSearchParams(input);
   }
 
