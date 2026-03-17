@@ -571,7 +571,7 @@ class LocalTelemetry {
 
     this.logEvent('page_load', {
       page: pageName,
-      windoLoadTime: performance?.getEntriesByType('navigation')?.[0]?.loadEventEnd || 0
+      loadTime: performance?.getEntriesByType('navigation')?.[0]?.loadEventEnd || 0
     });
   }
 

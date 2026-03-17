@@ -113,6 +113,29 @@ let respostasCorretas = []; // armazena true/false para acertos
 let answeredCount = 0;
 let maxStreak = 0;
 let questionStartTime = 0; // timestamp when question was rendered
+let quizAbandonLogged = false;
+
+function isQuizInProgress() {
+  const restartBtn = document.getElementById('restartBtn');
+  return !!restartBtn && restartBtn.style.display !== 'block' && lives > 0 && answeredCount >= 0;
+}
+
+function logQuizAbandonedIfNeeded(reason = 'PAGE_LEAVE') {
+  if (quizAbandonLogged) return;
+  if (!isQuizInProgress()) return;
+  if (!window.telemetry) return;
+
+  quizAbandonLogged = true;
+  const total = quizSet?.length || 0;
+  window.telemetry.logEvent('QUIZ_ABANDONED', {
+    topic: 'QUIZ',
+    value: reason,
+    progress: `${currentQ || 0}/${total}`,
+    duration: Date.now() - (window.quizStartTime || Date.now()),
+    livesRemaining: lives,
+    score
+  });
+}
 
 function updateStatsUI() {
   const answeredEl = document.getElementById('answered-count');
@@ -341,6 +364,7 @@ function endQuiz() {
       ...quizResult
     });
   }
+  quizAbandonLogged = true;
 
   if (lives === 0) {
     document.getElementById("question").innerText = "☠️ GAME OVER!";
@@ -386,6 +410,7 @@ function startQuiz() {
   
   // HOOK AUTOMÁTICO: Captura início do quiz
   window.quizStartTime = Date.now();
+  quizAbandonLogged = false;
   if (window.telemetry) {
     window.telemetry.currentQuizTopic = document.title || 'SAP-1 Quiz';
     window.telemetry.currentQuizScore = 0;
@@ -769,6 +794,16 @@ endQuiz = function() {
 attachTouchHandlers();
 renderAchievementsList();
 startQuiz();
+
+window.addEventListener('pagehide', () => {
+  logQuizAbandonedIfNeeded('PAGEHIDE');
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    logQuizAbandonedIfNeeded('VISIBILITY_HIDDEN');
+  }
+});
 
 // Hidratação de dados externos em segundo plano
 loadExternalData().then(() => {

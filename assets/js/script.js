@@ -29,6 +29,7 @@ let pendingManualChallengeResolver = null;
 let challengeRunDebounce = null;
 let currentValidationChallenge = null;
 let challengeOracle = [];
+const hoverStartByComponent = new Map();
 const EMULATOR_ACHIEVEMENTS_KEY = 'sap_emulator_achievements';
 const achievementCatalog = new Map();
 const CHALLENGE_TARGETS = Object.freeze({
@@ -247,6 +248,16 @@ function startChallengePrompt(targetId) {
 
 function answerChallengePrompt(correct) {
     if (!awaitingChallengeClick) return;
+
+    if (window.telemetry) {
+        window.telemetry.logEvent('CHALLENGE_ATTEMPT', {
+            topic: 'SPATIAL_MAPPING',
+            value: correct ? 'CORRECT' : 'INCORRECT',
+            expectedTarget: pendingChallengeTargetId || null,
+            mode: isChallengeMode ? 'CHALLENGE' : 'NORMAL'
+        });
+    }
+
     if (workerRunning && emulatorWorker) {
         emulatorWorker.postMessage({ type: 'challenge-response', correct: !!correct });
     }
@@ -1827,6 +1838,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const hardwareContainer = document.querySelector('.sap1-container');
     if (hardwareContainer) {
+        hardwareContainer.addEventListener('mouseover', (ev) => {
+            const target = ev.target.closest('.sap1-block, #barramento');
+            if (!target || !target.id || !window.telemetry) return;
+            if (hoverStartByComponent.has(target.id)) return;
+            hoverStartByComponent.set(target.id, Date.now());
+            window.telemetry.logEvent('COMPONENT_HOVER_START', {
+                topic: 'SPATIAL_MAPPING',
+                value: target.id,
+                componentId: target.id
+            });
+        });
+
+        hardwareContainer.addEventListener('mouseout', (ev) => {
+            const target = ev.target.closest('.sap1-block, #barramento');
+            if (!target || !target.id || !window.telemetry) return;
+            const startedAt = hoverStartByComponent.get(target.id);
+            if (!startedAt) return;
+            hoverStartByComponent.delete(target.id);
+            window.telemetry.logEvent('COMPONENT_HOVER_END', {
+                topic: 'SPATIAL_MAPPING',
+                value: target.id,
+                componentId: target.id,
+                durationMs: Date.now() - startedAt
+            });
+        });
+
         hardwareContainer.addEventListener('click', (ev) => {
             if (!awaitingChallengeClick || !isChallengeMode) return;
             const target = ev.target.closest('.sap1-block, #barramento');
