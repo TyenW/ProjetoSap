@@ -70,6 +70,7 @@ class LocalTelemetry {
     this.sendCooldown = 100; // Rate limiting: min 100ms entre envios
     this.maxRetries = 3;
     this.remoteBlockedUntil = 0; // pausa envio remoto em caso de auth/config inválida
+    this.remoteDisabled = false;
     this.hasWarnedRemoteAuth = false;
     this.hasWarnedRemoteBlocked = false;
     this.consecutiveSendFailures = 0;
@@ -193,6 +194,10 @@ class LocalTelemetry {
       return false;
     }
 
+    if (this.remoteDisabled) {
+      return false;
+    }
+
     // Evita flood quando endpoint está com auth/configuração inválida
     if (Date.now() < this.remoteBlockedUntil) {
       return false;
@@ -250,6 +255,7 @@ class LocalTelemetry {
       const message = String(e?.message || '');
       const unauthorized = /401|unauthorized/i.test(message);
       const blockedByClient = /blocked|err_blocked_by_client/i.test(message);
+      const transportBlocked = (e?.name === 'TypeError') && /failed to fetch|networkerror|load failed/i.test(message.toLowerCase());
 
       if (unauthorized) {
         // Pausa por 10 minutos para evitar repetição infinita de erro no console
@@ -263,8 +269,19 @@ class LocalTelemetry {
 
       if (blockedByClient) {
         this.remoteBlockedUntil = Date.now() + (30 * 60 * 1000);
+        this.remoteDisabled = true;
         if (!this.hasWarnedRemoteBlocked) {
           console.warn('[Telemetria] Envio bloqueado pelo cliente/navegador (ERR_BLOCKED_BY_CLIENT). Desative bloqueadores para este domínio ou use um endpoint no mesmo domínio. Retentativa pausada por 30 minutos; eventos seguem na fila local.');
+          this.hasWarnedRemoteBlocked = true;
+        }
+        return false;
+      }
+
+      if (transportBlocked) {
+        this.remoteBlockedUntil = Date.now() + (30 * 60 * 1000);
+        this.remoteDisabled = true;
+        if (!this.hasWarnedRemoteBlocked) {
+          console.warn('[Telemetria] Falha de transporte ao enviar telemetria (possível bloqueador de conteúdo). Envio remoto desativado nesta sessão; eventos permanecem na fila local.');
           this.hasWarnedRemoteBlocked = true;
         }
         return false;
@@ -730,10 +747,21 @@ class LocalTelemetry {
     this.sendQueue = [];
     this.pendingEvents = [];
     this.sentEventIds = new Set();
+    this.remoteDisabled = false;
+    this.consecutiveSendFailures = 0;
+    this.remoteBlockedUntil = 0;
+    this.hasWarnedRemoteBlocked = false;
     localStorage.removeItem(TELEMETRY_KEYS.sessions);
     localStorage.removeItem(TELEMETRY_KEYS.sendQueue);
     localStorage.removeItem(TELEMETRY_KEYS.sentCache);
     localStorage.removeItem(TELEMETRY_KEYS.sequence);
+  }
+
+  resumeRemoteSending() {
+    this.remoteDisabled = false;
+    this.remoteBlockedUntil = 0;
+    this.hasWarnedRemoteBlocked = false;
+    this._flushSendQueue();
   }
 }
 
@@ -741,6 +769,9 @@ class LocalTelemetry {
 window.telemetry = new LocalTelemetry();
 window.setBitlabNickname = function setBitlabNickname(nickname) {
   return window.telemetry.setNickname(nickname);
+};
+window.resumeTelemetryRemoteSending = function resumeTelemetryRemoteSending() {
+  return window.telemetry.resumeRemoteSending();
 };
 
 // INICIALIZAÇÃO E VALIDAÇÃO AUTOMÁTICA
