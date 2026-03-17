@@ -1,241 +1,485 @@
 /**
- * Google Apps Script - Receptor de Telemetria BitLab
- * Versão Otimizada para Pesquisa Acadêmica
- * 
- * INSTRUÇÕES:
- * 1. Abra script.google.com
- * 2. Crie novo projeto
- * 3. Cole este código
- * 4. Salve e publique como Web App
- * 5. Copie a URL e cole no telemetry.js
+ * Google Apps Script - Receptor de Telemetria BitLab (v3)
+ *
+ * Objetivos:
+ * - Idempotência por eventId (sem duplicação)
+ * - Verificação de integridade por checksum
+ * - Armazenamento em duas abas: Raw + Structured
+ * - Endpoints de import/export para backup e reprocessamento
+ *
+ * Passos rápidos:
+ * 1) Ajuste SPREADSHEET_ID
+ * 2) Faça Deploy > New deployment > Web app
+ * 3) Execute como: você; acesso: Anyone
  */
+
+const CONFIG = {
+  SPREADSHEET_ID: 'SEU_SPREADSHEET_ID_AQUI',
+  RAW_SHEET: 'Raw_Events',
+  STRUCT_SHEET: 'Structured_Events',
+  MAX_IMPORT_BATCH: 500,
+  CACHE_TTL_SECONDS: 60 * 60 * 6
+};
+
+const RAW_HEADERS = [
+  'ingestedAt',
+  'eventId',
+  'timestamp',
+  'sessionId',
+  'studentId',
+  'installationId',
+  'nickname',
+  'topic',
+  'metricType',
+  'value',
+  'sequence',
+  'isRepeating',
+  'checksum',
+  'checksumValid',
+  'source',
+  'userAgent',
+  'viewport',
+  'language',
+  'platform',
+  'retryCount',
+  'userJourneyJson',
+  'additionalDataJson',
+  'rawJson'
+];
+
+const STRUCT_HEADERS = [
+  'ingestedAt',
+  'eventId',
+  'timestamp',
+  'date',
+  'hour',
+  'sessionId',
+  'studentId',
+  'installationId',
+  'nickname',
+  'topic',
+  'metricType',
+  'value',
+  'sequence',
+  'isRepeating',
+  'checksumValid',
+  'page',
+  'duration',
+  'questionId',
+  'difficulty',
+  'correct',
+  'timeMs',
+  'errorMessage',
+  'queueSize',
+  'connection',
+  'additionalDataFlat',
+  'rawJson'
+];
 
 function doPost(e) {
   try {
-    // Configuração - ALTERE AQUI COM SEU SPREADSHEET ID
-    const SPREADSHEET_ID = 'SEU_SPREADSHEET_ID_AQUI';
-    const SHEET_NAME = 'BitLab_Telemetria';
-    
-    // Abrir planilha
-    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-    let sheet;
-    
-    try {
-      sheet = spreadsheet.getSheetByName(SHEET_NAME);
-    } catch (err) {
-      // Criar aba se não existir
-      sheet = spreadsheet.insertSheet(SHEET_NAME);
-      
-      // Adicionar cabeçalhos
-      const headers = [
-        'Timestamp', 'Topic', 'Metric Type', 'Value', 'Session ID',
-        'Student ID', 'User Agent', 'Viewport', 'Is Repeating',
-        'Additional Data', 'Raw Data'
-      ];
-      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-      
-      // Formatação dos cabeçalhos
-      const headerRange = sheet.getRange(1, 1, 1, headers.length);
-      headerRange.setBackground('#1f4e79');
-      headerRange.setFontColor('#ffffff');
-      headerRange.setFontWeight('bold');
-      headerRange.setHorizontalAlignment('center');
-      
-      console.log('Planilha criada com cabeçalhos');
+    const action = (e && e.parameter && e.parameter.action) || 'ingest';
+
+    if (action === 'import') {
+      return importEvents_(e);
     }
-    
-    // Extrair dados do POST
-    const data = e.parameter;
-    
-    // Timestamp mais legível para análise
-    const timestamp = data.timestamp ? 
-      new Date(data.timestamp) : 
-      new Date();
-    
-    // Processar additional data
-    let additionalDataFormatted = '';
-    try {
-      const additionalData = JSON.parse(data.additionalData || '{}');
-      additionalDataFormatted = Object.keys(additionalData).length > 0 ? 
-        JSON.stringify(additionalData, null, 1) : '';
-    } catch (err) {
-      additionalDataFormatted = data.additionalData || '';
-    }
-    
-    // Dados estruturados para análise
-    const row = [
-      timestamp,
-      data.topic || '',
-      data.metricType || '',
-      data.value || '',
-      data.sessionId || '',
-      data.studentId || '',
-      (data.userAgent || '').substring(0, 100), // Limitar tamanho
-      data.viewport || '',
-      data.isRepeating === 'true' ? 'SIM' : 'NÃO',
-      additionalDataFormatted,
-      JSON.stringify(data) // Raw data for backup
-    ];
-    
-    // Inserir linha
-    sheet.appendRow(row);
-    
-    // Log para debug (opcional)
-    console.log('Dados salvos:', {
-      topic: data.topic,
-      metricType: data.metricType,
-      studentId: data.studentId,
-      timestamp: timestamp.toISOString()
+
+    const payload = parseRequestPayload_(e);
+    const ingest = ingestSingleEvent_(payload, 'webapp');
+
+    return jsonResponse_({
+      status: ingest.duplicate ? 'duplicate' : 'success',
+      duplicate: ingest.duplicate,
+      eventId: ingest.eventId,
+      checksumValid: ingest.checksumValid
     });
-    
-    // Retornar sucesso
-    return ContentService
-      .createTextOutput('{"status":"success","message":"Data recorded"}')
-      .setMimeType(ContentService.MimeType.JSON);
-      
   } catch (error) {
-    console.error('Erro no doPost:', error);
-    
-    // Log detalhado do erro
-    console.error('Dados recebidos:', e.parameter);
-    console.error('Stack trace:', error.stack);
-    
-    // Retornar erro sem quebrar o sistema
-    return ContentService
-      .createTextOutput('{"status":"error","message":"' + error.message + '"}')
-      .setMimeType(ContentService.MimeType.JSON);
+    return jsonResponse_({ status: 'error', message: String(error && error.message ? error.message : error) });
   }
 }
 
 function doGet(e) {
-  // Endpoint para teste rápido
-  return ContentService
-    .createTextOutput('BitLab Telemetry API is running. Use POST to send data.')
-    .setMimeType(ContentService.MimeType.TEXT);
+  try {
+    const action = (e && e.parameter && e.parameter.action) || 'health';
+
+    if (action === 'export') {
+      return exportEvents_(e);
+    }
+
+    if (action === 'health') {
+      const spreadsheet = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+      return jsonResponse_({
+        status: 'ok',
+        spreadsheet: spreadsheet.getName(),
+        rawSheet: CONFIG.RAW_SHEET,
+        structuredSheet: CONFIG.STRUCT_SHEET,
+        now: new Date().toISOString()
+      });
+    }
+
+    return jsonResponse_({ status: 'error', message: 'Ação inválida. Use health ou export.' });
+  } catch (error) {
+    return jsonResponse_({ status: 'error', message: String(error && error.message ? error.message : error) });
+  }
 }
 
-/**
- * Função de configuração inicial (execute uma vez manualmente)
- */
-function setupInitialSheet() {
-  const SPREADSHEET_ID = 'SEU_SPREADSHEET_ID_AQUI'; // ALTERE AQUI
-  
-  try {
-    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = spreadsheet.insertSheet('BitLab_Telemetria');
-    
-    const headers = [
-      'Timestamp', 'Topic', 'Metric Type', 'Value', 'Session ID',
-      'Student ID', 'User Agent', 'Viewport', 'Is Repeating',
-      'Additional Data', 'Raw Data'
-    ];
-    
+function ingestSingleEvent_(inputPayload, source) {
+  const spreadsheet = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  const rawSheet = getOrCreateSheet_(spreadsheet, CONFIG.RAW_SHEET, RAW_HEADERS);
+  const structuredSheet = getOrCreateSheet_(spreadsheet, CONFIG.STRUCT_SHEET, STRUCT_HEADERS);
+
+  const normalized = normalizePayload_(inputPayload);
+  const eventId = normalized.eventId;
+
+  if (!eventId) {
+    throw new Error('eventId ausente após normalização.');
+  }
+
+  const alreadyExists = eventExists_(rawSheet, eventId);
+  if (alreadyExists) {
+    return { eventId, duplicate: true, checksumValid: normalized.checksumValid };
+  }
+
+  const rawRow = buildRawRow_(normalized, source || 'webapp');
+  const structRow = buildStructuredRow_(normalized);
+
+  rawSheet.appendRow(rawRow);
+  structuredSheet.appendRow(structRow);
+
+  cacheEventId_(eventId);
+
+  return { eventId, duplicate: false, checksumValid: normalized.checksumValid };
+}
+
+function normalizePayload_(payload) {
+  const nowIso = new Date().toISOString();
+  const timestamp = coerceIsoDate_(payload.timestamp) || nowIso;
+  const metricType = String(payload.metricType || payload.type || '').trim().toUpperCase();
+  const topic = String(payload.topic || 'GENERAL').trim().toUpperCase();
+
+  const sessionId = String(payload.sessionId || '').trim();
+  const studentId = String(payload.studentId || '').trim();
+  const installationId = String(payload.installationId || '').trim();
+  const nickname = String(payload.nickname || '').trim().substring(0, 60);
+
+  const sequence = toInteger_(payload.sequence, 0);
+  const value = payload.value !== undefined && payload.value !== null ? String(payload.value) : '';
+  const isRepeating = String(payload.isRepeating || '').toLowerCase() === 'true' ? 'true' : 'false';
+
+  const additionalData = parseJsonSafe_(payload.additionalData, {});
+  const userJourney = parseJsonSafe_(payload.userJourney, []);
+
+  let eventId = String(payload.eventId || '').trim();
+  if (!eventId) {
+    const base = [timestamp, sessionId, studentId, metricType, sequence, value].join('|');
+    eventId = 'fallback_' + hashString_(base);
+  }
+
+  const checksum = String(payload.checksum || '').trim();
+  const computedChecksum = computeChecksum_({
+    eventId,
+    timestamp,
+    sessionId,
+    studentId,
+    metricType,
+    topic,
+    value,
+    additionalData: JSON.stringify(additionalData),
+    sequence,
+    installationId,
+    nickname
+  });
+
+  const checksumValid = checksum ? (checksum === computedChecksum) : false;
+
+  return {
+    ingestedAt: nowIso,
+    eventId,
+    timestamp,
+    sessionId,
+    studentId,
+    installationId,
+    nickname,
+    topic,
+    metricType,
+    value,
+    sequence,
+    isRepeating,
+    checksum,
+    checksumValid,
+    userAgent: String(payload.userAgent || '').substring(0, 250),
+    viewport: String(payload.viewport || ''),
+    language: String(payload.language || ''),
+    platform: String(payload.platform || ''),
+    retryCount: toInteger_(payload.retryCount, 0),
+    userJourney,
+    additionalData,
+    rawPayload: payload
+  };
+}
+
+function buildRawRow_(normalized, source) {
+  return [
+    normalized.ingestedAt,
+    normalized.eventId,
+    normalized.timestamp,
+    normalized.sessionId,
+    normalized.studentId,
+    normalized.installationId,
+    normalized.nickname,
+    normalized.topic,
+    normalized.metricType,
+    normalized.value,
+    normalized.sequence,
+    normalized.isRepeating,
+    normalized.checksum,
+    normalized.checksumValid ? 'true' : 'false',
+    source,
+    normalized.userAgent,
+    normalized.viewport,
+    normalized.language,
+    normalized.platform,
+    normalized.retryCount,
+    JSON.stringify(normalized.userJourney),
+    JSON.stringify(normalized.additionalData),
+    JSON.stringify(normalized.rawPayload)
+  ];
+}
+
+function buildStructuredRow_(normalized) {
+  const dt = new Date(normalized.timestamp);
+  const date = Utilities.formatDate(dt, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  const hour = Utilities.formatDate(dt, Session.getScriptTimeZone(), 'HH');
+
+  const ad = normalized.additionalData || {};
+
+  return [
+    normalized.ingestedAt,
+    normalized.eventId,
+    normalized.timestamp,
+    date,
+    hour,
+    normalized.sessionId,
+    normalized.studentId,
+    normalized.installationId,
+    normalized.nickname,
+    normalized.topic,
+    normalized.metricType,
+    normalized.value,
+    normalized.sequence,
+    normalized.isRepeating,
+    normalized.checksumValid ? 'true' : 'false',
+    toFlatValue_(ad.page),
+    toFlatValue_(ad.duration || ad.sessionDuration),
+    toFlatValue_(ad.questionId),
+    toFlatValue_(ad.difficulty),
+    toFlatValue_(ad.correct),
+    toFlatValue_(ad.timeMs || ad.responseTime),
+    toFlatValue_(ad.message || ad.errorReason),
+    toFlatValue_(ad.queueSize),
+    toFlatValue_(ad.connection),
+    flattenObject_(ad),
+    JSON.stringify(normalized.rawPayload)
+  ];
+}
+
+function importEvents_(e) {
+  const payload = parseRequestPayload_(e);
+  const records = Array.isArray(payload.records) ? payload.records : [];
+
+  if (records.length === 0) {
+    return jsonResponse_({ status: 'error', message: 'records vazio no import.' });
+  }
+
+  if (records.length > CONFIG.MAX_IMPORT_BATCH) {
+    return jsonResponse_({
+      status: 'error',
+      message: 'Lote excede limite.',
+      maxBatch: CONFIG.MAX_IMPORT_BATCH
+    });
+  }
+
+  let inserted = 0;
+  let duplicates = 0;
+  let checksumInvalid = 0;
+  const errors = [];
+
+  records.forEach(function(record, index) {
+    try {
+      const result = ingestSingleEvent_(record, 'import');
+      if (result.duplicate) {
+        duplicates += 1;
+      } else {
+        inserted += 1;
+      }
+      if (!result.checksumValid) {
+        checksumInvalid += 1;
+      }
+    } catch (err) {
+      errors.push({ index, message: String(err && err.message ? err.message : err) });
+    }
+  });
+
+  return jsonResponse_({
+    status: errors.length ? 'partial' : 'success',
+    inserted,
+    duplicates,
+    checksumInvalid,
+    errors
+  });
+}
+
+function exportEvents_(e) {
+  const spreadsheet = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  const rawSheet = getOrCreateSheet_(spreadsheet, CONFIG.RAW_SHEET, RAW_HEADERS);
+
+  const limit = Math.max(1, Math.min(toInteger_((e && e.parameter && e.parameter.limit) || 1000, 1000), 5000));
+  const includeDuplicates = String((e && e.parameter && e.parameter.includeDuplicates) || 'true') === 'true';
+
+  const values = rawSheet.getDataRange().getValues();
+  if (values.length <= 1) {
+    return jsonResponse_({ status: 'success', count: 0, records: [] });
+  }
+
+  const headers = values[0];
+  const rows = values.slice(1);
+  const sliced = rows.slice(Math.max(0, rows.length - limit));
+
+  const records = sliced
+    .map(function(row) {
+      const item = {};
+      headers.forEach(function(header, idx) {
+        item[header] = row[idx];
+      });
+      return item;
+    })
+    .filter(function(item) {
+      return includeDuplicates || item.source !== 'duplicate';
+    });
+
+  return jsonResponse_({ status: 'success', count: records.length, records });
+}
+
+function parseRequestPayload_(e) {
+  const parameter = (e && e.parameter) ? e.parameter : {};
+
+  if (e && e.postData && e.postData.contents) {
+    const contents = e.postData.contents;
+    const type = String(e.postData.type || '').toLowerCase();
+
+    if (type.indexOf('application/json') >= 0) {
+      const parsed = parseJsonSafe_(contents, null);
+      if (parsed && typeof parsed === 'object') return parsed;
+    }
+  }
+
+  return parameter;
+}
+
+function eventExists_(sheet, eventId) {
+  if (!eventId) return false;
+  const cacheKey = 'evt_' + eventId;
+  const cache = CacheService.getScriptCache();
+
+  if (cache.get(cacheKey)) {
+    return true;
+  }
+
+  const dataRows = sheet.getLastRow() - 1;
+  if (dataRows <= 0) {
+    return false;
+  }
+
+  const finder = sheet.getRange(2, 2, dataRows, 1).createTextFinder(eventId).matchEntireCell(true);
+  const found = finder.findNext();
+  const exists = !!found;
+
+  if (exists) {
+    cache.put(cacheKey, '1', CONFIG.CACHE_TTL_SECONDS);
+  }
+
+  return exists;
+}
+
+function cacheEventId_(eventId) {
+  if (!eventId) return;
+  CacheService.getScriptCache().put('evt_' + eventId, '1', CONFIG.CACHE_TTL_SECONDS);
+}
+
+function getOrCreateSheet_(spreadsheet, sheetName, headers) {
+  let sheet = spreadsheet.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(sheetName);
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    
-    // Formatação
     const headerRange = sheet.getRange(1, 1, 1, headers.length);
     headerRange.setBackground('#1f4e79');
     headerRange.setFontColor('#ffffff');
     headerRange.setFontWeight('bold');
-    
-    // Auto-resize colunas
-    sheet.autoResizeColumns(1, headers.length);
-    
-    console.log('Planilha configurada com sucesso!');
-    
-  } catch (error) {
-    console.error('Erro na configuração:', error);
+    headerRange.setHorizontalAlignment('center');
+  }
+  return sheet;
+}
+
+function jsonResponse_(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function parseJsonSafe_(value, fallbackValue) {
+  if (value === null || value === undefined || value === '') return fallbackValue;
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(String(value));
+  } catch (_error) {
+    return fallbackValue;
   }
 }
 
-/**
- * Função para criar relatório automático (execute periodicamente)
- */
-function generateWeeklyReport() {
-  const SPREADSHEET_ID = 'SEU_SPREADSHEET_ID_AQUI'; // ALTERE AQUI
-  
-  try {
-    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const dataSheet = spreadsheet.getSheetByName('BitLab_Telemetria');
-    
-    if (!dataSheet) {
-      console.log('Planilha de dados não encontrada');
-      return;
-    }
-    
-    // Criar aba de relatório
-    let reportSheet;
-    try {
-      reportSheet = spreadsheet.getSheetByName('Relatório_Semanal');
-      reportSheet.clear();
-    } catch (err) {
-      reportSheet = spreadsheet.insertSheet('Relatório_Semanal');
-    }
-    
-    // Pegar dados da última semana
-    const data = dataSheet.getDataRange().getValues();
-    const headers = data[0];
-    const rows = data.slice(1);
-    
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    
-    const recentData = rows.filter(row => {
-      const timestamp = new Date(row[0]);
-      return timestamp >= sevenDaysAgo;
-    });
-    
-    // Métricas agregadas
-    const totalEvents = recentData.length;
-    const uniqueStudents = new Set(recentData.map(row => row[5])).size;
-    const quizStarts = recentData.filter(row => row[2] === 'QUIZ_STARTED').length;
-    const quizFinished = recentData.filter(row => row[2] === 'QUIZ_FINISHED').length;
-    const execStarts = recentData.filter(row => row[2] === 'EXECUTION_STARTED').length;
-    const execCompleted = recentData.filter(row => row[2] === 'EXECUTION_COMPLETE').length;
-    const abandonments = recentData.filter(row => row[2].includes('ABANDONED')).length;
-    
-    const completionRateQuiz = quizStarts > 0 ? ((quizFinished / quizStarts) * 100).toFixed(1) : 0;
-    const completionRateEmulator = execStarts > 0 ? ((execCompleted / execStarts) * 100).toFixed(1) : 0;
-    const abandonmentRate = totalEvents > 0 ? ((abandonments / totalEvents) * 100).toFixed(1) : 0;
-    
-    // Relatório
-    const report = [
-      ['RELATÓRIO SEMANAL BITLAB', '', ''],
-      [`Período: ${sevenDaysAgo.toLocaleDateString()} - ${new Date().toLocaleDateString()}`, '', ''],
-      ['', '', ''],
-      ['MÉTRICAS GERAIS', '', ''],
-      ['Total de Eventos', totalEvents, ''],
-      ['Estudantes Únicos', uniqueStudents, ''],
-      ['', '', ''],
-      ['QUIZ', '', ''],
-      ['Quiz Iniciados', quizStarts, ''],
-      ['Quiz Finalizados', quizFinished, ''],
-      ['Taxa de Conclusão Quiz', completionRateQuiz + '%', ''],
-      ['', '', ''],
-      ['EMULADOR', '', ''],
-      ['Execuções Iniciadas', execStarts, ''],
-      ['Execuções Completas', execCompleted, ''],
-      ['Taxa de Conclusão Emulador', completionRateEmulator + '%', ''],
-      ['', '', ''],
-      ['ABANDONO', '', ''],
-      ['Total de Abandonos', abandonments, ''],
-      ['Taxa de Abandono', abandonmentRate + '%', '']
-    ];
-    
-    reportSheet.getRange(1, 1, report.length, 3).setValues(report);
-    
-    // Formatação  
-    reportSheet.getRange(1, 1, 1, 3).setBackground('#1f4e79').setFontColor('#ffffff').setFontWeight('bold');
-    reportSheet.getRange(4, 1, 1, 3).setBackground('#d9e1f2').setFontWeight('bold');
-    reportSheet.getRange(8, 1, 1, 3).setBackground('#d9e1f2').setFontWeight('bold');
-    reportSheet.getRange(13, 1, 1, 3).setBackground('#d9e1f2').setFontWeight('bold');
-    reportSheet.getRange(18, 1, 1, 3).setBackground('#d9e1f2').setFontWeight('bold');
-    
-    reportSheet.autoResizeColumns(1, 3);
-    
-    console.log('Relatório semanal gerado com sucesso!');
-    
-  } catch (error) {
-    console.error('Erro ao gerar relatório:', error);
+function toInteger_(value, defaultValue) {
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.trunc(n) : defaultValue;
+}
+
+function coerceIsoDate_(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return '';
+  return date.toISOString();
+}
+
+function toFlatValue_(value) {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+}
+
+function flattenObject_(obj) {
+  if (!obj || typeof obj !== 'object') return '';
+  const keys = Object.keys(obj).sort();
+  return keys
+    .map(function(key) {
+      return key + '=' + toFlatValue_(obj[key]);
+    })
+    .join('; ');
+}
+
+function computeChecksum_(payloadCore) {
+  return hashString_(JSON.stringify(payloadCore));
+}
+
+function hashString_(value) {
+  const str = String(value || '');
+  let hash = 0;
+  for (let i = 0; i < str.length; i += 1) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
   }
+  return Math.abs(hash).toString(36);
+}
+
+function setupInitialSheet() {
+  const spreadsheet = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  getOrCreateSheet_(spreadsheet, CONFIG.RAW_SHEET, RAW_HEADERS);
+  getOrCreateSheet_(spreadsheet, CONFIG.STRUCT_SHEET, STRUCT_HEADERS);
 }
