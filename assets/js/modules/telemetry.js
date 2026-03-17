@@ -71,6 +71,8 @@ class LocalTelemetry {
     this.maxRetries = 3;
     this.remoteBlockedUntil = 0; // pausa envio remoto em caso de auth/config inválida
     this.hasWarnedRemoteAuth = false;
+    this.hasWarnedRemoteBlocked = false;
+    this.consecutiveSendFailures = 0;
     this.isOnline = navigator.onLine;
     this.userJourney = []; // Tracking de páginas visitadas
     this.eventSequence = this._loadEventSequence();
@@ -240,11 +242,14 @@ class LocalTelemetry {
       clearTimeout(timeoutId);
       this.lastSendTime = Date.now();
       this.hasWarnedRemoteAuth = false;
+      this.hasWarnedRemoteBlocked = false;
+      this.consecutiveSendFailures = 0;
       return true;
       
     } catch (e) {
       const message = String(e?.message || '');
       const unauthorized = /401|unauthorized/i.test(message);
+      const blockedByClient = /blocked|err_blocked_by_client/i.test(message);
 
       if (unauthorized) {
         // Pausa por 10 minutos para evitar repetição infinita de erro no console
@@ -256,7 +261,26 @@ class LocalTelemetry {
         return false;
       }
 
+      if (blockedByClient) {
+        this.remoteBlockedUntil = Date.now() + (30 * 60 * 1000);
+        if (!this.hasWarnedRemoteBlocked) {
+          console.warn('[Telemetria] Envio bloqueado pelo cliente/navegador (ERR_BLOCKED_BY_CLIENT). Desative bloqueadores para este domínio ou use um endpoint no mesmo domínio. Retentativa pausada por 30 minutos; eventos seguem na fila local.');
+          this.hasWarnedRemoteBlocked = true;
+        }
+        return false;
+      }
+
       // RETRY MECHANISM para produção
+      this.consecutiveSendFailures += 1;
+      if (this.consecutiveSendFailures >= 5) {
+        this.remoteBlockedUntil = Date.now() + (5 * 60 * 1000);
+        if (!this.hasWarnedRemoteBlocked) {
+          console.warn('[Telemetria] Falhas consecutivas no envio remoto. Pausando retentativas por 5 minutos para evitar flood; eventos permanecem na fila local.');
+          this.hasWarnedRemoteBlocked = true;
+        }
+        return false;
+      }
+
       if (retryCount < this.maxRetries && !data.isExit) {
         const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Backoff exponencial
         await new Promise(resolve => setTimeout(resolve, retryDelay));
