@@ -6,7 +6,7 @@
  */
 
 // Configure your Google Apps Script URL here
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwTLy1F6IE5tOtcKgHtkGyz44JebINPkWIHf1fz2aBKp741lYazuhjvZJXIm2AzHgHWQ/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwD6QweAI0CHiQDWgHNoN0lARFxowqUIluVvEnT855HkyWWFgmEuU64AEyfgso7JIl6Xg/exec';
 const TELEMETRY_KEYS = {
   studentId: 'bitlab_student_id',
   installationId: 'bitlab_installation_id',
