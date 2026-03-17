@@ -20,6 +20,14 @@ function toSearchParams(input) {
   return params;
 }
 
+function mergeIntoParams(params, input) {
+  if (!input || typeof input !== 'object') return;
+  Object.entries(input).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+    params.set(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
+  });
+}
+
 module.exports = async function handler(req, res) {
   try {
     if (req.method === 'OPTIONS') {
@@ -57,6 +65,8 @@ module.exports = async function handler(req, res) {
     } else {
       bodyParams = toSearchParams(req.body || {});
     }
+
+    mergeIntoParams(bodyParams, req.query || {});
 
     const response = await fetch(TARGET_GAS_URL, {
       method: 'POST',
