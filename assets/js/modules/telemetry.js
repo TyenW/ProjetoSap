@@ -78,6 +78,7 @@ class LocalTelemetry {
     this.userJourney = []; // Tracking de páginas visitadas
     this.eventSequence = this._loadEventSequence();
     this.flushInProgress = false;
+    this.debugEnabled = new URLSearchParams(window.location.search).get('telemetryDebug') === '1';
     
     // Detectar mudanças de conectividade
     window.addEventListener('online', () => this._handleOnlineStatus(true));
@@ -138,22 +139,36 @@ class LocalTelemetry {
     }
 
     // ENVIO AUTOMÁTICO INVISÍVEL para Google Apps Script
+    const normalizedTopic = String(metadata.topic || 'GENERAL').trim().toUpperCase() || 'GENERAL';
+    const normalizedValue = String(metadata.value ?? 1);
+    const normalizedAdditionalData = this._normalizeAdditionalDataString(metadata);
+
     const payload = {
       eventId,
       sequence,
-      topic: metadata.topic || 'GENERAL',
+      topic: normalizedTopic,
       metricType: normalizedEventType,
-      value: metadata.value || 1,
+      value: normalizedValue,
       timestamp: new Date(now).toISOString(),
       sessionId: this.sessionId,
       studentId: this._getStudentId(),
       installationId: this._getInstallationId(),
       nickname: this._getNickname(),
       userJourney: JSON.stringify(this.userJourney.slice(-5)), // Últimas 5 páginas
-      additionalData: JSON.stringify(metadata)
+      additionalData: normalizedAdditionalData
     };
 
     payload.checksum = this._buildChecksum(payload);
+
+    if (this.debugEnabled && normalizedEventType === 'SCAFFOLDING_TRIGGERED') {
+      console.info('[Telemetria][Debug] SCAFFOLDING_TRIGGERED gerado:', {
+        eventId: payload.eventId,
+        sequence: payload.sequence,
+        topic: payload.topic,
+        value: payload.value,
+        queueSize: this.sendQueue.length
+      });
+    }
 
     if (metadata.isExit) {
       const exitPayload = { ...payload, isExit: true };
@@ -249,6 +264,13 @@ class LocalTelemetry {
       this.hasWarnedRemoteAuth = false;
       this.hasWarnedRemoteBlocked = false;
       this.consecutiveSendFailures = 0;
+      if (this.debugEnabled) {
+        console.info('[Telemetria][Debug] Evento enviado ao endpoint:', {
+          eventId: payload.eventId,
+          metricType: payload.metricType,
+          retryCount
+        });
+      }
       return true;
       
     } catch (e) {
@@ -300,6 +322,14 @@ class LocalTelemetry {
 
       if (retryCount < this.maxRetries && !data.isExit) {
         const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Backoff exponencial
+        if (this.debugEnabled) {
+          console.warn('[Telemetria][Debug] Falha no envio, tentando novamente:', {
+            eventId: payload.eventId,
+            metricType: payload.metricType,
+            retryCount,
+            error: String(e?.message || e)
+          });
+        }
         await new Promise(resolve => setTimeout(resolve, retryDelay));
         return this._sendToGoogleSheets(data, retryCount + 1);
       }
@@ -509,20 +539,75 @@ class LocalTelemetry {
   }
 
   _buildChecksum(payload) {
+    const normalized = this._normalizeForChecksum(payload);
     const canonical = JSON.stringify({
-      eventId: payload.eventId,
-      timestamp: payload.timestamp,
-      sessionId: payload.sessionId,
-      studentId: payload.studentId,
-      metricType: payload.metricType,
-      topic: payload.topic,
-      value: payload.value,
-      additionalData: payload.additionalData,
-      sequence: payload.sequence,
-      installationId: payload.installationId,
-      nickname: payload.nickname
+      eventId: normalized.eventId,
+      timestamp: normalized.timestamp,
+      sessionId: normalized.sessionId,
+      studentId: normalized.studentId,
+      metricType: normalized.metricType,
+      topic: normalized.topic,
+      value: normalized.value,
+      additionalData: normalized.additionalData,
+      sequence: normalized.sequence,
+      installationId: normalized.installationId,
+      nickname: normalized.nickname
     });
     return this._simpleHash(canonical);
+  }
+
+  _normalizeForChecksum(payload) {
+    const parsedTimestamp = new Date(payload.timestamp || '');
+    const normalizedTimestamp = Number.isFinite(parsedTimestamp.getTime())
+      ? parsedTimestamp.toISOString()
+      : String(payload.timestamp || '');
+
+    return {
+      eventId: String(payload.eventId || ''),
+      timestamp: normalizedTimestamp,
+      sessionId: String(payload.sessionId || ''),
+      studentId: String(payload.studentId || ''),
+      metricType: String(payload.metricType || '').trim().toUpperCase(),
+      topic: String(payload.topic || '').trim().toUpperCase(),
+      value: String(payload.value ?? ''),
+      additionalData: this._normalizeAdditionalDataString(payload.additionalData),
+      sequence: Number.isFinite(Number(payload.sequence)) ? Math.trunc(Number(payload.sequence)) : 0,
+      installationId: String(payload.installationId || ''),
+      nickname: String(payload.nickname || '')
+    };
+  }
+
+  _normalizeAdditionalDataString(value) {
+    let obj = value;
+    if (typeof obj === 'string') {
+      if (!obj.trim()) return '{}';
+      try {
+        obj = JSON.parse(obj);
+      } catch {
+        return '{}';
+      }
+    }
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
+      return '{}';
+    }
+    return this._stableStringify(obj);
+  }
+
+  _stableStringify(value) {
+    if (value === null) return 'null';
+    const t = typeof value;
+    if (t === 'string') return JSON.stringify(value);
+    if (t === 'number') return Number.isFinite(value) ? String(value) : 'null';
+    if (t === 'boolean') return value ? 'true' : 'false';
+    if (Array.isArray(value)) {
+      return `[${value.map(item => this._stableStringify(item)).join(',')}]`;
+    }
+    if (t === 'object') {
+      const keys = Object.keys(value).sort();
+      const parts = keys.map((key) => `${JSON.stringify(key)}:${this._stableStringify(value[key])}`);
+      return `{${parts.join(',')}}`;
+    }
+    return 'null';
   }
 
   _simpleHash(str) {
@@ -559,20 +644,66 @@ class LocalTelemetry {
    * @param {string} pageName
    */
   recordPageLoad(pageName) {
-    const perfData = performance.getEntriesByType('navigation')[0];
-    if (perfData) {
-      this.pageMetrics[pageName] = {
-        loadTime: perfData.loadEventEnd - perfData.loadEventStart,
-        domReady: perfData.domInteractive - perfData.fetchStart,
-        resourceTime: perfData.responseEnd - perfData.fetchStart,
-        timestamp: new Date().toISOString()
-      };
-    }
+    const metrics = this._getNavigationMetrics();
+    this.pageMetrics[pageName] = {
+      loadTime: metrics.loadTime,
+      domReady: metrics.domReady,
+      resourceTime: metrics.resourceTime,
+      timestamp: new Date().toISOString()
+    };
 
     this.logEvent('page_load', {
       page: pageName,
-      loadTime: performance?.getEntriesByType('navigation')?.[0]?.loadEventEnd || 0
+      value: metrics.loadTime,
+      loadTime: metrics.loadTime,
+      windoLoadTime: metrics.loadTime,
+      domReady: metrics.domReady,
+      resourceTime: metrics.resourceTime
     });
+  }
+
+  _getNavigationMetrics() {
+    const nav = performance?.getEntriesByType?.('navigation')?.[0];
+    if (nav) {
+      const loadTime = this._firstPositive(
+        nav.loadEventEnd,
+        nav.domComplete,
+        nav.responseEnd,
+        0
+      );
+      const domReady = this._safeDiff(nav.domInteractive, nav.fetchStart);
+      const resourceTime = this._safeDiff(nav.responseEnd, nav.fetchStart);
+      return { loadTime, domReady, resourceTime };
+    }
+
+    const t = performance?.timing;
+    if (t) {
+      const loadTime = this._safeDiff(t.loadEventEnd, t.navigationStart)
+        || this._safeDiff(t.domComplete, t.navigationStart)
+        || this._safeDiff(t.responseEnd, t.navigationStart)
+        || 0;
+      const domReady = this._safeDiff(t.domInteractive, t.navigationStart);
+      const resourceTime = this._safeDiff(t.responseEnd, t.navigationStart);
+      return { loadTime, domReady, resourceTime };
+    }
+
+    return { loadTime: 0, domReady: 0, resourceTime: 0 };
+  }
+
+  _safeDiff(end, start) {
+    const e = Number(end);
+    const s = Number(start);
+    if (!Number.isFinite(e) || !Number.isFinite(s)) return 0;
+    const diff = e - s;
+    return diff > 0 ? Math.round(diff) : 0;
+  }
+
+  _firstPositive(...values) {
+    for (const value of values) {
+      const n = Number(value);
+      if (Number.isFinite(n) && n > 0) return Math.round(n);
+    }
+    return 0;
   }
 
   /**

@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.net.http.HttpTimeoutException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -19,7 +20,7 @@ import java.util.Set;
 public class leitura {
     private static final String DEFAULT_BASE_URL = "https://projeto-sap.vercel.app/api/telemetry";
     private static final int DEFAULT_EXPORT_LIMIT = 5000;
-    private static final int DEFAULT_IMPORT_BATCH = 200;
+    private static final int DEFAULT_IMPORT_BATCH = 50;
     private static final LinkedHashMap<String, String> EXPECTED_EVENT_PILLAR = new LinkedHashMap<>();
 
     static {
@@ -48,6 +49,8 @@ public class leitura {
         System.out.println("Base URL: " + config.baseUrl);
         System.out.println("Export limit: " + config.exportLimit);
         System.out.println("Import all: " + config.importAll);
+        System.out.println("Since: " + (config.sinceIso == null ? "(none)" : config.sinceIso));
+        System.out.println("Until: " + (config.untilIso == null ? "(none)" : config.untilIso));
 
         JsonObject health = getJson(client, config.baseUrl + "?action=health");
         System.out.println("Health status: " + stringValue(health.get("status")));
@@ -66,17 +69,33 @@ public class leitura {
             if (obj != null) records.add(obj);
         }
 
+        int beforeFilterCount = records.size();
+        records = filterRecordsByTime(records, config.sinceTs, config.untilTs);
+        if (config.sinceTs != null || config.untilTs != null) {
+            System.out.println("Filtro temporal aplicado: " + beforeFilterCount + " -> " + records.size() + " registros");
+            if (records.isEmpty()) {
+                System.out.println("Nenhum registro no intervalo informado. Ajuste --since/--until e rode novamente.");
+                return;
+            }
+        }
+
         Metrics metrics = computeMetrics(records);
         printMetrics(metrics);
+        printChecksumDiagnostics(records);
 
         if (!config.importAll) {
             System.out.println("Import desativado (--importAll=false).");
             return;
         }
 
+        System.out.println("Importação ativada: os mesmos registros exportados serão reenviados para o endpoint (duplicados são esperados).");
+        System.out.println("Iniciando importação...");
         List<JsonObject> payloadForImport = normalizeForImport(records);
+        System.out.println("Registros a importar: " + payloadForImport.size());
         ImportSummary summary = importAll(client, config.baseUrl, payloadForImport, config.importBatch);
+        System.out.println("Importação concluída.");
         printImportSummary(summary);
+       
     }
 
     private static Metrics computeMetrics(List<JsonObject> records) {
@@ -507,6 +526,19 @@ public class leitura {
         }
     }
 
+    private static List<JsonObject> filterRecordsByTime(List<JsonObject> records, Instant since, Instant until) {
+        if (since == null && until == null) return records;
+        List<JsonObject> filtered = new ArrayList<>();
+        for (JsonObject record : records) {
+            Instant ts = parseInstant(stringValue(record.get("timestamp")));
+            if (ts == null) continue;
+            if (since != null && ts.isBefore(since)) continue;
+            if (until != null && ts.isAfter(until)) continue;
+            filtered.add(record);
+        }
+        return filtered;
+    }
+
     private static double numberOrDefault(Object value, double fallback) {
         if (value == null) return fallback;
         if (value instanceof Number n) return n.doubleValue();
@@ -581,6 +613,7 @@ public class leitura {
     private static List<JsonObject> normalizeForImport(List<JsonObject> records) {
         List<JsonObject> normalized = new ArrayList<>();
         for (JsonObject row : records) {
+            
             JsonObject obj = new JsonObject();
             copyIfPresent(row, obj, "eventId");
             copyIfPresent(row, obj, "timestamp");
@@ -608,8 +641,191 @@ public class leitura {
         return normalized;
     }
 
+    private static void printChecksumDiagnostics(List<JsonObject> records) {
+        ChecksumDiagnostics diag = new ChecksumDiagnostics();
+        diag.totalRecords = records.size();
+
+        for (JsonObject row : records) {
+            boolean valid = boolValue(row.get("checksumValid"));
+            if (valid) continue;
+            diag.invalidRecords++;
+
+            String sentChecksum = stringValue(row.get("checksum"));
+            String rawJson = stringValue(row.get("rawJson"));
+            if (rawJson.isBlank()) {
+                diag.invalidWithoutRawJson++;
+                continue;
+            }
+
+            JsonObject raw = null;
+            try {
+                raw = asObject(Json.parse(rawJson));
+            } catch (Exception ignored) {
+                diag.invalidRawJsonParseError++;
+            }
+            if (raw == null) {
+                diag.invalidRawJsonParseError++;
+                continue;
+            }
+
+            String clientChecksum = computeClientChecksumLikeTelemetry(raw);
+            String gasChecksum = computeGasChecksumLikeServer(raw);
+
+            if (sentChecksum.equals(clientChecksum)) {
+                diag.invalidClientChecksumMatchesRaw++;
+            } else {
+                diag.invalidClientChecksumMismatchRaw++;
+            }
+
+            if (sentChecksum.equals(gasChecksum)) {
+                diag.invalidGasChecksumMatchesRaw++;
+            } else {
+                diag.invalidGasChecksumMismatchRaw++;
+            }
+
+            String rawTopic = stringValue(raw.get("topic"));
+            if (!rawTopic.equals(rawTopic.toUpperCase())) {
+                diag.likelyTopicNormalization++;
+            }
+
+            String rawMetricType = stringValue(raw.get("metricType"));
+            if (!rawMetricType.equals(rawMetricType.toUpperCase())) {
+                diag.likelyMetricTypeNormalization++;
+            }
+
+            Object rawValue = raw.get("value");
+            if (!(rawValue instanceof String)) {
+                diag.likelyValueTypeNormalization++;
+            }
+
+            String rawTimestamp = stringValue(raw.get("timestamp"));
+            String normalizedTimestamp = coerceIsoDateLikeGas(rawTimestamp);
+            if (!normalizedTimestamp.equals(rawTimestamp)) {
+                diag.likelyTimestampNormalization++;
+            }
+
+            String rawAdditionalData = stringValue(raw.get("additionalData"));
+            String normalizedAdditionalData = normalizedAdditionalDataJson(raw.get("additionalData"));
+            if (!rawAdditionalData.equals(normalizedAdditionalData)) {
+                diag.likelyAdditionalDataNormalization++;
+            }
+        }
+
+        System.out.println("\n=== DIAGNÓSTICO CHECKSUM ===");
+        System.out.println("Registros analisados: " + diag.totalRecords);
+        System.out.println("Checksum inválido (export): " + diag.invalidRecords);
+        if (diag.invalidRecords == 0) {
+            System.out.println("Nenhuma divergência de checksum encontrada neste recorte.");
+            return;
+        }
+
+        System.out.println("Inválidos sem rawJson: " + diag.invalidWithoutRawJson);
+        System.out.println("Inválidos com erro de parse do rawJson: " + diag.invalidRawJsonParseError);
+        System.out.println("Checksum bate com algoritmo do cliente (raw): " + diag.invalidClientChecksumMatchesRaw);
+        System.out.println("Checksum NÃO bate com algoritmo do cliente (raw): " + diag.invalidClientChecksumMismatchRaw);
+        System.out.println("Checksum bate com algoritmo do servidor (raw normalizado): " + diag.invalidGasChecksumMatchesRaw);
+        System.out.println("Checksum NÃO bate com algoritmo do servidor (raw normalizado): " + diag.invalidGasChecksumMismatchRaw);
+        System.out.println("Sinais de normalização divergente -> topic: " + diag.likelyTopicNormalization
+                + ", metricType: " + diag.likelyMetricTypeNormalization
+                + ", value: " + diag.likelyValueTypeNormalization
+                + ", timestamp: " + diag.likelyTimestampNormalization
+                + ", additionalData: " + diag.likelyAdditionalDataNormalization);
+
+        if (diag.invalidClientChecksumMatchesRaw > 0 && diag.invalidGasChecksumMismatchRaw > 0) {
+            System.out.println("Conclusão provável: o cliente está assinando o payload bruto, mas o servidor valida após normalização.");
+        }
+        if (diag.invalidRecords > 0 && diag.invalidClientChecksumMatchesRaw == 0 && diag.invalidGasChecksumMatchesRaw == 0) {
+            System.out.println("Observação: nenhum inválido bate em qualquer algoritmo de referência.");
+            System.out.println("Isso geralmente indica que o rawJson exportado já está transformado em relação ao payload assinado no navegador.");
+            System.out.println("Para validar a correção do checksum, use novos eventos gerados após a atualização do telemetry.js.");
+        }
+    }
+
+    private static String computeClientChecksumLikeTelemetry(JsonObject raw) {
+        JsonObject canonical = new JsonObject();
+        canonical.map.put("eventId", stringValue(raw.get("eventId")));
+        canonical.map.put("timestamp", stringValue(raw.get("timestamp")));
+        canonical.map.put("sessionId", stringValue(raw.get("sessionId")));
+        canonical.map.put("studentId", stringValue(raw.get("studentId")));
+        canonical.map.put("metricType", stringValue(raw.get("metricType")));
+        canonical.map.put("topic", stringValue(raw.get("topic")));
+        canonical.map.put("value", raw.get("value") == null ? "" : raw.get("value"));
+        canonical.map.put("additionalData", stringValue(raw.get("additionalData")));
+        canonical.map.put("sequence", raw.get("sequence") == null ? 0 : raw.get("sequence"));
+        canonical.map.put("installationId", stringValue(raw.get("installationId")));
+        canonical.map.put("nickname", stringValue(raw.get("nickname")));
+        return simpleHash(toJson(canonical));
+    }
+
+    private static String computeGasChecksumLikeServer(JsonObject raw) {
+        JsonObject canonical = new JsonObject();
+        canonical.map.put("eventId", stringValue(raw.get("eventId")));
+        canonical.map.put("timestamp", coerceIsoDateLikeGas(stringValue(raw.get("timestamp"))));
+        canonical.map.put("sessionId", stringValue(raw.get("sessionId")));
+        canonical.map.put("studentId", stringValue(raw.get("studentId")));
+        canonical.map.put("metricType", stringValue(raw.get("metricType")).toUpperCase());
+        canonical.map.put("topic", stringValue(raw.get("topic")).toUpperCase());
+        canonical.map.put("value", normalizeValueLikeGas(raw.get("value")));
+        canonical.map.put("additionalData", normalizedAdditionalDataJson(raw.get("additionalData")));
+        canonical.map.put("sequence", normalizeSequenceLikeGas(raw.get("sequence")));
+        canonical.map.put("installationId", stringValue(raw.get("installationId")));
+        canonical.map.put("nickname", stringValue(raw.get("nickname")));
+        return simpleHash(toJson(canonical));
+    }
+
+    private static String coerceIsoDateLikeGas(String rawTs) {
+        if (rawTs == null || rawTs.isBlank()) return "";
+        try {
+            return Instant.parse(rawTs).toString();
+        } catch (Exception ignored) {
+            return rawTs;
+        }
+    }
+
+    private static String normalizeValueLikeGas(Object value) {
+        if (value == null) return "";
+        return String.valueOf(value);
+    }
+
+    private static int normalizeSequenceLikeGas(Object sequence) {
+        if (sequence == null) return 0;
+        if (sequence instanceof Number n) return (int) Math.floor(n.doubleValue());
+        try {
+            return (int) Math.floor(Double.parseDouble(String.valueOf(sequence)));
+        } catch (Exception ignored) {
+            return 0;
+        }
+    }
+
+    private static String normalizedAdditionalDataJson(Object additionalDataRaw) {
+        Object ad = additionalDataRaw;
+        if (ad instanceof String s) {
+            if (s.isBlank()) return "{}";
+            try {
+                ad = Json.parse(s);
+            } catch (Exception ignored) {
+                ad = new JsonObject();
+            }
+        }
+        if (ad instanceof JsonObject || ad instanceof JsonArray) {
+            return toJson(ad);
+        }
+        return "{}";
+    }
+
+    private static String simpleHash(String value) {
+        String str = value == null ? "" : value;
+        int hash = 0;
+        for (int i = 0; i < str.length(); i++) {
+            hash = ((hash << 5) - hash) + str.charAt(i);
+        }
+        long abs = hash == Integer.MIN_VALUE ? 2147483648L : Math.abs(hash);
+        return Long.toString(abs, 36);
+    }
+
     private static ImportSummary importAll(HttpClient client, String baseUrl, List<JsonObject> records, int batchSize) throws Exception {
         ImportSummary summary = new ImportSummary();
+        summary.requestedRecords = records.size();
         if (records.isEmpty()) return summary;
 
         for (int i = 0; i < records.size(); i += batchSize) {
@@ -622,20 +838,41 @@ public class leitura {
             JsonObject payload = new JsonObject();
             payload.map.put("records", batch);
 
-            String response = postJson(client, baseUrl + "?action=import", toJson(payload));
-            JsonObject result = asObject(Json.parse(response));
-            if (result == null) {
-                summary.errors += (end - i);
-                continue;
+            boolean imported = false;
+            for (int attempt = 1; attempt <= 3; attempt++) {
+                try {
+                    String response = postJson(client, baseUrl + "?action=import", toJson(payload), 90);
+                    JsonObject result = asObject(Json.parse(response));
+                    if (result == null) {
+                        summary.errors += (end - i);
+                    } else {
+                        summary.batches++;
+                        summary.inserted += intValue(result.get("inserted"));
+                        summary.duplicates += intValue(result.get("duplicates"));
+                        summary.checksumInvalid += intValue(result.get("checksumInvalid"));
+
+                        JsonArray errors = asArray(result.get("errors"));
+                        summary.errors += errors.values.size();
+                    }
+                    summary.processedRecords += (end - i);
+                    imported = true;
+                    break;
+                } catch (HttpTimeoutException timeout) {
+                    summary.timeoutRetries++;
+                    if (attempt < 3) {
+                        Thread.sleep(400L * attempt);
+                    }
+                } catch (IOException io) {
+                    summary.failedBatches++;
+                    summary.errors += (end - i);
+                    imported = true;
+                    break;
+                }
             }
-
-            summary.batches++;
-            summary.inserted += intValue(result.get("inserted"));
-            summary.duplicates += intValue(result.get("duplicates"));
-            summary.checksumInvalid += intValue(result.get("checksumInvalid"));
-
-            JsonArray errors = asArray(result.get("errors"));
-            summary.errors += errors.values.size();
+            if (!imported) {
+                summary.failedBatches++;
+                summary.errors += (end - i);
+            }
         }
 
         return summary;
@@ -643,11 +880,18 @@ public class leitura {
 
     private static void printImportSummary(ImportSummary summary) {
         System.out.println("\n=== RESUMO IMPORT ===");
+        System.out.println("Registros solicitados: " + summary.requestedRecords);
+        System.out.println("Registros processados: " + summary.processedRecords);
         System.out.println("Batches enviados: " + summary.batches);
         System.out.println("Inseridos: " + summary.inserted);
         System.out.println("Duplicados: " + summary.duplicates);
         System.out.println("Checksum inválido: " + summary.checksumInvalid);
         System.out.println("Erros: " + summary.errors);
+        System.out.println("Timeout retries: " + summary.timeoutRetries);
+        System.out.println("Batches com falha: " + summary.failedBatches);
+        if (summary.requestedRecords > summary.processedRecords) {
+            System.out.println("ALERTA: nem todos os registros foram processados na importação.");
+        }
     }
 
     private static void printTop(Map<String, Integer> map, int topN) {
@@ -698,8 +942,12 @@ public class leitura {
     }
 
     private static String postJson(HttpClient client, String url, String body) throws IOException, InterruptedException {
+        return postJson(client, url, body, 30);
+    }
+
+    private static String postJson(HttpClient client, String url, String body, int timeoutSeconds) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(URI.create(url))
-                .timeout(Duration.ofSeconds(30))
+                .timeout(Duration.ofSeconds(Math.max(1, timeoutSeconds)))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
                 .build();
@@ -788,8 +1036,12 @@ public class leitura {
     private static class Config {
         String baseUrl = DEFAULT_BASE_URL;
         int exportLimit = DEFAULT_EXPORT_LIMIT;
-        boolean importAll = true;
+        boolean importAll = false;
         int importBatch = DEFAULT_IMPORT_BATCH;
+        String sinceIso;
+        String untilIso;
+        Instant sinceTs;
+        Instant untilTs;
 
         static Config fromArgs(String[] args) {
             Config cfg = new Config();
@@ -798,8 +1050,34 @@ public class leitura {
                 if (arg.startsWith("--limit=")) cfg.exportLimit = parsePositiveInt(arg.substring("--limit=".length()), DEFAULT_EXPORT_LIMIT);
                 if (arg.startsWith("--importAll=")) cfg.importAll = Boolean.parseBoolean(arg.substring("--importAll=".length()));
                 if (arg.startsWith("--batch=")) cfg.importBatch = parsePositiveInt(arg.substring("--batch=".length()), DEFAULT_IMPORT_BATCH);
+                if (arg.startsWith("--since=")) cfg.sinceIso = emptyToNull(arg.substring("--since=".length()));
+                if (arg.startsWith("--until=")) cfg.untilIso = emptyToNull(arg.substring("--until=".length()));
+            }
+
+            if (cfg.sinceIso != null) {
+                cfg.sinceTs = parseRequiredInstant(cfg.sinceIso, "--since");
+            }
+            if (cfg.untilIso != null) {
+                cfg.untilTs = parseRequiredInstant(cfg.untilIso, "--until");
+            }
+            if (cfg.sinceTs != null && cfg.untilTs != null && cfg.sinceTs.isAfter(cfg.untilTs)) {
+                throw new IllegalArgumentException("--since deve ser menor ou igual a --until");
             }
             return cfg;
+        }
+
+        private static String emptyToNull(String value) {
+            if (value == null) return null;
+            String trimmed = value.trim();
+            return trimmed.isEmpty() ? null : trimmed;
+        }
+
+        private static Instant parseRequiredInstant(String value, String argName) {
+            Instant parsed = parseInstant(value);
+            if (parsed == null) {
+                throw new IllegalArgumentException("Formato inválido para " + argName + ": " + value + " (use ISO-8601, ex: 2026-03-22T12:00:00Z)");
+            }
+            return parsed;
         }
 
         private static int parsePositiveInt(String raw, int fallback) {
@@ -897,11 +1175,31 @@ public class leitura {
     }
 
     private static class ImportSummary {
+        int requestedRecords;
+        int processedRecords;
         int batches;
         int inserted;
         int duplicates;
         int checksumInvalid;
         int errors;
+        int timeoutRetries;
+        int failedBatches;
+    }
+
+    private static class ChecksumDiagnostics {
+        int totalRecords;
+        int invalidRecords;
+        int invalidWithoutRawJson;
+        int invalidRawJsonParseError;
+        int invalidClientChecksumMatchesRaw;
+        int invalidClientChecksumMismatchRaw;
+        int invalidGasChecksumMatchesRaw;
+        int invalidGasChecksumMismatchRaw;
+        int likelyTopicNormalization;
+        int likelyMetricTypeNormalization;
+        int likelyValueTypeNormalization;
+        int likelyTimestampNormalization;
+        int likelyAdditionalDataNormalization;
     }
 
     private static class JsonObject {
