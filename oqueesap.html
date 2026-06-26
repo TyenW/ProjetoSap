@@ -111,7 +111,7 @@
                 <li><strong>Entrada e REM (Registrador de Endereços da Memória)</strong>: Inclui registradores de chaves
                     de dados e endereços que permitem enviar 4 bits de endereço e 8 bits de dados para a RAM. O REM
                     retém o endereço do contador de programa e o aplica à RAM para operações de leitura.</li>
-                <li><strong>RAM (Memória de Acesso Aleatório)</strong>: Uma RAM TTL estática de $16 \times 8$ que
+                <li><strong>RAM (Memória de Acesso Aleatório)</strong>: Uma RAM TTL estática de 16 &times; 8 que
                     armazena programas e dados. Durante o processamento, ela recebe endereços do REM e coloca a
                     instrução ou palavra de dados no barramento W.</li>
                 <li><strong>Registrador de Instruções (IR)</strong>: Parte da unidade de controle. Ele é carregado com o
@@ -218,7 +218,7 @@
             <p>Ao programar as chaves de dados, o código de operação entra no nibble superior, e o operando (o resto da
                 instrução) entra no nibble inferior. Por exemplo, LDA FH se torna 00001111 em binário, onde 0000 é o op
                 code de LDA e 1111 é o endereço FH. Para HLT, o nibble inferior é irrelevante (XXXX) porque não é uma
-                instrução de referência de memória.</p>
+                instrução de referência à memória.</p>
 
             <h3>3.2. Linguagem de Máquina e Linguagem de Montagem</h3>
             <ul>
@@ -241,10 +241,10 @@
 
             <h3>4.1. Contador em Anel</h3>
             <p>O contador em anel do SAP-1 tem uma saída
-                <em>&tau;=&tau;<sub>6</sub>&tau;<sub>5</sub>&tau;<sub>4</sub>&tau;<sub>3</sub>&tau;<sub>2</sub>&tau;<sub>1</sub></em>.
-                No início do processamento, a palavra do anel é `000001`. Pulsos de relógio sucessivos produzem palavras
-                de anel que representam seis estados &tau; distintos. Cada instrução é buscada e executada durante esses
-                seis estados &tau;.</p>
+                <em>T = T<sub>6</sub>T<sub>5</sub>T<sub>4</sub>T<sub>3</sub>T<sub>2</sub>T<sub>1</sub></em>.
+                No início do processamento, a palavra do anel é <code>000001</code>. Pulsos de relógio sucessivos produzem palavras
+                de anel que representam seis estados T distintos. Cada instrução é buscada e executada durante esses
+                seis estados T.</p>
 
             <div class="image-container">
                 <div class="sap-circuito-anel" id="fig-10-2-animada" aria-label="Fig. 10-2: Contador em anel interativo (FF1..FF6)">
@@ -275,53 +275,50 @@
             </div>
 
             <h3>4.2. Ciclo de Busca (FETCH)</h3>
-            <p>Os três primeiros estados <em>&tau;</em> (<em>&tau;<sub>1</sub>, &tau;<sub>2</sub>,
-                    &tau;<sub>3</sub></em>) formam o ciclo de busca.</p>
+            <p>Os três primeiros estados <em>T</em> (<em>T<sub>1</sub>, T<sub>2</sub>,
+                    T<sub>3</sub></em>) formam o ciclo de busca.</p>
             <ul>
-                <li><strong>Estado de Endereço (<em>&tau;<sub>1</sub></em>)</strong>: O endereço no contador de programa
-                    é transferido para o REM. Os sinais <em>&tau;<sub>P</sub></em> (alto) e <em>&tau;<sub>M</sub></em>
-                    (baixo) estão ativos.</li>
-                <li><strong>Estado de Incremento (<em>&tau;<sub>2</sub></em>)</strong>: O contador de programa é
-                    incrementado. O bit <em>&tau;<sub>P</sub></em> é ativo.</li>
-                <li><strong>Estado de Memória (<em>&tau;<sub>3</sub></em>)</strong>: A instrução de RAM endereçada é
+                <li><strong>Estado de Endereço (<em>T<sub>1</sub></em>)</strong>: O endereço no contador de programa
+                    é transferido para o REM. Os sinais <em>E<sub>P</sub></em> (alto) e <span style="text-decoration: overline;">L<sub>M</sub></span> (baixo) estão ativos.</li>
+                <li><strong>Estado de Incremento (<em>T<sub>2</sub></em>)</strong>: O contador de programa é
+                    incrementado. O bit <em>C<sub>P</sub></em> é ativo.</li>
+                <li><strong>Estado de Memória (<em>T<sub>3</sub></em>)</strong>: A instrução de RAM endereçada é
                     transferida da memória para o registrador de instruções. Os bits de controle ativos são
-                    <em>&tau;<sub>CE</sub></em> (baixo) e <em>&tau;<sub>I</sub></em> (baixo).</li>
+                    <span style="text-decoration: overline;">CE</span> (baixo) e <span style="text-decoration: overline;">L<sub>I</sub></span> (baixo).</li>
             </ul>
 
             <h3>4.3. Ciclo de Execução</h3>
-            <p>Os três estados seguintes (&tau;<sub>4</sub>, &tau;<sub>5</sub> e &tau;<sub>6</sub>) constituem o ciclo
+            <p>Os três estados seguintes (<em>T<sub>4</sub></em>, <em>T<sub>5</sub></em> e <em>T<sub>6</sub></em>) constituem o ciclo
                 de execução, e as transferências de registradores dependem da instrução específica.</p>
             <ul>
                 <li><strong>Rotina LDA</strong>:
                     <ul>
-                        <li><em>&tau;<sub>4</sub></em>: O campo de instrução é decodificado, e o campo de endereços é
-                            carregado no REM. <em>E<sub>I</sub></em> e <em>L<sub>M</sub></em> estão ativos.</li>
-                        <li><em>&tau;<sub>5</sub></em>: A palavra de dados endereçada da RAM é carregada no acumulador.
-                            <span style="text-decoration: overline;">CE</span> e <span
-                                style="text-decoration: overline;">LA</span> estão ativos.</li>
-                        <li><em>&tau;<sub>6</sub></em>: Estado "nop" (sem operação).</li>
+                        <li><strong><em>T<sub>4</sub></em></strong>: O campo de instrução é decodificado, e o campo de endereços é
+                            carregado no REM. Sinais <span style="text-decoration: overline;">E<sub>I</sub></span> e <span style="text-decoration: overline;">L<sub>M</sub></span> estão ativos.</li>
+                        <li><strong><em>T<sub>5</sub></em></strong>: A palavra de dados endereçada da RAM é carregada no acumulador.
+                            Sinais <span style="text-decoration: overline;">CE</span> e <span
+                                style="text-decoration: overline;">L<sub>A</sub></span> estão ativos.</li>
+                        <li><strong><em>T<sub>6</sub></em></strong>: Estado "nop" (sem operação).</li>
                     </ul>
                 </li>
                 <li><strong>Rotina ADD</strong>:
                     <ul>
-                        <li><em>T<sub>4</sub></em>: O campo de instrução vai para o controlador-sequencializador e o
-                            campo de endereços para o REM. <em>E<sub>I</sub></em> e <span
-                                style="text-decoration: overline;">LM</span> estão ativos.</li>
-                        <li><em>T<sub>5</sub></em>: A palavra de RAM endereçada é carregada no registrador B. <span
+                        <li><strong><em>T<sub>4</sub></em></strong>: O campo de instrução vai para o controlador-sequenciador e o
+                            campo de endereços para o REM. Sinais <span style="text-decoration: overline;">E<sub>I</sub></span> e <span style="text-decoration: overline;">L<sub>M</sub></span> estão ativos.</li>
+                        <li><strong><em>T<sub>5</sub></em></strong>: A palavra de RAM endereçada é carregada no registrador B. Sinais <span
                                 style="text-decoration: overline;">CE</span> e <span
-                                style="text-decoration: overline;">LB</span> estão ativos.</li>
-                        <li><em>T<sub>6</sub></em>: O somador-subtrator prepara o acumulador com a soma.
-                            <em>E<sub>U</sub></em> e <span style="text-decoration: overline;">LA</span> estão
+                                style="text-decoration: overline;">L<sub>B</sub></span> estão ativos.</li>
+                        <li><strong><em>T<sub>6</sub></em></strong>: O somador-subtrator prepara o acumulador com a soma.
+                            Sinais <em>E<sub>U</sub></em> e <span style="text-decoration: overline;">L<sub>A</sub></span> estão
                             ativos.</li>
                     </ul>
                 </li>
 
-                <li><strong>Rotina SUB</strong>: Similar à rotina ADD, mas com um $S_{U}$ alto no estado &tau;<sub>6</sub> para
-                    indicar subtração.</li>
+                <li><strong>Rotina SUB</strong>: Similar à rotina ADD, mas com um <em>S<sub>U</sub></em> alto no estado <em>T<sub>6</sub></em> para indicar subtração.</li>
                 <li><strong>Rotina OUT</strong>:
                     <ul>
-                        <li>&tau;<sub>4</sub> O conteúdo do acumulador é carregado no registrador de saída. <span style="text-decoration: overline;">EA</span> e <span style="text-decoration: overline;">L0</span> estão ativos.</li>
-                        <li>&tau;<sub>5</sub> e &tau;<sub>6</sub>: São estados "nops".</li>
+                        <li><strong><em>T<sub>4</sub></em></strong>: O conteúdo do acumulador é carregado no registrador de saída. Sinais <em>E<sub>A</sub></em> e <span style="text-decoration: overline;">L<sub>O</sub></span> estão ativos.</li>
+                        <li><strong><em>T<sub>5</sub></em> e <em>T<sub>6</sub></em></strong>: São estados "nops".</li>
                     </ul>
                 </li>
                 <li><strong>Rotina HLT</strong>: Não requer rotina de controle; o campo 1111 de instrução avisa ao
@@ -329,9 +326,9 @@
             </ul>
 
             <h3>4.4. Ciclo de Máquina e Ciclo de Instrução</h3>
-            <p>O SAP-1 possui seis estados &tau; (três de busca e três de execução), que são chamados de "ciclo de máquina".
+            <p>O SAP-1 possui seis estados T (três de busca e três de execução), que são chamados de "ciclo de máquina".
                 É necessário um ciclo de máquina para buscar e executar cada instrução. O SAP-1 opera a 1 kHz, levando 6
-                ms para um ciclo de máquina. O "ciclo de instrução" é o número de estados &tau; necessários para buscar e
+                ms para um ciclo de máquina. O "ciclo de instrução" é o número de estados T necessários para buscar e
                 executar uma instrução. No SAP-1, o ciclo de instrução é igual ao ciclo de máquina. Em outros
                 microcomputadores, como o 8085, o ciclo de instrução pode variar de um a cinco ciclos de máquina.</p>
             <div class="image-container">
@@ -429,8 +426,8 @@
                 <li><strong>ROM de Endereços</strong>: Contém os endereços de partida de cada rotina de microinstruções.
                     Quando os bits do código de operação (e.g., I<sub>7</sub>I<sub>6</sub>I<sub>5</sub>I<sub>4</sub>) comandam a ROM de endereço, o
                     endereço de partida da rotina correspondente é gerado (ex: ADD com 0001 gera 0110).</li>
-                <li><strong>Contador Pré-ajustável</strong>: Quando o estado &tau;<sub>3</sub> está alto, ele carrega o endereço
-                    de partida da ROM de endereços. Nos outros estados &tau;, ele conta. A saída do contador é o endereço
+                <li><strong>Contador Pré-ajustável</strong>: Quando o estado <em>T<sub>3</sub></em> está alto, ele carrega o endereço
+                    de partida da ROM de endereços. Nos outros estados T, ele conta. A saída do contador é o endereço
                     que será aplicado à ROM de controle.</li>
                 <li><strong>ROM de Controle</strong>: Armazena as microinstruções do SAP-1. Ela recebe os endereços do
                     contador pré-ajustável e produz a microinstrução adequada, que por sua vez gera os sinais de
@@ -537,12 +534,12 @@
             </details>
 
             <h3>5.3. Ciclo Variável de Máquina</h3>
-            <p>O SAP-1 utiliza um ciclo de máquina fixo (seis estados &tau;) para todas as instruções, o que inclui estados
+            <p>O SAP-1 utiliza um ciclo de máquina fixo (seis estados T) para todas as instruções, o que inclui estados
                 "nop" (sem operação) para algumas rotinas (uma vez na LDA, duas vezes na OUT). Para otimizar a
                 velocidade, os estados "nop" podem ser eliminados, resultando em um ciclo de máquina variável. Isso
                 encurtaria o ciclo de máquina da instrução LDA para cinco estados e da instrução OUT para quatro
                 estados. Esse recurso é comum em microprocessadores como o 8085, onde os ciclos de máquina variam de
-                dois a seis estados &tau;, ignorando os nops indesejáveis.</p>
+                dois a seis estados T, ignorando os nops indesejáveis.</p>
 
             <h3>5.4. Vantagens da Microprogramação</h3>
             <p>A microprogramação elimina a necessidade de decodificadores de instruções e matrizes de controle

@@ -1511,5 +1511,5 @@ Para dúvidas sobre interpretação de dados ou implementação de novas métric
 
 **Documento criado em**: 25/02/2026  
 **Versão**: 1.0.0  
-**Autor**: Sistema de Documentação BitLab  
+**Autor**: Pedro
 **Última atualização**: 25/02/2026
