@@ -7,7 +7,7 @@
     <title>BitLab | O que é SAP-1</title>
     <link rel="icon" href="assets/img/logoBitLab.png" type="image/png">
     <link
-    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Roboto+Mono:wght@300;400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Roboto+Mono:wght@300;400;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/footer.css">
@@ -18,55 +18,68 @@
 
     <a href="#main" class="skip-link">Pular para conteúdo</a>
 
-        <!-- Novo Cabeçalho -->
-        <header class="site-header">
-            <div class="header-inner">
-                <a href="home.html" class="brand" aria-label="BitLab Home">
-                    <div class="logo-frasco" role="img" aria-label="BitLab">
-                        <div class="logo-icon">
-                            <span class="bolha bolha1"></span>
-                            <span class="bolha bolha2"></span>
-                        </div>
-                        <div class="logo-text">BitLab</div>
+    <!-- Novo Cabeçalho -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="home.html" class="brand" aria-label="BitLab Home">
+                <div class="logo-frasco" role="img" aria-label="BitLab">
+                    <div class="logo-icon">
+                        <span class="bolha bolha1"></span>
+                        <span class="bolha bolha2"></span>
                     </div>
-                </a>
-                <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menu">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </button>
-                <nav id="site-nav" class="site-nav" aria-label="Navegação principal">
-                    <ul class="site-nav-list">
-                        <li><a class="nav-link" href="home.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/flask_full.png" alt="" aria-hidden="true"><span>Home</span></a></li>
-                        <li><a class="nav-link" href="oqueesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true"><span>O que é SAP</span></a></li>
-                        <li><a class="nav-link" href="quiz.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/token.png" alt="" aria-hidden="true"><span>Quiz</span></a></li>
-                        <li><a class="nav-link" href="index.html#emulacao"><img class="icon" src="kenney_board-game-icons/Double (128px)/hexagon.png" alt="" aria-hidden="true"><span>Emulação</span></a></li>
-                        <li><a class="nav-link" href="equipesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/pawn.png" alt="" aria-hidden="true"><span>Equipe</span></a></li>
-                    </ul>
-                                        <div class="audio-menu">
-                                            <button id="audioToggle" class="audio-toggle" aria-expanded="false" aria-controls="audioPopover" aria-label="Configurações de áudio">
-                                                <span id="audioIcon" class="svg-icon" aria-hidden="true"></span>
-                                                <span class="label">Áudio</span>
-                                            </button>
-                                            <div id="audioPopover" class="audio-popover" role="dialog" aria-labelledby="audioPopoverTitle" hidden>
-                                                <h4 id="audioPopoverTitle">Configurações de áudio</h4>
-                                                <div class="audio-row">
-                                                    <span class="label">Mudo</span>
-                                                    <label class="audio-switch" aria-label="Alternar mudo">
-                                                        <input type="checkbox" id="audioMute">
-                                                        <span class="slider"></span>
-                                                    </label>
-                                                </div>
-                                                <div class="audio-row">
-                                                    <span class="label">Volume</span>
-                                                    <input type="range" id="audioVolume" class="audio-volume" min="0" max="100" step="1" value="100" aria-label="Volume">
-                                                    <span class="value" id="audioVolumeValue">100%</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                </nav>
-            </div>
-        </header>
+                    <div class="logo-text">BitLab</div>
+                </div>
+            </a>
+            <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <nav id="site-nav" class="site-nav" aria-label="Navegação principal">
+                <ul class="site-nav-list">
+                    <li><a class="nav-link" href="home.html"><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/flask_full.png" alt=""
+                                aria-hidden="true"><span>Home</span></a></li>
+                    <li><a class="nav-link" href="oqueesap.html"><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/book_open.png" alt=""
+                                aria-hidden="true"><span>O que é SAP</span></a></li>
+                    <li><a class="nav-link" href="quiz.html"><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/token.png" alt=""
+                                aria-hidden="true"><span>Quiz</span></a></li>
+                    <li><a class="nav-link" href="index.html#emulacao"><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/hexagon.png" alt=""
+                                aria-hidden="true"><span>Emulação</span></a></li>
+                    <li><a class="nav-link" href="equipesap.html"><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/pawn.png" alt=""
+                                aria-hidden="true"><span>Equipe</span></a></li>
+                </ul>
+                <div class="audio-menu">
+                    <button id="audioToggle" class="audio-toggle" aria-expanded="false" aria-controls="audioPopover"
+                        aria-label="Configurações de áudio">
+                        <span id="audioIcon" class="svg-icon" aria-hidden="true"></span>
+                        <span class="label">Áudio</span>
+                    </button>
+                    <div id="audioPopover" class="audio-popover" role="dialog" aria-labelledby="audioPopoverTitle"
+                        hidden>
+                        <h4 id="audioPopoverTitle">Configurações de áudio</h4>
+                        <div class="audio-row">
+                            <span class="label">Mudo</span>
+                            <label class="audio-switch" aria-label="Alternar mudo">
+                                <input type="checkbox" id="audioMute">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="audio-row">
+                            <span class="label">Volume</span>
+                            <input type="range" id="audioVolume" class="audio-volume" min="0" max="100" step="1"
+                                value="100" aria-label="Volume">
+                            <span class="value" id="audioVolumeValue">100%</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
     <div class="mini-menu">
         <button class="li-btn" onclick="location.href='#introducao'">Introdução</button>
         <button class="li-btn" onclick="location.href='#arquitetura'">Arquitetura</button>
@@ -78,589 +91,744 @@
     </div>
 
     <main id="main" tabindex="-1">
-    <div class="container">
-        <section id="introducao">
-            <h2>Introdução ao Computador SAP-1</h2>
-            <p>O computador SAP (Simples-Quanto-Possível) foi projetado para apresentar os conceitos fundamentais da
-                arquitetura e operação de computadores de forma simplificada. Ele serve como um passo inicial para
-                entender computadores modernos, como os microprocessadores 8080 e 8085. Este guia detalha a arquitetura,
-                programação e operação do SAP-1, preparando o caminho para o estudo de computadores mais complexos como
-                o SAP-2.</p>
-        </section>
+        <div class="container">
+            <section id="introducao">
+                <h2>Introdução ao Computador SAP-1</h2>
+                <p>O computador SAP (Simples-Quanto-Possível) foi projetado para apresentar os conceitos fundamentais da
+                    arquitetura e operação de computadores de forma simplificada. Ele serve como um passo inicial para
+                    entender computadores modernos, como os microprocessadores 8080 e 8085. Este guia detalha a
+                    arquitetura,
+                    programação e operação do SAP-1, preparando o caminho para o estudo de computadores mais complexos
+                    como
+                    o SAP-2.</p>
+            </section>
 
-        <section id="arquitetura">
-            <h2>1. Arquitetura do SAP-1</h2>
-            <p>A arquitetura do SAP-1 (estrutura) é organizada em barramentos, permitindo a transferência ordenada de
-                dados entre os componentes. O barramento W é o principal canal para a transferência de dados. Todas as
-                saídas dos registradores para o barramento W são de três estados, o que permite a transferência ordenada
-                de dados. As outras saídas dos registradores são de dois estados e comandam continuamente os blocos aos
-                quais estão conectadas.</p>
+            <section id="arquitetura">
+                <h2>1. Arquitetura do SAP-1</h2>
+                <p>A arquitetura do SAP-1 (estrutura) é organizada em barramentos, permitindo a transferência ordenada
+                    de
+                    dados entre os componentes. O barramento W é o principal canal para a transferência de dados. Todas
+                    as
+                    saídas dos registradores para o barramento W são de três estados, o que permite a transferência
+                    ordenada
+                    de dados. As outras saídas dos registradores são de dois estados e comandam continuamente os blocos
+                    aos
+                    quais estão conectadas.</p>
 
-            <div class="image-container">
-                <img src="assets/img/SAP1_Arq-1.png" alt="Diagrama de Arquitetura do SAP-1">
-                <p class="image-caption">Fig. 10-1: Arquitetura do SAP-1 (Diagrama Ilustrativo) - Uma representação
-                    visual detalhada da interconexão dos componentes do SAP-1.</p>
-            </div>
-
-            <h3>1.1. Componentes Principais</h3>
-            <ul>
-                <li><strong>Contador de Programa (PC)</strong>: Parte da unidade de controle, ele conta de 0000 a 1111
-                    em binário. Sua função é enviar à memória o endereço da próxima instrução a ser buscada e executada.
-                    Ele é restabelecido (reset) a 0000 antes de cada processamento e é incrementado após cada instrução
-                    ser buscada e executada.</li>
-                <li><strong>Entrada e REM (Registrador de Endereços da Memória)</strong>: Inclui registradores de chaves
-                    de dados e endereços que permitem enviar 4 bits de endereço e 8 bits de dados para a RAM. O REM
-                    retém o endereço do contador de programa e o aplica à RAM para operações de leitura.</li>
-                <li><strong>RAM (Memória de Acesso Aleatório)</strong>: Uma RAM TTL estática de 16 &times; 8 que
-                    armazena programas e dados. Durante o processamento, ela recebe endereços do REM e coloca a
-                    instrução ou palavra de dados no barramento W.</li>
-                <li><strong>Registrador de Instruções (IR)</strong>: Parte da unidade de controle. Ele é carregado com o
-                    conteúdo do local de memória endereçado após uma operação de leitura. O conteúdo do IR é dividido em
-                    dois nibbles: o superior vai para o controlador-sequenciador, e o inferior pode ser lido no
-                    barramento W quando necessário.</li>
-                <li><strong>Controlador-Sequenciador</strong>: Emite a palavra de controle de 12 bits que comanda os
-                    outros componentes do computador, além de sinais de relógio (CLK) para sincronização e sinais de
-                    limpeza (CLR) para resetar o contador de programa e o registrador de instruções.</li>
-                <li><strong>Acumulador (A)</strong>: Um registrador que armazena resultados intermediários de operações.
-                    Possui duas saídas: uma de dois estados para o somador-subtrator e uma de três estados para o
-                    barramento W.</li>
-                <li><strong>Somador-Subtrator</strong>: Realiza operações de adição e subtração em complemento de 2. É
-                    assíncrono, ou seja, seu conteúdo pode variar assim que as entradas mudam.</li>
-                <li><strong>Registrador B</strong>: Um registrador auxiliar usado em operações aritméticas, fornecendo o
-                    número a ser adicionado ou subtraído do conteúdo do acumulador.</li>
-                <li><strong>Registrador de Saída</strong>: Transfere o conteúdo do acumulador para o "mundo exterior" ao
-                    final do processamento, frequentemente chamado de porta de saída.</li>
-                <li><strong>Indicador Visual em Binário</strong>: Uma fileira de oito LEDs que exibe o conteúdo do
-                    registrador de saída em formato binário.</li>
-            </ul>
-        </section>
-
-        <section id="instrucoes">
-            <h2>2. Conjunto de Instruções</h2>
-            <p>Para que um computador seja útil, ele precisa ser programado. Isso envolve carregar instruções passo a
-                passo na memória. Antes de programar, é essencial aprender o conjunto de instruções, que são as
-                operações básicas que o computador pode executar. O SAP-1 utiliza mnemônicos, que são abreviações que
-                auxiliam na memorização das operações.</p>
-
-            <h3>2.1. Mnemônicos e Operações</h3>
-            <ul>
-                <li><strong>LDA (Load the Accumulator)</strong>: Carrega o acumulador com o conteúdo de um local
-                    específico da memória RAM.
-                    <ul>
-                        <li>Exemplo: LDA 8H carrega o acumulador com o conteúdo do endereço 8H da memória.</li>
-                    </ul>
-                </li>
-                <li><strong>ADD</strong>: Adiciona o conteúdo de um local da memória RAM ao conteúdo do acumulador. A
-                    soma substitui o conteúdo original do acumulador.
-                    <ul>
-                        <li>Exemplo: ADD 9H adiciona o conteúdo do endereço 9H ao acumulador.</li>
-                    </ul>
-                </li>
-                <li><strong>SUB</strong>: Subtrai o conteúdo de um local da memória RAM do conteúdo do acumulador. A
-                    diferença substitui o conteúdo original do acumulador.
-                    <ul>
-                        <li>Exemplo: SUB CH subtrai o conteúdo do endereço CH da memória do acumulador.</li>
-                    </ul>
-                </li>
-                <li><strong>OUT</strong>: Transfere o conteúdo do acumulador para o registrador de saída, tornando a
-                    resposta visível. Esta instrução é completa por si só e não exige um endereço.</li>
-                <li><strong>HLT (Halt)</strong>: Sinaliza ao computador para parar o processamento de dados. É o fim de
-                    um programa e deve ser usada para evitar "refugos" (respostas sem significado causadas pelo
-                    processamento descontrolado).</li>
-            </ul>
-
-            <h3>2.2. Instruções de Referência à Memória</h3>
-            <p>LDA, ADD e SUB são chamadas "instruções de referência à memória" porque elas utilizam dados armazenados
-                na memória. Por outro lado, OUT e HLT não são instruções de referência à memória, pois não envolvem
-                dados armazenados na memória.</p>
-
-            <h3>2.3. Compatibilidade com Microprocessadores</h3>
-            <p>O conjunto de instruções do SAP (LDA, ADD, SUB, OUT e HLT) possui compatibilidade ascendente com o
-                conjunto de instruções dos microprocessadores 8080 e 8085, amplamente utilizados.</p>
-        </section>
-
-        <section id="programacao">
-            <h2>3. Programação do SAP-1</h2>
-            <p>Para carregar palavras de dados e instruções na memória do SAP-1, é necessário usar um código que o
-                computador possa interpretar. Este código é chamado de "código de operação" (op code).</p>
-
-            <h3>3.1. Código Op do SAP-1</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mnemônico</th>
-                        <th>Código op</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>LDA</td>
-                        <td>0000</td>
-                    </tr>
-                    <tr>
-                        <td>ADD</td>
-                        <td>0001</td>
-                    </tr>
-                    <tr>
-                        <td>SUB</td>
-                        <td>0010</td>
-                    </tr>
-                    <tr>
-                        <td>OUT</td>
-                        <td>1110</td>
-                    </tr>
-                    <tr>
-                        <td>HLT</td>
-                        <td>1111</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p>Ao programar as chaves de dados, o código de operação entra no nibble superior, e o operando (o resto da
-                instrução) entra no nibble inferior. Por exemplo, LDA FH se torna 00001111 em binário, onde 0000 é o op
-                code de LDA e 1111 é o endereço FH. Para HLT, o nibble inferior é irrelevante (XXXX) porque não é uma
-                instrução de referência à memória.</p>
-
-            <h3>3.2. Linguagem de Máquina e Linguagem de Montagem</h3>
-            <ul>
-                <li><strong>Linguagem de Montagem</strong>: Envolve o trabalho com mnemônicos ao escrever um programa. É
-                    o "programa fonte".</li>
-                <li><strong>Linguagem de Máquina</strong>: Envolve o trabalho com sequências de 0s e 1s. É o "programa
-                    objeto".</li>
-                <li>No SAP-1, o operador traduz o programa fonte em programa objeto ao programar as chaves de dados e
-                    endereços. Os quatro bits mais significativos (MSBs) de uma instrução em linguagem de máquina SAP-1
-                    especificam a operação (campo de instrução), e os quatro bits menos significativos (LSBs) dão o
-                    endereço (campo de endereço).</li>
-            </ul>
-        </section>
-
-        <section id="ciclos">
-            <h2>4. Ciclos de Operação do SAP-1</h2>
-            <p>A unidade de controle gera as palavras de controle que buscam e executam cada instrução. Durante este
-                processo, o computador passa por "estados T" (estados de temporização), que são períodos durante os
-                quais o conteúdo dos registradores se modifica.</p>
-
-            <h3>4.1. Contador em Anel</h3>
-            <p>O contador em anel do SAP-1 tem uma saída
-                <em>T = T<sub>6</sub>T<sub>5</sub>T<sub>4</sub>T<sub>3</sub>T<sub>2</sub>T<sub>1</sub></em>.
-                No início do processamento, a palavra do anel é <code>000001</code>. Pulsos de relógio sucessivos produzem palavras
-                de anel que representam seis estados T distintos. Cada instrução é buscada e executada durante esses
-                seis estados T.</p>
-
-            <div class="image-container">
-                <div class="sap-circuito-anel" id="fig-10-2-animada" aria-label="Fig. 10-2: Contador em anel interativo (FF1..FF6)">
-                    <div class="container-flipflops" role="group" aria-label="Flip-flops do contador em anel">
-                        <div class="flipflop" id="ff1"><span class="ff-label">FF1</span><span class="ff-valor">1</span></div>
-                        <div class="flipflop" id="ff2"><span class="ff-label">FF2</span><span class="ff-valor">0</span></div>
-                        <div class="flipflop" id="ff3"><span class="ff-label">FF3</span><span class="ff-valor">0</span></div>
-                        <div class="flipflop" id="ff4"><span class="ff-label">FF4</span><span class="ff-valor">0</span></div>
-                        <div class="flipflop" id="ff5"><span class="ff-label">FF5</span><span class="ff-valor">0</span></div>
-                        <div class="flipflop" id="ff6"><span class="ff-label">FF6</span><span class="ff-valor">0</span></div>
-                    </div>
-
-                    <div class="container-saidas-t" role="group" aria-label="Sinais de temporização gerados T1..T6">
-                        <div class="saida-t" id="t1">T1</div>
-                        <div class="saida-t" id="t2">T2</div>
-                        <div class="saida-t" id="t3">T3</div>
-                        <div class="saida-t" id="t4">T4</div>
-                        <div class="saida-t" id="t5">T5</div>
-                        <div class="saida-t" id="t6">T6</div>
-                    </div>
-
-                    <div class="controles-circuito">
-                        <button id="btn-clk-anel" class="li-btn" type="button" aria-controls="fig-10-2-animada">► CLK (Pulso)</button>
-                        <button id="btn-reset-anel" class="li-btn" type="button">CLR (Resetar)</button>
-                    </div>
+                <div class="image-container">
+                    <img src="assets/img/SAP1_Arq-1.png" alt="Diagrama de Arquitetura do SAP-1">
+                    <p class="image-caption">Fig. 10-1: Arquitetura do SAP-1 (Diagrama Ilustrativo) - Uma representação
+                        visual detalhada da interconexão dos componentes do SAP-1.</p>
                 </div>
-                <p class="image-caption">Fig. 10-2: Contador em anel (FF1..FF6) gerando os sinais T1..T6.</p>
-            </div>
 
-            <h3>4.2. Ciclo de Busca (FETCH)</h3>
-            <p>Os três primeiros estados <em>T</em> (<em>T<sub>1</sub>, T<sub>2</sub>,
-                    T<sub>3</sub></em>) formam o ciclo de busca.</p>
-            <ul>
-                <li><strong>Estado de Endereço (<em>T<sub>1</sub></em>)</strong>: O endereço no contador de programa
-                    é transferido para o REM. Os sinais <em>E<sub>P</sub></em> (alto) e <span style="text-decoration: overline;">L<sub>M</sub></span> (baixo) estão ativos.</li>
-                <li><strong>Estado de Incremento (<em>T<sub>2</sub></em>)</strong>: O contador de programa é
-                    incrementado. O bit <em>C<sub>P</sub></em> é ativo.</li>
-                <li><strong>Estado de Memória (<em>T<sub>3</sub></em>)</strong>: A instrução de RAM endereçada é
-                    transferida da memória para o registrador de instruções. Os bits de controle ativos são
-                    <span style="text-decoration: overline;">CE</span> (baixo) e <span style="text-decoration: overline;">L<sub>I</sub></span> (baixo).</li>
-            </ul>
+                <h3>1.1. Componentes Principais</h3>
+                <ul>
+                    <li><strong>Contador de Programa (PC)</strong>: Parte da unidade de controle, ele conta de 0000 a
+                        1111
+                        em binário. Sua função é enviar à memória o endereço da próxima instrução a ser buscada e
+                        executada.
+                        Ele é restabelecido (reset) a 0000 antes de cada processamento e é incrementado após cada
+                        instrução
+                        ser buscada e executada.</li>
+                    <li><strong>Entrada e REM (Registrador de Endereços da Memória)</strong>: Inclui registradores de
+                        chaves
+                        de dados e endereços que permitem enviar 4 bits de endereço e 8 bits de dados para a RAM. O REM
+                        retém o endereço do contador de programa e o aplica à RAM para operações de leitura.</li>
+                    <li><strong>RAM (Memória de Acesso Aleatório)</strong>: Uma RAM TTL estática de 16 &times; 8 que
+                        armazena programas e dados. Durante o processamento, ela recebe endereços do REM e coloca a
+                        instrução ou palavra de dados no barramento W.</li>
+                    <li><strong>Registrador de Instruções (IR)</strong>: Parte da unidade de controle. Ele é carregado
+                        com o
+                        conteúdo do local de memória endereçado após uma operação de leitura. O conteúdo do IR é
+                        dividido em
+                        dois nibbles: o superior vai para o controlador-sequenciador, e o inferior pode ser lido no
+                        barramento W quando necessário.</li>
+                    <li><strong>Controlador-Sequenciador</strong>: Emite a palavra de controle de 12 bits que comanda os
+                        outros componentes do computador, além de sinais de relógio (CLK) para sincronização e sinais de
+                        limpeza (CLR) para resetar o contador de programa e o registrador de instruções.</li>
+                    <li><strong>Acumulador (A)</strong>: Um registrador que armazena resultados intermediários de
+                        operações.
+                        Possui duas saídas: uma de dois estados para o somador-subtrator e uma de três estados para o
+                        barramento W.</li>
+                    <li><strong>Somador-Subtrator</strong>: Realiza operações de adição e subtração em complemento de 2.
+                        É
+                        assíncrono, ou seja, seu conteúdo pode variar assim que as entradas mudam.</li>
+                    <li><strong>Registrador B</strong>: Um registrador auxiliar usado em operações aritméticas,
+                        fornecendo o
+                        número a ser adicionado ou subtraído do conteúdo do acumulador.</li>
+                    <li><strong>Registrador de Saída</strong>: Transfere o conteúdo do acumulador para o "mundo
+                        exterior" ao
+                        final do processamento, frequentemente chamado de porta de saída.</li>
+                    <li><strong>Indicador Visual em Binário</strong>: Uma fileira de oito LEDs que exibe o conteúdo do
+                        registrador de saída em formato binário.</li>
+                </ul>
+            </section>
 
-            <h3>4.3. Ciclo de Execução</h3>
-            <p>Os três estados seguintes (<em>T<sub>4</sub></em>, <em>T<sub>5</sub></em> e <em>T<sub>6</sub></em>) constituem o ciclo
-                de execução, e as transferências de registradores dependem da instrução específica.</p>
-            <ul>
-                <li><strong>Rotina LDA</strong>:
-                    <ul>
-                        <li><strong><em>T<sub>4</sub></em></strong>: O campo de instrução é decodificado, e o campo de endereços é
-                            carregado no REM. Sinais <span style="text-decoration: overline;">E<sub>I</sub></span> e <span style="text-decoration: overline;">L<sub>M</sub></span> estão ativos.</li>
-                        <li><strong><em>T<sub>5</sub></em></strong>: A palavra de dados endereçada da RAM é carregada no acumulador.
-                            Sinais <span style="text-decoration: overline;">CE</span> e <span
-                                style="text-decoration: overline;">L<sub>A</sub></span> estão ativos.</li>
-                        <li><strong><em>T<sub>6</sub></em></strong>: Estado "nop" (sem operação).</li>
-                    </ul>
-                </li>
-                <li><strong>Rotina ADD</strong>:
-                    <ul>
-                        <li><strong><em>T<sub>4</sub></em></strong>: O campo de instrução vai para o controlador-sequenciador e o
-                            campo de endereços para o REM. Sinais <span style="text-decoration: overline;">E<sub>I</sub></span> e <span style="text-decoration: overline;">L<sub>M</sub></span> estão ativos.</li>
-                        <li><strong><em>T<sub>5</sub></em></strong>: A palavra de RAM endereçada é carregada no registrador B. Sinais <span
-                                style="text-decoration: overline;">CE</span> e <span
-                                style="text-decoration: overline;">L<sub>B</sub></span> estão ativos.</li>
-                        <li><strong><em>T<sub>6</sub></em></strong>: O somador-subtrator prepara o acumulador com a soma.
-                            Sinais <em>E<sub>U</sub></em> e <span style="text-decoration: overline;">L<sub>A</sub></span> estão
-                            ativos.</li>
-                    </ul>
-                </li>
+            <section id="instrucoes">
+                <h2>2. Conjunto de Instruções</h2>
+                <p>Para que um computador seja útil, ele precisa ser programado. Isso envolve carregar instruções passo
+                    a
+                    passo na memória. Antes de programar, é essencial aprender o conjunto de instruções, que são as
+                    operações básicas que o computador pode executar. O SAP-1 utiliza mnemônicos, que são abreviações
+                    que
+                    auxiliam na memorização das operações.</p>
 
-                <li><strong>Rotina SUB</strong>: Similar à rotina ADD, mas com um <em>S<sub>U</sub></em> alto no estado <em>T<sub>6</sub></em> para indicar subtração.</li>
-                <li><strong>Rotina OUT</strong>:
-                    <ul>
-                        <li><strong><em>T<sub>4</sub></em></strong>: O conteúdo do acumulador é carregado no registrador de saída. Sinais <em>E<sub>A</sub></em> e <span style="text-decoration: overline;">L<sub>O</sub></span> estão ativos.</li>
-                        <li><strong><em>T<sub>5</sub></em> e <em>T<sub>6</sub></em></strong>: São estados "nops".</li>
-                    </ul>
-                </li>
-                <li><strong>Rotina HLT</strong>: Não requer rotina de controle; o campo 1111 de instrução avisa ao
-                    controlador-sequencializador para interromper o processamento, desligando o relógio.</li>
-            </ul>
+                <h3>2.1. Mnemônicos e Operações</h3>
+                <ul>
+                    <li><strong>LDA (Load the Accumulator)</strong>: Carrega o acumulador com o conteúdo de um local
+                        específico da memória RAM.
+                        <ul>
+                            <li>Exemplo: LDA 8H carrega o acumulador com o conteúdo do endereço 8H da memória.</li>
+                        </ul>
+                    </li>
+                    <li><strong>ADD</strong>: Adiciona o conteúdo de um local da memória RAM ao conteúdo do acumulador.
+                        A
+                        soma substitui o conteúdo original do acumulador.
+                        <ul>
+                            <li>Exemplo: ADD 9H adiciona o conteúdo do endereço 9H ao acumulador.</li>
+                        </ul>
+                    </li>
+                    <li><strong>SUB</strong>: Subtrai o conteúdo de um local da memória RAM do conteúdo do acumulador. A
+                        diferença substitui o conteúdo original do acumulador.
+                        <ul>
+                            <li>Exemplo: SUB CH subtrai o conteúdo do endereço CH da memória do acumulador.</li>
+                        </ul>
+                    </li>
+                    <li><strong>OUT</strong>: Transfere o conteúdo do acumulador para o registrador de saída, tornando a
+                        resposta visível. Esta instrução é completa por si só e não exige um endereço.</li>
+                    <li><strong>HLT (Halt)</strong>: Sinaliza ao computador para parar o processamento de dados. É o fim
+                        de
+                        um programa e deve ser usada para evitar "refugos" (respostas sem significado causadas pelo
+                        processamento descontrolado).</li>
+                </ul>
 
-            <h3>4.4. Ciclo de Máquina e Ciclo de Instrução</h3>
-            <p>O SAP-1 possui seis estados T (três de busca e três de execução), que são chamados de "ciclo de máquina".
-                É necessário um ciclo de máquina para buscar e executar cada instrução. O SAP-1 opera a 1 kHz, levando 6
-                ms para um ciclo de máquina. O "ciclo de instrução" é o número de estados T necessários para buscar e
-                executar uma instrução. No SAP-1, o ciclo de instrução é igual ao ciclo de máquina. Em outros
-                microcomputadores, como o 8085, o ciclo de instrução pode variar de um a cinco ciclos de máquina.</p>
-            <div class="image-container">
-                <img src="assets/img/Ciclo-de-Instrução.png"
-                    alt="Ciclo de Máquina e Instrução do SAP-1">
-                <p class="image-caption">Fig. 10-10: Ciclo de instrução do SAP-1 (a) e ciclo de instrução com dois
-                    ciclos de máquina (b).</p>
-            </div>
-        </section>
+                <h3>2.2. Instruções de Referência à Memória</h3>
+                <p>LDA, ADD e SUB são chamadas "instruções de referência à memória" porque elas utilizam dados
+                    armazenados
+                    na memória. Por outro lado, OUT e HLT não são instruções de referência à memória, pois não envolvem
+                    dados armazenados na memória.</p>
 
-        <section id="microprogramacao">
-            <h2>5. Microprogramação</h2>
-            <p>Em sistemas mais complexos, a "matriz de controle" (controle por fios fixos) torna-se excessivamente
-                complicada e exige milhares de portas. A "microprogramação" surge como alternativa, armazenando
-                microinstruções em uma ROM (Read-Only Memory) de controle, simplificando a construção de um
-                controlador-sequenciador.</p>
+                <h3>2.3. Compatibilidade com Microprocessadores</h3>
+                <p>O conjunto de instruções do SAP (LDA, ADD, SUB, OUT e HLT) possui compatibilidade ascendente com o
+                    conjunto de instruções dos microprocessadores 8080 e 8085, amplamente utilizados.</p>
+            </section>
 
-            <h3>5.1. Armazenamento do Microprograma</h3>
-            <p>As microinstruções do SAP-1, incluindo a rotina de busca e as rotinas de LDA, ADD, SUB e OUT, são
-                armazenadas em uma ROM de controle em endereços específicos (ex: busca em 0H a 2H, LDA em 3H a 5H,
-                etc.). Para acessar uma rotina, é necessário conhecer seu endereço de partida, escalonar através dos
-                endereços da rotina e aplicá-los à ROM de controle.</p>
+            <section id="programacao">
+                <h2>3. Programação do SAP-1</h2>
+                <p>Para carregar palavras de dados e instruções na memória do SAP-1, é necessário usar um código que o
+                    computador possa interpretar. Este código é chamado de "código de operação" (op code).</p>
 
-            <h3>5.2. Componentes da Microprogramação</h3>
-            <div class="image-container">
-                <div class="sap-interactive-module" id="modulo-microprograma" aria-label="Fig. 10-16: Controle Microprogramado interativo">
-                    <h4>Animação: Controle Microprogramado (Fig. 10-16)</h4>
+                <h3>3.1. Código Op do SAP-1</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mnemônico</th>
+                            <th>Código op</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>LDA</td>
+                            <td>0000</td>
+                        </tr>
+                        <tr>
+                            <td>ADD</td>
+                            <td>0001</td>
+                        </tr>
+                        <tr>
+                            <td>SUB</td>
+                            <td>0010</td>
+                        </tr>
+                        <tr>
+                            <td>OUT</td>
+                            <td>1110</td>
+                        </tr>
+                        <tr>
+                            <td>HLT</td>
+                            <td>1111</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Ao programar as chaves de dados, o código de operação entra no nibble superior, e o operando (o resto
+                    da
+                    instrução) entra no nibble inferior. Por exemplo, LDA FH se torna 00001111 em binário, onde 0000 é o
+                    op
+                    code de LDA e 1111 é o endereço FH. Para HLT, o nibble inferior é irrelevante (XXXX) porque não é
+                    uma
+                    instrução de referência à memória.</p>
 
-                    <div class="controles-microprograma">
-                        <label for="instrucao-select">1. Escolha uma Instrução:</label>
-                        <select id="instrucao-select" aria-label="Escolha uma instrução">
-                            <option value="LDA" data-op="0000">LDA (0000)</option>
-                            <option value="ADD" data-op="0001">ADD (0001)</option>
-                            <option value="SUB" data-op="0010">SUB (0010)</option>
-                            <option value="OUT" data-op="1110">OUT (1110)</option>
-                        </select>
-                        <button id="btn-play-microprograma" class="li-btn" type="button">► Iniciar Simulação</button>
-                    </div>
+                <h3>3.2. Linguagem de Máquina e Linguagem de Montagem</h3>
+                <ul>
+                    <li><strong>Linguagem de Montagem</strong>: Envolve o trabalho com mnemônicos ao escrever um
+                        programa. É
+                        o "programa fonte".</li>
+                    <li><strong>Linguagem de Máquina</strong>: Envolve o trabalho com sequências de 0s e 1s. É o
+                        "programa
+                        objeto".</li>
+                    <li>No SAP-1, o operador traduz o programa fonte em programa objeto ao programar as chaves de dados
+                        e
+                        endereços. Os quatro bits mais significativos (MSBs) de uma instrução em linguagem de máquina
+                        SAP-1
+                        especificam a operação (campo de instrução), e os quatro bits menos significativos (LSBs) dão o
+                        endereço (campo de endereço).</li>
+                </ul>
+            </section>
 
-                    <div class="container-circuito-microprograma" role="group" aria-label="Circuito do controle microprogramado">
-                        <div class="bloco" id="micro-rom-addr">
-                            <span class="titulo">ROM de Endereço 16x4</span>
-                            <div class="io-port in">
-                                <span class="label">OpCode (de RI)</span>
-                                <span class="valor" id="val-opcode">--</span>
-                            </div>
-                            <div class="io-port out">
-                                <span class="label">Endereço de Partida</span>
-                                <span class="valor" id="val-start-addr">--</span>
-                            </div>
+            <section id="ciclos">
+                <h2>4. Ciclos de Operação do SAP-1</h2>
+                <p>A unidade de controle gera as palavras de controle que buscam e executam cada instrução. Durante este
+                    processo, o computador passa por "estados T" (estados de temporização), que são períodos durante os
+                    quais o conteúdo dos registradores se modifica.</p>
+
+                <h3>4.1. Contador em Anel</h3>
+                <p>O contador em anel do SAP-1 tem uma saída
+                    <em>&tau;=&tau;<sub>6</sub>&tau;<sub>5</sub>&tau;<sub>4</sub>&tau;<sub>3</sub>&tau;<sub>2</sub>&tau;<sub>1</sub></em>.
+                    No início do processamento, a palavra do anel é `000001`. Pulsos de relógio sucessivos produzem
+                    palavras
+                    de anel que representam seis estados &tau; distintos. Cada instrução é buscada e executada durante
+                    esses
+                    seis estados &tau;.
+                </p>
+
+                <div class="image-container">
+                    <div class="sap-circuito-anel" id="fig-10-2-animada"
+                        aria-label="Fig. 10-2: Contador em anel interativo (FF1..FF6)">
+                        <div class="container-flipflops" role="group" aria-label="Flip-flops do contador em anel">
+                            <div class="flipflop" id="ff1"><span class="ff-label">FF1</span><span
+                                    class="ff-valor">1</span></div>
+                            <div class="flipflop" id="ff2"><span class="ff-label">FF2</span><span
+                                    class="ff-valor">0</span></div>
+                            <div class="flipflop" id="ff3"><span class="ff-label">FF3</span><span
+                                    class="ff-valor">0</span></div>
+                            <div class="flipflop" id="ff4"><span class="ff-label">FF4</span><span
+                                    class="ff-valor">0</span></div>
+                            <div class="flipflop" id="ff5"><span class="ff-label">FF5</span><span
+                                    class="ff-valor">0</span></div>
+                            <div class="flipflop" id="ff6"><span class="ff-label">FF6</span><span
+                                    class="ff-valor">0</span></div>
                         </div>
 
-                        <div class="bloco" id="micro-contador">
-                            <span class="titulo">Contador Pré-ajustável</span>
-                            <div class="io-port in">
-                                <span class="label">Sinal de Carga (T3)</span>
-                                <span class="sinal" id="sinal-t3" aria-hidden="true"></span>
-                            </div>
-                            <div class="io-port out">
-                                <span class="label">Endereço p/ ROM</span>
-                                <span class="valor" id="val-current-addr">--</span>
-                            </div>
+                        <div class="container-saidas-t" role="group" aria-label="Sinais de temporização gerados T1..T6">
+                            <div class="saida-t" id="t1">T1</div>
+                            <div class="saida-t" id="t2">T2</div>
+                            <div class="saida-t" id="t3">T3</div>
+                            <div class="saida-t" id="t4">T4</div>
+                            <div class="saida-t" id="t5">T5</div>
+                            <div class="saida-t" id="t6">T6</div>
                         </div>
 
-                        <div class="bloco" id="micro-rom-ctrl">
-                            <span class="titulo">ROM de Controle 16x12</span>
-                            <div class="io-port out">
-                                <span class="label">Microinstrução (CON)</span>
-                                <span class="valor" id="val-microinst">--</span>
-                            </div>
+                        <div class="controles-circuito">
+                            <button id="btn-clk-anel" class="li-btn" type="button" aria-controls="fig-10-2-animada">►
+                                CLK (Pulso)</button>
+                            <button id="btn-reset-anel" class="li-btn" type="button">CLR (Resetar)</button>
                         </div>
-
-                        <div class="fluxo" id="fluxo-addr-contador" aria-hidden="true"></div>
-                        <div class="fluxo" id="fluxo-contador-rom" aria-hidden="true"></div>
                     </div>
-
-                    <div class="container-log-microprograma">
-                        <h4>Log de Microprograma (ROM de Controle)</h4>
-                        <table id="log-tabela">
-                            <thead>
-                                <tr>
-                                    <th>Estado T</th>
-                                    <th>Fase</th>
-                                    <th>Endereço (do Contador)</th>
-                                    <th>Microinstrução (Saída da ROM)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="log-corpo"></tbody>
-                        </table>
-                    </div>
+                    <p class="image-caption">Fig. 10-2: Contador em anel (FF1..FF6) gerando os sinais T1..T6.</p>
                 </div>
-                <p class="image-caption">Fig. 10-16: Controle microprogramado do SAP-1 — simulação do fluxo e log de microinstruções.</p>
-            </div>
-            <ul>
-                <li><strong>ROM de Endereços</strong>: Contém os endereços de partida de cada rotina de microinstruções.
-                    Quando os bits do código de operação (e.g., I<sub>7</sub>I<sub>6</sub>I<sub>5</sub>I<sub>4</sub>) comandam a ROM de endereço, o
-                    endereço de partida da rotina correspondente é gerado (ex: ADD com 0001 gera 0110).</li>
-                <li><strong>Contador Pré-ajustável</strong>: Quando o estado <em>T<sub>3</sub></em> está alto, ele carrega o endereço
-                    de partida da ROM de endereços. Nos outros estados T, ele conta. A saída do contador é o endereço
-                    que será aplicado à ROM de controle.</li>
-                <li><strong>ROM de Controle</strong>: Armazena as microinstruções do SAP-1. Ela recebe os endereços do
-                    contador pré-ajustável e produz a microinstrução adequada, que por sua vez gera os sinais de
-                    controle (ex: para busca, produz 5E3H, BE3H, 263H).</li>
-            </ul>
 
-            <h4 id="exemplos-sequencia">Exemplos práticos da sequência (aplicação)</h4>
-            <p>Para efeitos de exemplo, abaixo estão as sequências completas (em ordem de aplicação) de endereços e
-                microinstruções emitidas pela ROM de controle para cada instrução. Os três primeiros estados T são
-                sempre de busca e iguais para todas as instruções; os três seguintes dependem da rotina selecionada.</p>
+                <h3>4.2. Ciclo de Busca (FETCH)</h3>
+                <p>Os três primeiros estados <em>&tau;</em> (<em>&tau;<sub>1</sub>, &tau;<sub>2</sub>,
+                        &tau;<sub>3</sub></em>) formam o ciclo de busca.</p>
+                <ul>
+                    <li><strong>Estado de Endereço (<em>&tau;<sub>1</sub></em>)</strong>: O endereço no contador de
+                        programa
+                        é transferido para o REM. Os sinais <em>&tau;<sub>P</sub></em> (alto) e
+                        <em>&tau;<sub>M</sub></em>
+                        (baixo) estão ativos.</li>
+                    <li><strong>Estado de Incremento (<em>&tau;<sub>2</sub></em>)</strong>: O contador de programa é
+                        incrementado. O bit <em>&tau;<sub>P</sub></em> é ativo.</li>
+                    <li><strong>Estado de Memória (<em>&tau;<sub>3</sub></em>)</strong>: A instrução de RAM endereçada é
+                        transferida da memória para o registrador de instruções. Os bits de controle ativos são
+                        <em>&tau;<sub>CE</sub></em> (baixo) e <em>&tau;<sub>I</sub></em> (baixo).
+                    </li>
+                </ul>
 
-            <details>
-                <summary><strong>Sequência comum de Busca (T1–T3)</strong></summary>
-                <table aria-label="Sequência de busca T1–T3">
-                    <thead>
-                        <tr>
-                            <th>Estado T</th>
-                            <th>Endereço (bin)</th>
-                            <th>Saída da ROM de Controle</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>T1</td><td>0000 (0H)</td><td>5E3H</td></tr>
-                        <tr><td>T2</td><td>0001 (1H)</td><td>BE3H</td></tr>
-                        <tr><td>T3</td><td>0010 (2H)</td><td>263H</td></tr>
-                    </tbody>
-                </table>
-            </details>
+                <h3>4.3. Ciclo de Execução</h3>
+                <p>Os três estados seguintes (&tau;<sub>4</sub>, &tau;<sub>5</sub> e &tau;<sub>6</sub>) constituem o
+                    ciclo
+                    de execução, e as transferências de registradores dependem da instrução específica.</p>
+                <ul>
+                    <li><strong>Rotina LDA</strong>:
+                        <ul>
+                            <li><em>&tau;<sub>4</sub></em>: O campo de instrução é decodificado, e o campo de endereços
+                                é
+                                carregado no REM. <em>E<sub>I</sub></em> e <em>L<sub>M</sub></em> estão ativos.</li>
+                            <li><em>&tau;<sub>5</sub></em>: A palavra de dados endereçada da RAM é carregada no
+                                acumulador.
+                                <span style="text-decoration: overline;">CE</span> e <span
+                                    style="text-decoration: overline;">LA</span> estão ativos.
+                            </li>
+                            <li><em>&tau;<sub>6</sub></em>: Estado "nop" (sem operação).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Rotina ADD</strong>:
+                        <ul>
+                            <li><em>T<sub>4</sub></em>: O campo de instrução vai para o controlador-sequencializador e o
+                                campo de endereços para o REM. <em>E<sub>I</sub></em> e <span
+                                    style="text-decoration: overline;">LM</span> estão ativos.</li>
+                            <li><em>T<sub>5</sub></em>: A palavra de RAM endereçada é carregada no registrador B. <span
+                                    style="text-decoration: overline;">CE</span> e <span
+                                    style="text-decoration: overline;">LB</span> estão ativos.</li>
+                            <li><em>T<sub>6</sub></em>: O somador-subtrator prepara o acumulador com a soma.
+                                <em>E<sub>U</sub></em> e <span style="text-decoration: overline;">LA</span> estão
+                                ativos.
+                            </li>
+                        </ul>
+                    </li>
 
-            <details>
-                <summary><strong>LDA</strong> — endereço de partida: 0011 (3H)</summary>
-                <table aria-label="Sequência da instrução LDA (T4–T6)">
-                    <thead>
-                        <tr>
-                            <th>Estado T</th>
-                            <th>Endereço (bin)</th>
-                            <th>Saída da ROM de Controle</th>
-                            <th>Observação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>T4</td><td>0011 (3H)</td><td>1A3H</td><td>Decodifica instr.; RI → REM</td></tr>
-                        <tr><td>T5</td><td>0100 (4H)</td><td>2C3H</td><td>RAM → A</td></tr>
-                        <tr><td>T6</td><td>0101 (5H)</td><td>3E3H</td><td>nop</td></tr>
-                    </tbody>
-                </table>
-            </details>
+                    <li><strong>Rotina SUB</strong>: Similar à rotina ADD, mas com um <em>S<sub>U</sub></em> alto no
+                        estado <em>T<sub>6</sub></em> para indicar subtração.</li>
+                    <li><strong>Rotina OUT</strong>:
+                        <ul>
+                            <li><strong><em>T<sub>4</sub></em></strong>: O conteúdo do acumulador é carregado no
+                                registrador de saída. Sinais <em>E<sub>A</sub></em> e <span
+                                    style="text-decoration: overline;">L<sub>O</sub></span> estão ativos.</li>
+                            <li><strong><em>T<sub>5</sub></em> e <em>T<sub>6</sub></em></strong>: São estados "nops".
+                            </li>
+                        </ul>
+                    </li>
+                    <li><strong>Rotina HLT</strong>: Não requer rotina de controle; o campo 1111 de instrução avisa ao
+                        controlador-sequencializador para interromper o processamento, desligando o relógio.</li>
+                </ul>
 
-            <details>
-                <summary><strong>ADD</strong> — endereço de partida: 0110 (6H)</summary>
-                <table aria-label="Sequência da instrução ADD (T4–T6)">
-                    <thead>
-                        <tr>
-                            <th>Estado T</th>
-                            <th>Endereço (bin)</th>
-                            <th>Saída da ROM de Controle</th>
-                            <th>Observação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>T4</td><td>0110 (6H)</td><td>1A3H</td><td>RI → REM</td></tr>
-                        <tr><td>T5</td><td>0111 (7H)</td><td>2E1H</td><td>RAM → B</td></tr>
-                        <tr><td>T6</td><td>1000 (8H)</td><td>3C7H</td><td>A ← A + B</td></tr>
-                    </tbody>
-                </table>
-            </details>
+                <h3>4.4. Ciclo de Máquina e Ciclo de Instrução</h3>
+                <p>O SAP-1 possui seis estados T (três de busca e três de execução), que são chamados de "ciclo de
+                    máquina".
+                    É necessário um ciclo de máquina para buscar e executar cada instrução. O SAP-1 opera a 1 kHz,
+                    levando 6
+                    ms para um ciclo de máquina. O "ciclo de instrução" é o número de estados T necessários para buscar
+                    e
+                    executar uma instrução. No SAP-1, o ciclo de instrução é igual ao ciclo de máquina. Em outros
+                    microcomputadores, como o 8085, o ciclo de instrução pode variar de um a cinco ciclos de máquina.
+                </p>
+                <div class="image-container">
+                    <img src="assets/img/Ciclo-de-Instrução.png" alt="Ciclo de Máquina e Instrução do SAP-1">
+                    <p class="image-caption">Fig. 10-10: Ciclo de instrução do SAP-1 (a) e ciclo de instrução com dois
+                        ciclos de máquina (b).</p>
+                </div>
+            </section>
 
-            <details>
-                <summary><strong>SUB</strong> — endereço de partida: 1001 (9H)</summary>
-                <table aria-label="Sequência da instrução SUB (T4–T6)">
-                    <thead>
-                        <tr>
-                            <th>Estado T</th>
-                            <th>Endereço (bin)</th>
-                            <th>Saída da ROM de Controle</th>
-                            <th>Observação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>T4</td><td>1001 (9H)</td><td>1A3H</td><td>RI → REM</td></tr>
-                        <tr><td>T5</td><td>1010 (AH)</td><td>2E1H</td><td>RAM → B</td></tr>
-                        <tr><td>T6</td><td>1011 (BH)</td><td>3CFH</td><td>A ← A − B</td></tr>
-                    </tbody>
-                </table>
-            </details>
+            <section id="microprogramacao">
+                <h2>5. Microprogramação</h2>
+                <p>Em sistemas mais complexos, a "matriz de controle" (controle por fios fixos) torna-se excessivamente
+                    complicada e exige milhares de portas. A "microprogramação" surge como alternativa, armazenando
+                    microinstruções em uma ROM (Read-Only Memory) de controle, simplificando a construção de um
+                    controlador-sequenciador.</p>
 
-            <details>
-                <summary><strong>OUT</strong> — endereço de partida: 1100 (CH)</summary>
-                <table aria-label="Sequência da instrução OUT (T4–T6)">
-                    <thead>
-                        <tr>
-                            <th>Estado T</th>
-                            <th>Endereço (bin)</th>
-                            <th>Saída da ROM de Controle</th>
-                            <th>Observação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>T4</td><td>1100 (CH)</td><td>3F2H</td><td>A → OUT</td></tr>
-                        <tr><td>T5</td><td>1101 (DH)</td><td>3E3H</td><td>nop</td></tr>
-                        <tr><td>T6</td><td>1110 (EH)</td><td>3E3H</td><td>nop</td></tr>
-                    </tbody>
-                </table>
-            </details>
+                <h3>5.1. Armazenamento do Microprograma</h3>
+                <p>As microinstruções do SAP-1, incluindo a rotina de busca e as rotinas de LDA, ADD, SUB e OUT, são
+                    armazenadas em uma ROM de controle em endereços específicos (ex: busca em 0H a 2H, LDA em 3H a 5H,
+                    etc.). Para acessar uma rotina, é necessário conhecer seu endereço de partida, escalonar através dos
+                    endereços da rotina e aplicá-los à ROM de controle.</p>
 
-            <h3>5.3. Ciclo Variável de Máquina</h3>
-            <p>O SAP-1 utiliza um ciclo de máquina fixo (seis estados T) para todas as instruções, o que inclui estados
-                "nop" (sem operação) para algumas rotinas (uma vez na LDA, duas vezes na OUT). Para otimizar a
-                velocidade, os estados "nop" podem ser eliminados, resultando em um ciclo de máquina variável. Isso
-                encurtaria o ciclo de máquina da instrução LDA para cinco estados e da instrução OUT para quatro
-                estados. Esse recurso é comum em microprocessadores como o 8085, onde os ciclos de máquina variam de
-                dois a seis estados T, ignorando os nops indesejáveis.</p>
+                <h3>5.2. Componentes da Microprogramação</h3>
+                <div class="image-container">
+                    <div class="sap-interactive-module" id="modulo-microprograma"
+                        aria-label="Fig. 10-16: Controle Microprogramado interativo">
+                        <h4>Animação: Controle Microprogramado (Fig. 10-16)</h4>
 
-            <h3>5.4. Vantagens da Microprogramação</h3>
-            <p>A microprogramação elimina a necessidade de decodificadores de instruções e matrizes de controle
-                complexas, que se tornariam impraticáveis com maiores conjuntos de instruções. É muito mais fácil
-                armazenar microinstruções em uma ROM do que montar circuitos fixos. Além disso, a microprogramação
-                permite alterar o conjunto de instruções modificando apenas as ROMs de controle e de endereço de
-                partida, sem a necessidade de reconfigurar o hardware físico.</p>
-        </section>
+                        <div class="controles-microprograma">
+                            <label for="instrucao-select">1. Escolha uma Instrução:</label>
+                            <select id="instrucao-select" aria-label="Escolha uma instrução">
+                                <option value="LDA" data-op="0000">LDA (0000)</option>
+                                <option value="ADD" data-op="0001">ADD (0001)</option>
+                                <option value="SUB" data-op="0010">SUB (0010)</option>
+                                <option value="OUT" data-op="1110">OUT (1110)</option>
+                            </select>
+                            <button id="btn-play-microprograma" class="li-btn" type="button">► Iniciar
+                                Simulação</button>
+                        </div>
 
-        <section id="recursos-visuais">
-            <h2>Recursos Visuais e Simulações</h2>
-            <p>Para aprofundar seu entendimento sobre o SAP-1, explore os recursos visuais e simulações abaixo. Note
-                que, para uma experiência interativa completa com vídeos, links diretos de plataformas como YouTube são
-                ideais para embedding.</p>
+                        <div class="container-circuito-microprograma" role="group"
+                            aria-label="Circuito do controle microprogramado">
+                            <div class="bloco" id="micro-rom-addr">
+                                <span class="titulo">ROM de Endereço 16x4</span>
+                                <div class="io-port in">
+                                    <span class="label">OpCode (de RI)</span>
+                                    <span class="valor" id="val-opcode">--</span>
+                                </div>
+                                <div class="io-port out">
+                                    <span class="label">Endereço de Partida</span>
+                                    <span class="valor" id="val-start-addr">--</span>
+                                </div>
+                            </div>
+
+                            <div class="bloco" id="micro-contador">
+                                <span class="titulo">Contador Pré-ajustável</span>
+                                <div class="io-port in">
+                                    <span class="label">Sinal de Carga (T3)</span>
+                                    <span class="sinal" id="sinal-t3" aria-hidden="true"></span>
+                                </div>
+                                <div class="io-port out">
+                                    <span class="label">Endereço p/ ROM</span>
+                                    <span class="valor" id="val-current-addr">--</span>
+                                </div>
+                            </div>
+
+                            <div class="bloco" id="micro-rom-ctrl">
+                                <span class="titulo">ROM de Controle 16x12</span>
+                                <div class="io-port out">
+                                    <span class="label">Microinstrução (CON)</span>
+                                    <span class="valor" id="val-microinst">--</span>
+                                </div>
+                            </div>
+
+                            <div class="fluxo" id="fluxo-addr-contador" aria-hidden="true"></div>
+                            <div class="fluxo" id="fluxo-contador-rom" aria-hidden="true"></div>
+                        </div>
+
+                        <div class="container-log-microprograma">
+                            <h4>Log de Microprograma (ROM de Controle)</h4>
+                            <table id="log-tabela">
+                                <thead>
+                                    <tr>
+                                        <th>Estado T</th>
+                                        <th>Fase</th>
+                                        <th>Endereço (do Contador)</th>
+                                        <th>Microinstrução (Saída da ROM)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="log-corpo"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <p class="image-caption">Fig. 10-16: Controle microprogramado do SAP-1 — simulação do fluxo e log de
+                        microinstruções.</p>
+                </div>
+                <ul>
+                    <li><strong>ROM de Endereços</strong>: Contém os endereços de partida de cada rotina de
+                        microinstruções.
+                        Quando os bits do código de operação (e.g.,
+                        I<sub>7</sub>I<sub>6</sub>I<sub>5</sub>I<sub>4</sub>) comandam a ROM de endereço, o
+                        endereço de partida da rotina correspondente é gerado (ex: ADD com 0001 gera 0110).</li>
+                    <li><strong>Contador Pré-ajustável</strong>: Quando o estado <em>T<sub>3</sub></em> está alto, ele
+                        carrega o endereço
+                        de partida da ROM de endereços. Nos outros estados T, ele conta. A saída do contador é o
+                        endereço
+                        que será aplicado à ROM de controle.</li>
+                    <li><strong>ROM de Controle</strong>: Armazena as microinstruções do SAP-1. Ela recebe os endereços
+                        do
+                        contador pré-ajustável e produz a microinstrução adequada, que por sua vez gera os sinais de
+                        controle (ex: para busca, produz 5E3H, BE3H, 263H).</li>
+                </ul>
+
+                <h4 id="exemplos-sequencia">Exemplos práticos da sequência (aplicação)</h4>
+                <p>Para efeitos de exemplo, abaixo estão as sequências completas (em ordem de aplicação) de endereços e
+                    microinstruções emitidas pela ROM de controle para cada instrução. Os três primeiros estados T são
+                    sempre de busca e iguais para todas as instruções; os três seguintes dependem da rotina selecionada.
+                </p>
+
+                <details>
+                    <summary><strong>Sequência comum de Busca (T1–T3)</strong></summary>
+                    <table aria-label="Sequência de busca T1–T3">
+                        <thead>
+                            <tr>
+                                <th>Estado T</th>
+                                <th>Endereço (bin)</th>
+                                <th>Saída da ROM de Controle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>T1</td>
+                                <td>0000 (0H)</td>
+                                <td>5E3H</td>
+                            </tr>
+                            <tr>
+                                <td>T2</td>
+                                <td>0001 (1H)</td>
+                                <td>BE3H</td>
+                            </tr>
+                            <tr>
+                                <td>T3</td>
+                                <td>0010 (2H)</td>
+                                <td>263H</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </details>
+
+                <details>
+                    <summary><strong>LDA</strong> — endereço de partida: 0011 (3H)</summary>
+                    <table aria-label="Sequência da instrução LDA (T4–T6)">
+                        <thead>
+                            <tr>
+                                <th>Estado T</th>
+                                <th>Endereço (bin)</th>
+                                <th>Saída da ROM de Controle</th>
+                                <th>Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>T4</td>
+                                <td>0011 (3H)</td>
+                                <td>1A3H</td>
+                                <td>Decodifica instr.; RI → REM</td>
+                            </tr>
+                            <tr>
+                                <td>T5</td>
+                                <td>0100 (4H)</td>
+                                <td>2C3H</td>
+                                <td>RAM → A</td>
+                            </tr>
+                            <tr>
+                                <td>T6</td>
+                                <td>0101 (5H)</td>
+                                <td>3E3H</td>
+                                <td>nop</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </details>
+
+                <details>
+                    <summary><strong>ADD</strong> — endereço de partida: 0110 (6H)</summary>
+                    <table aria-label="Sequência da instrução ADD (T4–T6)">
+                        <thead>
+                            <tr>
+                                <th>Estado T</th>
+                                <th>Endereço (bin)</th>
+                                <th>Saída da ROM de Controle</th>
+                                <th>Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>T4</td>
+                                <td>0110 (6H)</td>
+                                <td>1A3H</td>
+                                <td>RI → REM</td>
+                            </tr>
+                            <tr>
+                                <td>T5</td>
+                                <td>0111 (7H)</td>
+                                <td>2E1H</td>
+                                <td>RAM → B</td>
+                            </tr>
+                            <tr>
+                                <td>T6</td>
+                                <td>1000 (8H)</td>
+                                <td>3C7H</td>
+                                <td>A ← A + B</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </details>
+
+                <details>
+                    <summary><strong>SUB</strong> — endereço de partida: 1001 (9H)</summary>
+                    <table aria-label="Sequência da instrução SUB (T4–T6)">
+                        <thead>
+                            <tr>
+                                <th>Estado T</th>
+                                <th>Endereço (bin)</th>
+                                <th>Saída da ROM de Controle</th>
+                                <th>Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>T4</td>
+                                <td>1001 (9H)</td>
+                                <td>1A3H</td>
+                                <td>RI → REM</td>
+                            </tr>
+                            <tr>
+                                <td>T5</td>
+                                <td>1010 (AH)</td>
+                                <td>2E1H</td>
+                                <td>RAM → B</td>
+                            </tr>
+                            <tr>
+                                <td>T6</td>
+                                <td>1011 (BH)</td>
+                                <td>3CFH</td>
+                                <td>A ← A − B</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </details>
+
+                <details>
+                    <summary><strong>OUT</strong> — endereço de partida: 1100 (CH)</summary>
+                    <table aria-label="Sequência da instrução OUT (T4–T6)">
+                        <thead>
+                            <tr>
+                                <th>Estado T</th>
+                                <th>Endereço (bin)</th>
+                                <th>Saída da ROM de Controle</th>
+                                <th>Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>T4</td>
+                                <td>1100 (CH)</td>
+                                <td>3F2H</td>
+                                <td>A → OUT</td>
+                            </tr>
+                            <tr>
+                                <td>T5</td>
+                                <td>1101 (DH)</td>
+                                <td>3E3H</td>
+                                <td>nop</td>
+                            </tr>
+                            <tr>
+                                <td>T6</td>
+                                <td>1110 (EH)</td>
+                                <td>3E3H</td>
+                                <td>nop</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </details>
+
+                <h3>5.3. Ciclo Variável de Máquina</h3>
+                <p>O SAP-1 utiliza um ciclo de máquina fixo (seis estados T) para todas as instruções, o que inclui
+                    estados
+                    "nop" (sem operação) para algumas rotinas (uma vez na LDA, duas vezes na OUT). Para otimizar a
+                    velocidade, os estados "nop" podem ser eliminados, resultando em um ciclo de máquina variável. Isso
+                    encurtaria o ciclo de máquina da instrução LDA para cinco estados e da instrução OUT para quatro
+                    estados. Esse recurso é comum em microprocessadores como o 8085, onde os ciclos de máquina variam de
+                    dois a seis estados T, ignorando os nops indesejáveis.</p>
+
+                <h3>5.4. Vantagens da Microprogramação</h3>
+                <p>A microprogramação elimina a necessidade de decodificadores de instruções e matrizes de controle
+                    complexas, que se tornariam impraticáveis com maiores conjuntos de instruções. É muito mais fácil
+                    armazenar microinstruções em uma ROM do que montar circuitos fixos. Além disso, a microprogramação
+                    permite alterar o conjunto de instruções modificando apenas as ROMs de controle e de endereço de
+                    partida, sem a necessidade de reconfigurar o hardware físico.</p>
+            </section>
+
+            <section id="recursos-visuais">
+                <h2>Recursos Visuais e Simulações</h2>
+                <p>Para aprofundar seu entendimento sobre o SAP-1, explore os recursos visuais e simulações abaixo. Note
+                    que, para uma experiência interativa completa com vídeos, links diretos de plataformas como YouTube
+                    são
+                    ideais para embedding.</p>
                 <div class="video-loop-container" style="text-align:center; margin-bottom: 2em;">
                     <video width="480" height="270" autoplay loop muted playsinline>
                         <source src="assets/img/Imagem_SAP_Vídeo_Gerado.mp4" type="video/mp4">
                         Seu navegador não suporta o elemento de vídeo.
                     </video>
                     <p><strong>Demonstração SAP-1 em Loop</strong><br>
-                    Vídeo demonstrativo do funcionamento do SAP-1, reproduzido continuamente.</p>
+                        Vídeo demonstrativo do funcionamento do SAP-1, reproduzido continuamente.</p>
                 </div>
 
-            <h3>Vídeos Explicativos e Demonstrações</h3>
-            <div class="video-gallery">
-                <div class="video-item">
-                    <iframe width="360" height="203" src="https://www.youtube.com/embed/CGKY7P-BHb8"
-                        title="Digital Electronics LAB Project: SAP 1 Architecture based 8 bit Computer Design"
-                        frameborder="0" allowfullscreen></iframe>
-                    <p><strong>Digital Electronics LAB Project: SAP 1 Architecture based 8 bit Computer
-                            Design</strong><br>
-                        Este vídeo aborda o projeto de um computador de 8 bits baseado na arquitetura SAP-1.</p>
+                <h3>Vídeos Explicativos e Demonstrações</h3>
+                <div class="video-gallery">
+                    <div class="video-item">
+                        <iframe width="360" height="203" src="https://www.youtube.com/embed/CGKY7P-BHb8"
+                            title="Digital Electronics LAB Project: SAP 1 Architecture based 8 bit Computer Design"
+                            frameborder="0" allowfullscreen></iframe>
+                        <p><strong>Digital Electronics LAB Project: SAP 1 Architecture based 8 bit Computer
+                                Design</strong><br>
+                            Este vídeo aborda o projeto de um computador de 8 bits baseado na arquitetura SAP-1.</p>
+                    </div>
+                    <div class="video-item">
+                        <iframe width="360" height="203" src="https://www.youtube.com/embed/NFuKWCwEWLI"
+                            title="SAP-1 Demonstration and Simulation on CircuitVerse by Brahma Kulkarni"
+                            frameborder="0" allowfullscreen></iframe>
+                        <p><strong>SAP-1 Demonstration and Simulation on CircuitVerse by Brahma Kulkarni</strong><br>
+                            Uma demonstração e simulação prática do SAP-1 usando a plataforma CircuitVerse.</p>
+                    </div>
+                    <div class="video-item">
+                        <iframe width="360" height="203" src="https://www.youtube.com/embed/mPkAgXJOoSc"
+                            title="Simpler than Ben Eater's SAP-1?" frameborder="0" allowfullscreen></iframe>
+                        <p><strong>Simpler than Ben Eater's SAP-1?</strong><br>
+                            Explore variações e simplificações do projeto SAP-1.</p>
+                    </div>
+                    <div class="video-item">
+                        <iframe width="360" height="203" src="https://www.youtube.com/embed/mAAbH9KlYp8"
+                            title="SAP 1 Addition Program | Assembly and Machine Code | #1" frameborder="0"
+                            allowfullscreen></iframe>
+                        <p><strong>SAP 1 Addition Program | Assembly and Machine Code | #1</strong><br>
+                            Um exemplo prático de programação para o SAP-1, mostrando o programa de adição em linguagem
+                            assembly e de máquina.</p>
+                    </div>
                 </div>
-                <div class="video-item">
-                    <iframe width="360" height="203" src="https://www.youtube.com/embed/NFuKWCwEWLI"
-                        title="SAP-1 Demonstration and Simulation on CircuitVerse by Brahma Kulkarni" frameborder="0"
-                        allowfullscreen></iframe>
-                    <p><strong>SAP-1 Demonstration and Simulation on CircuitVerse by Brahma Kulkarni</strong><br>
-                        Uma demonstração e simulação prática do SAP-1 usando a plataforma CircuitVerse.</p>
-                </div>
-                <div class="video-item">
-                    <iframe width="360" height="203" src="https://www.youtube.com/embed/mPkAgXJOoSc"
-                        title="Simpler than Ben Eater's SAP-1?" frameborder="0" allowfullscreen></iframe>
-                    <p><strong>Simpler than Ben Eater's SAP-1?</strong><br>
-                        Explore variações e simplificações do projeto SAP-1.</p>
-                </div>
-                <div class="video-item">
-                    <iframe width="360" height="203" src="https://www.youtube.com/embed/mAAbH9KlYp8"
-                        title="SAP 1 Addition Program | Assembly and Machine Code | #1" frameborder="0"
-                        allowfullscreen></iframe>
-                    <p><strong>SAP 1 Addition Program | Assembly and Machine Code | #1</strong><br>
-                        Um exemplo prático de programação para o SAP-1, mostrando o programa de adição em linguagem
-                        assembly e de máquina.</p>
-                </div>
-            </div>
 
 
-            <h3>Simuladores e Ferramentas</h3>
-            <ul>
-                <li><a href="http://aserrano.es/portafolio/informatica-con-processing/sap1english/" target="_blank"
-                        rel="noopener noreferrer">Simple-As-Possible Computer (SAP-1) simulator</a> - Um simulador
-                    online do SAP-1 que pode ajudar a visualizar a execução das instruções.</li>
-            </ul>
-            <p class="image-caption"><strong>Nota sobre imagens:</strong> Embora o documento original contenha diagramas
-                detalhados, links diretos para imagens embeddáveis não foram obtidos. As imagens acima são placeholders.
-                Para uma versão completa e interativa, seria ideal ter acesso a links diretos para as imagens dos
-                diagramas (e.g., Fig. 10-1, Fig. 10-2, Fig. 10-3, etc.) ou criar representações visuais personalizadas.
-            </p>
-        </section>
-    </div>
+                <h3>Simuladores e Ferramentas</h3>
+                <ul>
+                    <li><a href="http://aserrano.es/portafolio/informatica-con-processing/sap1english/" target="_blank"
+                            rel="noopener noreferrer">Simple-As-Possible Computer (SAP-1) simulator</a> - Um simulador
+                        online do SAP-1 que pode ajudar a visualizar a execução das instruções.</li>
+                </ul>
+                <p class="image-caption"><strong>Nota sobre imagens:</strong> Embora o documento original contenha
+                    diagramas
+                    detalhados, links diretos para imagens embeddáveis não foram obtidos. As imagens acima são
+                    placeholders.
+                    Para uma versão completa e interativa, seria ideal ter acesso a links diretos para as imagens dos
+                    diagramas (e.g., Fig. 10-1, Fig. 10-2, Fig. 10-3, etc.) ou criar representações visuais
+                    personalizadas.
+                </p>
+            </section>
+        </div>
     </main>
 
     <!-- MUSICA SAPMAN -->
     <audio id="bg-music" data-src="assets/audio/brute_force_loop.mp3" preload="none" loop muted></audio>
 
-        <!-- Novo Footer -->
-        <footer class="site-footer">
-            <div class="footer-columns">
-                <div class="col brand">
-                    <a href="home.html" class="brand" aria-label="BitLab">
-                        <div class="logo-frasco">
-                            <div class="logo-icon">
-                                <span class="bolha bolha1"></span>
-                                <span class="bolha bolha2"></span>
-                            </div>
-                            <div class="logo-text">BitLab</div>
+    <!-- Novo Footer -->
+    <footer class="site-footer">
+        <div class="footer-columns">
+            <div class="col brand">
+                <a href="home.html" class="brand" aria-label="BitLab">
+                    <div class="logo-frasco">
+                        <div class="logo-icon">
+                            <span class="bolha bolha1"></span>
+                            <span class="bolha bolha2"></span>
                         </div>
-                    </a>
-                    
-                </div>
-                <div class="col nav">
-                    <h4>Navegação</h4>
-                    <ul>
-                        <li><a href="home.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/flask_full.png" alt="" aria-hidden="true">Home</a></li>
-                        <li><a href="oqueesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true">O que é SAP</a></li>
-                        <li><a href="quiz.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/token.png" alt="" aria-hidden="true">Quiz</a></li>
-                        <li><a href="equipesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/pawn.png" alt="" aria-hidden="true">Equipe</a></li>
-                        <li><a href="index.html#emulacao"><img class="icon" src="kenney_board-game-icons/Double (128px)/hexagon.png" alt="" aria-hidden="true">Emulação</a></li>
-                    </ul>
-                </div>
-                <div class="col about">
-                    <h4>Sobre</h4>
-                    <ul>
-                        <li><a href="oqueesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true">O que é SAP</a></li>
-                        <li><a href="assets/docs/Artigo_SAP1_Malvino.pdf" download><img class="icon" src="kenney_board-game-icons/Double (128px)/notepad.png" alt="" aria-hidden="true">Artigo SAP‑1 (PDF)</a></li>
-                    </ul>
-                </div>
-            </div>
-                    <div class="footer-credits">
-                        <div class="credits">
-                            <p><strong>Autor:</strong> Pedro Freitas</p>
-                        </div>
+                        <div class="logo-text">BitLab</div>
                     </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 BitLab. Todos os direitos reservados a Pedro Guimarães.</p>
+                </a>
+
             </div>
-        </footer>
+            <div class="col nav">
+                <h4>Navegação</h4>
+                <ul>
+                    <li><a href="home.html"><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/flask_full.png" alt=""
+                                aria-hidden="true">Home</a></li>
+                    <li><a href="oqueesap.html"><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true">O
+                            que é SAP</a></li>
+                    <li><a href="quiz.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/token.png"
+                                alt="" aria-hidden="true">Quiz</a></li>
+                    <li><a href="equipesap.html"><img class="icon" src="kenney_board-game-icons/Double (128px)/pawn.png"
+                                alt="" aria-hidden="true">Equipe</a></li>
+                    <li><a href="index.html#emulacao"><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/hexagon.png" alt=""
+                                aria-hidden="true">Emulação</a></li>
+                </ul>
+            </div>
+            <div class="col about">
+                <h4>Sobre</h4>
+                <ul>
+                    <li><a href="oqueesap.html"><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/book_open.png" alt="" aria-hidden="true">O
+                            que é SAP</a></li>
+                    <li><a href="assets/docs/Artigo_SAP1_Malvino.pdf" download><img class="icon"
+                                src="kenney_board-game-icons/Double (128px)/notepad.png" alt=""
+                                aria-hidden="true">Artigo SAP‑1 (PDF)</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-credits">
+            <div class="credits">
+                <p><strong>Autor:</strong> Pedro Freitas</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 BitLab. Todos os direitos reservados a Pedro Guimarães.</p>
+        </div>
+    </footer>
 
     <script src="assets/js/media-opt.js" defer></script>
-        <script src="assets/js/bg-anim.js" defer></script>
-        <script src="assets/js/audio-menu.js" defer></script>
+    <script src="assets/js/bg-anim.js" defer></script>
+    <script src="assets/js/audio-menu.js" defer></script>
     <script src="assets/js/fig-10-2.js" defer></script>
     <script src="assets/js/fig-10-16.js" defer></script>
     <script src="assets/js/nav.js" defer></script>
